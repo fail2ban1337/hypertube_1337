@@ -15,6 +15,6 @@ Here's the technical stack this boilerplate was made with:
 # BackEnd
 
 - Express
-- Mangoo
+- MongoDB
 
 # Usage
