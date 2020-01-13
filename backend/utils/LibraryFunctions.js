@@ -1,12 +1,59 @@
+const _ = require("lodash");
+
 // take torrent hash as a parameter, return magnet link
 const getMagnetLink = hash => {
   return `magnet:?xt=urn:btih:${hash}&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337`;
+};
+
+// filter response if it has a empty element
+const filterYtsResponse = response => {
+  const filtredResponse = _.filter(response, item => {
+    return (
+      !_.isEmpty(item.imdb_code) &&
+      !_.isEmpty(item.title) &&
+      _.isNumber(item.year) &&
+      _.isNumber(item.runtime) &&
+      _.isNumber(item.rating) &&
+      !_.isEmpty(item.summary) &&
+      !_.isEmpty(item.language) &&
+      !_.isEmpty(item.large_cover_image) &&
+      !_.isEmpty(item.torrents[0].hash) &&
+      !_.isEmpty(item.torrents[0].quality) &&
+      !_.isEmpty(item.torrents[0].type) &&
+      _.isNumber(item.torrents[0].seeds) &&
+      _.isNumber(item.torrents[0].peers) &&
+      !_.isEmpty(item.torrents[0].size)
+    );
+  });
+  return filtredResponse;
+};
+
+// filter response if it has a empty element
+const filterPopResponse = response => {
+  const filtredResponse = _.filter(response, item => {
+    return (
+      !_.isEmpty(item.imdb_id) &&
+      !_.isEmpty(item.title) &&
+      !_.isEmpty(item.year) &&
+      !_.isEmpty(item.runtime) &&
+      _.isNumber(item.rating.percentage) &&
+      !_.isEmpty(item.synopsis) &&
+      !_.isEmpty(Object.keys(item.torrents)[0]) &&
+      !_.isEmpty(item.images.poster) &&
+      !_.isEmpty(item.torrents.en["1080p"].url) &&
+      _.isNumber(item.torrents.en["1080p"].seed) &&
+      _.isNumber(item.torrents.en["1080p"].peer) &&
+      !_.isEmpty(item.torrents.en["1080p"].filesize)
+    );
+  });
+  return filtredResponse;
 };
 
 // Format api response
 const formatResponse = response => {
   const result = [];
   if (response[0].imdb_code) {
+    response = filterYtsResponse(response);
     response.map(item => {
       let obj = {};
       obj.api_source = "YTS";
@@ -27,6 +74,7 @@ const formatResponse = response => {
     });
     return result;
   }
+  response = filterPopResponse(response);
   response.map(item => {
     let obj = {};
     obj.api_source = "PopCorn";
@@ -71,6 +119,13 @@ const formatResponse = response => {
   return result;
 };
 
+// Compare by seeds number
+const retMax = (a, b) => {
+  if (a.imdb_code !== b.imdb_code) return null;
+  return a.torrents[0].seeds > b.torrents[0].seeds ? a : b;
+};
+
 module.exports = {
-  formatResponse
+  formatResponse,
+  retMax
 };
