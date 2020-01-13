@@ -19,7 +19,8 @@
     "loadash": "^1.0.0",
     "mongoose": "^5.8.3",
     "nodemon": "^2.0.2",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "request-promise": "^4.2.5"
   },
   "devDependencies": {
     "concurrently": "5.0.2"

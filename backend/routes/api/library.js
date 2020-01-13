@@ -2,15 +2,16 @@ const router = require("express").Router();
 const { check, validationResult } = require("express-validator");
 const cloudscraper = require("cloudscraper");
 const request = require("request");
+const rp = require("request-promise");
 const _ = require("lodash");
 const { formatResponse, retMax } = require("../../utils/LibraryFunctions");
 
-// @route   Get api/library/:pid
+// @route   Get api/library/movies/page/:pid
 // @desc    Get list of movies
 // @access  Private
 // return imdb_code, title, year, runtime, rating, genres, summary, language, large_cover_image, torrents
 router.get(
-  "/:pid",
+  "/movies/page/:pid",
   check("pid", "Page id is required").isNumeric(),
   async (req, res) => {
     // Check if page id is exists and valid number
@@ -55,12 +56,12 @@ router.get(
   }
 );
 
-// @route   Get api/library/:keyword
-// @desc    Search for a movie
+// @route   Get api/library/movies/keyword/:keyword
+// @desc    Search for a movie by keyword
 // @access  Private
 // return imdb_code, title, year, runtime, rating, genres, summary, language, large_cover_image, torrents
 router.get(
-  "/search/:keyword",
+  "/movies/keyword/:keyword",
   check("keyword", "Keyword id is required").isString(),
   async (req, res) => {
     // Check if page id is exists and valid number
@@ -114,7 +115,7 @@ router.get(
             parsedMoviesPop.push(JSON.parse(popResult));
             // if movies not returned due to page number not exist in API
             if (_.isEmpty(parsedMoviesPop) && torrentFail)
-              return res.status(400).json({ msg: "Torrent not found" });
+              return res.status(404).json({ msg: "Torrent not found" });
             else if (_.isEmpty(parsedMoviesPop) && !torrentFail)
               return res.json(movies);
 
@@ -126,9 +127,78 @@ router.get(
           movies = _.uniqWith(movies, retMax);
           return res.json(movies);
         }
-        return res.status(400).json({ msg: "Result not found" });
+        return res.status(404).json({ msg: "Result not found" });
       });
     } catch (error) {
+      return res.status(500).json({ msg: "Server error" });
+    }
+  }
+);
+
+// @route   Get api/library/movies/imdb_code/:imdb_code
+// @desc    Search for a movie by imdb_code
+// @access  Private
+// return imdb_code, title, year, runtime, rating, genres, summary, language, large_cover_image, torrents
+router.get(
+  "/movies/imdb_code/:imdb_code",
+  check("imdb_code", "ID is required").exists(),
+  async (req, res) => {
+    // Check if page id is exists and valid number
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({ msg: "ID is required" });
+    const imdb_code = req.params.imdb_code;
+
+    try {
+      // get movies from yts api
+      const ytsResult = await cloudscraper.get(
+        `https://yts.lt/api/v2/list_movies.json?query_term=${imdb_code}`
+      );
+
+      const parsedMoviesYts = JSON.parse(ytsResult);
+      // if movies not returned due to page number not exist in API
+      if (!parsedMoviesYts.data.movies)
+        return res.status(404).json({ msg: "Movie not found" });
+      // format response
+      const ytsData = formatResponse(parsedMoviesYts.data.movies);
+
+      // get movies from popcorn api
+      const popResult = await cloudscraper.get(
+        `https://tv-v2.api-fetch.website/movie/${imdb_code}`
+      );
+      if (!popResult) return res.json(ytsData);
+
+      const parsedMoviesPop = [];
+      parsedMoviesPop.push(JSON.parse(popResult));
+      // if movies not returned due to page number not exist in API
+      if (_.isEmpty(parsedMoviesPop)) return res.json(ytsData);
+
+      const popData = formatResponse(parsedMoviesPop);
+      // return best result depending on seeds number
+      const result =
+        ytsData[0].torrents[0].seeds >= popData[0].torrents[0].seeds
+          ? ytsData
+          : popData;
+      // IMDb
+      const options = {
+        method: "GET",
+        url: "https://movie-database-imdb-alternative.p.rapidapi.com/",
+        qs: { i: imdb_code, r: "json" },
+        headers: {
+          "x-rapidapi-host": "movie-database-imdb-alternative.p.rapidapi.com",
+          "x-rapidapi-key": "d711f40390msh574e342547e129ap1d4c6ajsnb930ad3ee946"
+        }
+      };
+
+      // Get more info from imdb api, append it to result
+      const body = await rp(options);
+      const { Director, Actors, Production } = JSON.parse(body);
+      result[0].Director = Director;
+      result[0].Actors = Actors;
+      result[0].Production = Production;
+      return res.json(result);
+    } catch (error) {
+      console.log(error);
       return res.status(500).json({ msg: "Server error" });
     }
   }
