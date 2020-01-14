@@ -94,9 +94,7 @@ const useStyles = makeStyles(theme => ({
     maxWidth: "100%",
     marginBottom: "50px",
     transition: "transform 2s",
-    '&:hover': {
-      transform: 'scale(1.1)',
-    }
+
   },
   imgBox: {
     position: "relative",
@@ -128,7 +126,7 @@ const useStyles = makeStyles(theme => ({
   details: {
     position: "absolute",
     width: "100%",
-    height: "280px",
+    height: "100%",
     top: "0",
     left: "0",
     background: "rgba(59,71,99,.9)",
@@ -138,6 +136,8 @@ const useStyles = makeStyles(theme => ({
     opacity: "0",
     '&:hover': {
       opacity: '1',
+      transform: 'scale(1.6)',
+
     }
   }
 }));
@@ -298,7 +298,7 @@ function OtherMovie() {
             <img className={classes.movies} src={movie.medium_cover_image} alt="Smiley face" style={{ height: "280px", width: "100%" }} />
 
             <div className={classes.details}>
-              <img src="./img/btn-overlay-blue.png" style={{ position: 'relative', top: "50%", width: "75px", transform: "translateY(-50%)" }} />
+              <img src="./img/btn-overlay-blue.png" style={{ position: 'relative', top: "50%", width: "40px", transform: "translateY(-50%)" }} />
             </div>
             <span className={classes.movieName}>
               <h6 >Movie</h6>
