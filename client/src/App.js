@@ -3,6 +3,8 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
 import Login from "./Components/user/login";
 import Register from "./Components/user/register";
+import Streming from "./Components/streming/streming";
+
 import NavBar from "./Components/inc/NavBar";
 // Redux
 import { Provider } from "react-redux";
@@ -18,6 +20,7 @@ function App() {
             <Switch>
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
+              <Route exact path="/streming" component={Streming} />
             </Switch>
           </div>
         </div>

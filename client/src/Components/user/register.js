@@ -15,7 +15,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import {connect} from 'react-redux';
+import {connect, useSelector} from 'react-redux';
 import {setAlert} from '../../actions/alert';
 import {register} from '../../actions/auth';
 import propTypes from 'prop-types';
@@ -58,7 +58,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function SignUp({setAlert, register}) {
-
+  const test = useSelector(state => state.auth);
+  console.log(test);
   const classes = useStyles();
 
   const [MyForm, setMyFormData] = useState({
