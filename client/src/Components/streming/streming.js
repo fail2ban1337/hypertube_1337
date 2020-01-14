@@ -102,9 +102,32 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     overflow: "hidden"
   },
+  quality: {
+    position: "absolute",
+    top: "8px",
+    right: "8px",
+    background: "#fed700",
+    borderRadius: "3px",
+    color: "#222",
+    fontSize: "11px",
+    fontWeight: "500",
+    height: "auto",
+    padding: "4px 6px",
+
+  },
+  movieName: {
+    position: "absolute",
+    bottom: "0",
+    left: "0",
+    textAlign: "center",
+    width: "100%",
+    color: "white",
+    background: "url(../img/mask-title.png) top repeat-x",
+
+  },
   details: {
     position: "absolute",
-    width: "180px",
+    width: "100%",
     height: "280px",
     top: "0",
     left: "0",
@@ -253,7 +276,7 @@ const MovieContainer = ({ children }) => {
   const classes = useStyles();
   return (
     <>
-      <Box display="flex" flexWrap="wrap" alignItems="center" className={classes.imgBox} >
+      <Box display="flex" flexWrap="wrap" justifyContent={"center"} className={classes.imgBox} >
         {children}
       </Box>
     </>
@@ -264,18 +287,24 @@ function OtherMovie() {
   const classes = useStyles();
   return (
     <>
-      <Grid container style={{ paddingTop: "50px" }}>
+      <Grid container style={{ paddingTop: "50px", paddingBottom: "20px" }}>
         <Box p={1} bgcolor="primary.main" style={{ background: blue[500], color: "#fff" }}>
           YOU MAY ALSO LIKE
       </Box>
       </Grid>
       {movies.map(movie => {
         return (
-          <Box key={movie.id} width={150} style={{ margin: "0 4%" }} flexGrow={1} className={classes.imgBox}>
-            <img className={classes.movies} src={movie.medium_cover_image} alt="Smiley face" style={{ height: "280px", width: "180px" }} />
+          <Box key={movie.id} maxWidth={200} maxHeight={280} style={{ margin: "2% 4%" }} flexGrow={1} className={classes.imgBox}>
+            <img className={classes.movies} src={movie.medium_cover_image} alt="Smiley face" style={{ height: "280px", width: "100%" }} />
+
             <div className={classes.details}>
-              <h2 style={{ color: "white", lineHeight: "280px" }}>Play (later)</h2>
+              <img src="./img/btn-overlay-blue.png" style={{ position: 'relative', top: "50%", width: "75px", transform: "translateY(-50%)" }} />
             </div>
+            <span className={classes.movieName}>
+              <h6 >Movie</h6>
+            </span>
+            <span className={classes.quality}>HD</span>
+
           </Box>
         )
       })}
