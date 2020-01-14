@@ -192,10 +192,11 @@ router.get(
 
       // Get more info from imdb api, append it to result
       const body = await rp(options);
-      const { Director, Actors, Production } = JSON.parse(body);
+      const { Director, Actors, Production, Poster } = JSON.parse(body);
       result[0].Director = Director;
       result[0].Actors = Actors;
       result[0].Production = Production;
+      result[0].Poster = Poster;
       return res.json(result);
     } catch (error) {
       console.log(error);
