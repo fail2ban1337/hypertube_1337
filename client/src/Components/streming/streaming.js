@@ -172,6 +172,7 @@ function StrVedio() {
     <Video
       loop
       controls={["PlayPause", "Seek", "Time", "Volume", "Fullscreen", "Captions"]}
+      onPlay={() => console.log("test")}
       poster="https://i.ytimg.com/vi/n5bmAwbk9TI/maxresdefault.jpg"
       onCanPlayThrough={() => {
         // Do stuff
