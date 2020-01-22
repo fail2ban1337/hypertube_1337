@@ -95,10 +95,7 @@ const useStyles = makeStyles(theme => ({
   movies: {
     maxWidth: "100%",
     marginBottom: "50px",
-    transition: "transform 2s",
-    "&:hover": {
-      transform: "scale(1.1)"
-    }
+    transition: "transform 2s"
   },
   imgBox: {
     position: "relative",
@@ -128,7 +125,7 @@ const useStyles = makeStyles(theme => ({
   details: {
     position: "absolute",
     width: "100%",
-    height: "280px",
+    height: "100%",
     top: "0",
     left: "0",
     background: "rgba(59,71,99,.9)",
@@ -137,7 +134,8 @@ const useStyles = makeStyles(theme => ({
     cursor: "pointer",
     opacity: "0",
     "&:hover": {
-      opacity: "1"
+      opacity: "1",
+      transform: "scale(1.6)"
     }
   }
 }));
@@ -175,12 +173,16 @@ function StrVedio() {
         "Fullscreen",
         "Captions"
       ]}
+      onPlay={() => console.log("test")}
       poster="https://i.ytimg.com/vi/n5bmAwbk9TI/maxresdefault.jpg"
       onCanPlayThrough={() => {
         // Do stuff
       }}
     >
-      <source src="http://localhost:5000/api/streming/video" type="video/mp4" />
+      <source
+        src="http://localhost:5000/api/streaming/video"
+        type="video/mp4"
+      />
       <track label="English" kind="subtitles" srcLang="en" src="" default />
     </Video>
   );
@@ -341,7 +343,7 @@ function OtherMovie() {
                 style={{
                   position: "relative",
                   top: "50%",
-                  width: "75px",
+                  width: "40px",
                   transform: "translateY(-50%)"
                 }}
               />
