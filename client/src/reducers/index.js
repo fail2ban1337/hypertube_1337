@@ -1,10 +1,10 @@
-import {
-    combineReducers
-} from "redux";
-import alert from './alert';
-import auth from './auth';
+import { combineReducers } from "redux";
+import alert from "./alertReducer";
+import auth from "./authReducer";
+import library from "./libraryReducer";
 
 export default combineReducers({
-    alert,
-    auth
+  alert,
+  auth,
+  library
 });
