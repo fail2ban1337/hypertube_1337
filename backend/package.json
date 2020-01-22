@@ -9,17 +9,23 @@
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "apicache": "^1.5.3",
     "bcrypt": "^3.0.7",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "cloudscraper": "^4.5.0",
     "config": "^3.2.4",
     "express": "^4.17.1",
     "express-validator": "^6.3.1",
     "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
+    "loadash": "^1.0.0",
     "mongoose": "^5.8.3",
+    "nodemon": "^2.0.2",
     "pug": "^2.0.4",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.5",
     "torrent-stream": "^1.2.0"
   },
   "devDependencies": {

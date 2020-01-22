@@ -15,11 +15,11 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import {connect, useSelector} from 'react-redux';
-import {setAlert} from '../../actions/alert';
-import {register} from '../../actions/auth';
-import propTypes from 'prop-types';
-import Alert from '../inc/AlertComponents';
+import { connect, useSelector } from "react-redux";
+import { setAlert } from "../../actions/alert";
+import { register } from "../../actions/auth";
+import propTypes from "prop-types";
+import Alert from "../inc/AlertComponents";
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -57,9 +57,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function SignUp({setAlert, register}) {
+function SignUp({ setAlert, register }) {
   const test = useSelector(state => state.auth);
-  console.log(test);
+  //console.log(test);
   const classes = useStyles();
 
   const [MyForm, setMyFormData] = useState({
@@ -75,11 +75,17 @@ function SignUp({setAlert, register}) {
 
   const submitForm = async form => {
     form.preventDefault();
-    if (MyForm.password !== MyForm.confirmPassword)
-    {
-      setAlert('Password do not match', "error");
+    if (MyForm.password !== MyForm.confirmPassword) {
+      setAlert("Password do not match", "error");
     }
-    register({userName, firstName, lastName, email,password, confirmPassword});
+    register({
+      userName,
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword
+    });
   };
   const handleClickShowPassword = () => {
     setMyFormData({ ...MyForm, showPassword: !MyForm.showPassword });
@@ -105,170 +111,172 @@ function SignUp({setAlert, register}) {
     }));
   };
 
-
-  const {userName, firstName, lastName, email,password, confirmPassword } = MyForm;
+  const {
+    userName,
+    firstName,
+    lastName,
+    email,
+    password,
+    confirmPassword
+  } = MyForm;
   return (
     <>
-        <Container component="main" maxWidth="sm">
-          <CssBaseline />
-          <div className={classes.paper}>
-            <Alert/>
-            <Avatar className={classes.avatar}>
-              <AccountCircle />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign up
-            </Typography>
-            <form className={classes.form} onSubmit={form => submitForm(form)}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    className={classes.input}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    label="Usear Name"
-                    name="userName"
-                    onChange={handleInputChange}
-                    value={userName}
-                    autoFocus
-                    inputProps={{ maxLength: 15 }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    name="firstName"
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleInputChange}
-                    value={firstName}
-                    label="First Name"
-                    inputProps={{ maxLength: 20 }}
-                  />
-
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    label="Last Name"
-                    name="lastName"
-                    autoComplete="lname"
-                    onChange={handleInputChange}
-                    value={lastName}
-                    inputProps={{ maxLength: 20 }}
-                  />
-
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
-                    onChange={handleInputChange}
-                    value={email}
-                    inputProps={{ maxLength: 100 }}
-                  />
-      
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type={MyForm.showPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    onChange={handlePasswordChange}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            edge="end"
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                          >
-                            {MyForm.showPassword ? (
-                              <VisibilityOff />
-                            ) : (
-                              <Visibility />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-   
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="confirmPassword"
-                    label="Confirm  Password"
-                    autoComplete="new-password"
-                    type={MyForm.showConfPassword ? "text" : "password"}
-                    onChange={handlePasswordChange}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            edge="end"
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowConfPassword}
-                            onMouseDown={handleMouseDownPassword}
-                          >
-                            {MyForm.showConfPassword ? (
-                              <VisibilityOff />
-                            ) : (
-                              <Visibility />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                </Grid>
+      <Container component="main" maxWidth="sm">
+        <CssBaseline />
+        <div className={classes.paper}>
+          <Alert />
+          <Avatar className={classes.avatar}>
+            <AccountCircle />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Sign up
+          </Typography>
+          <form className={classes.form} onSubmit={form => submitForm(form)}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  className={classes.input}
+                  variant="outlined"
+                  required
+                  fullWidth
+                  label="Usear Name"
+                  name="userName"
+                  onChange={handleInputChange}
+                  value={userName}
+                  autoFocus
+                  inputProps={{ maxLength: 15 }}
+                />
               </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-              >
-                Sign Up
-              </Button>
-              <Grid container justify="center">
-                <Grid item>
-                  <Link to="/login">Already have an account? Sign in</Link>
-                </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  name="firstName"
+                  variant="outlined"
+                  required
+                  fullWidth
+                  onChange={handleInputChange}
+                  value={firstName}
+                  label="First Name"
+                  inputProps={{ maxLength: 20 }}
+                />
               </Grid>
-            </form>
-          </div>
-        </Container>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  label="Last Name"
+                  name="lastName"
+                  autoComplete="lname"
+                  onChange={handleInputChange}
+                  value={lastName}
+                  inputProps={{ maxLength: 20 }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  onChange={handleInputChange}
+                  value={email}
+                  inputProps={{ maxLength: 100 }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type={MyForm.showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  onChange={handlePasswordChange}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          edge="end"
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {MyForm.showPassword ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="confirmPassword"
+                  label="Confirm  Password"
+                  autoComplete="new-password"
+                  type={MyForm.showConfPassword ? "text" : "password"}
+                  onChange={handlePasswordChange}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          edge="end"
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowConfPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {MyForm.showConfPassword ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+            >
+              Sign Up
+            </Button>
+            <Grid container justify="center">
+              <Grid item>
+                <Link to="/login">Already have an account? Sign in</Link>
+              </Grid>
+            </Grid>
+          </form>
+        </div>
+      </Container>
       )}
     </>
   );
 }
-const Register = ({setAlert, register}) => {
+const Register = ({ setAlert, register }) => {
   return (
     <div style={{ flex: 1 }}>
-      <SignUp setAlert={setAlert} register={register}/>
+      <SignUp setAlert={setAlert} register={register} />
     </div>
   );
 };
 Register.propTypes = {
   setAlert: propTypes.func.isRequired,
-  register: propTypes.func.isRequired,
+  register: propTypes.func.isRequired
 };
 
-export default connect(null, {setAlert, register})(Register);
+export default connect(null, { setAlert, register })(Register);

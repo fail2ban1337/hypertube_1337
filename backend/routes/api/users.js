@@ -3,14 +3,9 @@ const router = express.Router();
 const userModel = require("../../models/User");
 const bcrypt = require("bcryptjs");
 const middleware = require("../../middleware/midlleware");
-const config = require('config');
-const {
-  check,
-  validationResult
-} = require("express-validator");
+const config = require("config");
+const { check, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
-
-
 
 // @route   Post api/users
 // @desc    Register user
@@ -19,8 +14,8 @@ router.post(
   "/",
   [
     check("userName", "Name is requird")
-    .not()
-    .isEmpty(),
+      .not()
+      .isEmpty(),
     check("firstName", "Please entre a valide a valide first-name").isLength({
       min: 3,
       max: 10
@@ -37,9 +32,7 @@ router.post(
       min: 6
     }),
     check("confirmPassword", "Passwords do not match").custom(
-      (value, {
-        req
-      }) => value === req.body.password
+      (value, { req }) => value === req.body.password
     )
   ],
   async (req, res) => {
@@ -63,9 +56,11 @@ router.post(
       });
       if (user) {
         return res.status(400).json({
-          erros: [{
-            msg: "User already Exists"
-          }]
+          erros: [
+            {
+              msg: "User already Exists"
+            }
+          ]
         });
       }
       user = new userModel({
@@ -83,9 +78,11 @@ router.post(
         user: {
           id: user.id
         }
-      }
+      };
       jwt.sign(
-        payload, config.get('jwtSecret'), {
+        payload,
+        config.get("jwtSecret"),
+        {
           expiresIn: 360000
         },
         (err, token) => {
@@ -93,9 +90,9 @@ router.post(
           res.json({
             token
           });
-        })
+        }
+      );
     } catch (err) {
-      console.log(err.message);
       res.status(500).send("Server error");
     }
   }
