@@ -5,12 +5,13 @@ const parseRange = require("range-parser");
 const path = require("path");
 var ffmpeg = require("fluent-ffmpeg");
 const engine = torrentStream(
-  "magnet:?xt=urn:btih:058BFB0A98D8DB5E6138AB5BB0300752AA94B4E7&dn=Funan+%282018%29+%5BBluRay%5D+%5B720p%5D+%5BYTS%5D+%5BYIFY%5D&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.com%3A2710%2Fannounce&tr=udp%3A%2F%2Fp4p.arenabg.com%3A1337&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.zer0day.to%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fcoppersurfer.tk%3A6969%2Fannounce"
-  , { tmp: "../client/movies" });
+  "magnet:?xt=urn:btih:058BFB0A98D8DB5E6138AB5BB0300752AA94B4E7&dn=Funan+%282018%29+%5BBluRay%5D+%5B720p%5D+%5BYTS%5D+%5BYIFY%5D&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.com%3A2710%2Fannounce&tr=udp%3A%2F%2Fp4p.arenabg.com%3A1337&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.zer0day.to%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fcoppersurfer.tk%3A6969%2Fannounce",
+  { tmp: "../client/movies" }
+);
 const fs = require("fs");
-const getTorrentFile = new Promise(function (resolve, reject) {
-  engine.on("ready", function () {
-    engine.files.forEach(function (file, idx) {
+const getTorrentFile = new Promise(function(resolve, reject) {
+  engine.on("ready", function() {
+    engine.files.forEach(function(file, idx) {
       const ext = path.extname(file.name).slice(1);
       if (ext === "mkv" || ext === "mp4") {
         file.ext = ext;
@@ -23,7 +24,7 @@ const getTorrentFile = new Promise(function (resolve, reject) {
 router.get("/video", async (req, res) => {
   res.setHeader("Accept-Ranges", "bytes");
   getTorrentFile
-    .then(function (file) {
+    .then(function(file) {
       console.log(file.name.split(/[. ]+/).pop());
       res.setHeader("Content-Length", file.length);
       res.setHeader("Content-Type", `video/${file.ext}`);
@@ -55,7 +56,7 @@ router.get("/video", async (req, res) => {
         return file.createReadStream(range).pipe(res);
       }
     })
-    .catch(function (e) {
+    .catch(function(e) {
       console.log(e);
       res.end(e);
     });
