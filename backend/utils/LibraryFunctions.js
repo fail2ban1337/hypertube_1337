@@ -19,8 +19,6 @@ const filterPopResponse = response => {
       !_.isEmpty(item.title) &&
       item.year &&
       !_.isEmpty(item.year) &&
-      item.runtime &&
-      !_.isEmpty(item.runtime) &&
       item.rating.percentage &&
       _.isNumber(item.rating.percentage) &&
       item.synopsis &&
@@ -103,8 +101,6 @@ const filterYtsResponse = response => {
       !_.isEmpty(item.title) &&
       item.year &&
       _.isNumber(item.year) &&
-      item.runtime &&
-      _.isNumber(item.runtime) &&
       item.rating &&
       _.isNumber(item.rating) &&
       item.summary &&
