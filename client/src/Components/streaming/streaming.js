@@ -180,7 +180,7 @@ function StrVedio() {
       }}
     >
       <source
-        src="http://localhost:5000/api/streaming/video"
+        src="http://localhost:5000/api/streaming/video/884B54B9241764354B9DC3FCB114D9B55BD95544"
         type="video/mp4"
       />
       <track label="English" kind="subtitles" srcLang="en" src="" default />

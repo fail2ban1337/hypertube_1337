@@ -6,7 +6,7 @@ import { CssBaseline } from "@material-ui/core";
 
 import Login from "./Components/user/login";
 import Register from "./Components/user/register";
-import Streaming from "./Components/streming/streaming";
+import Streaming from "./Components/streaming/streaming";
 import Library from "./Components/pages/Library";
 import NavBar from "./Components/inc/NavBar";
 import Controllers from "./Components/inc/Controllers";
@@ -45,7 +45,6 @@ function App() {
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/library" component={Library} />
                 <Route exact path="/streaming/:imdb" component={Streaming} />
-                <Route exact path="/controllers" component={Controllers} />
               </Switch>
             </div>
           </div>
