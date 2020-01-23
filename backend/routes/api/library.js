@@ -186,27 +186,19 @@ router.get(
 // @desc    Search for a movie by imdb_code
 // @access  Private
 // return imdb_code, title, year, runtime, rating, genres, summary, language, large_cover_image, torrents
-router.get(
-  "/movies/genre/:genre",
-  middleware.moviesByGenre(),
-  async (req, res) => {
-    // Check if page id is exists and valid number
-    const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(400).json({ msg: "Not valid genre" });
-    const genre = req.params.genre;
+router.get("/movies/genre/:genre", async (req, res) => {
+  const genre = req.params.genre;
 
-    try {
-      // get movies from popcorn api
-      let popResult = await rp.get(
-        `https://tv-v2.api-fetch.website/movies/1?sort=trending&order=-1&genre=${genre}`
-      );
-      popResult = popResult ? formatPopResponse(JSON.parse(popResult)) : false;
-      return res.json(popResult);
-    } catch (error) {
-      return res.status(500).json({ msg: "Server error" });
-    }
+  try {
+    // get movies from popcorn api
+    let popResult = await rp.get(
+      `https://tv-v2.api-fetch.website/movies/1?sort=trending&order=-1&genre=${genre}`
+    );
+    popResult = popResult ? formatPopResponse(JSON.parse(popResult)) : false;
+    return res.json(popResult);
+  } catch (error) {
+    return res.status(500).json({ msg: "Server error" });
   }
-);
+});
 
 module.exports = router;
