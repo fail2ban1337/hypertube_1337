@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { makeStyles, Box } from "@material-ui/core";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useSelector } from "react-redux";
@@ -95,16 +96,18 @@ const Thumb = ({ movies }) => {
           <img className={classes.movies} src={movie.Poster} alt="Thumbnail" />
 
           <div className={classes.details}>
-            <img
-              src="/img/btn-overlay-blue.png"
-              alt="play"
-              style={{
-                position: "relative",
-                top: "50%",
-                width: "75px",
-                transform: "translateY(-50%)"
-              }}
-            />
+            <Link to={`/streaming/${movie.imdb_code}`}>
+              <img
+                src="/img/btn-overlay-blue.png"
+                alt="play"
+                style={{
+                  position: "relative",
+                  top: "50%",
+                  width: "75px",
+                  transform: "translateY(-50%)"
+                }}
+              />
+            </Link>
           </div>
           <span className={classes.movieName}>
             <span className={classes.title}>{movie.title}</span>
@@ -164,7 +167,7 @@ export default function Library() {
       >
         {movies.length > 0 && <Thumb movies={movies} />}
       </InfiniteScroll>
-      <AlertComponents />
+      {movies.length === 0 && <AlertComponents />}
     </div>
   );
 }

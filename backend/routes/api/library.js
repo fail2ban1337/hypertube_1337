@@ -172,8 +172,8 @@ router.get(
       // return best result depending on seeds number
       const result =
         ytsData[0].torrents[0].seeds >= popData[0].torrents[0].seeds
-          ? await getMovieMoreInfo(ytsData)
-          : await getMovieMoreInfo(popData);
+          ? await getMovieMoreInfo(ytsData, true)
+          : await getMovieMoreInfo(popData, true);
 
       return res.json(result);
     } catch (error) {
