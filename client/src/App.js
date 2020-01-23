@@ -44,8 +44,7 @@ function App() {
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/library" component={Library} />
-                <Route exact path="/streaming" component={Streaming} />
-                <Route exact path="/controllers" component={Controllers} />
+                <Route exact path="/streaming/:imdb" component={Streaming} />
               </Switch>
             </div>
           </div>
