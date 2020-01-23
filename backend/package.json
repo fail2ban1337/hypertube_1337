@@ -8,7 +8,10 @@
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "dependencies": {
+<<<<<<< HEAD
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
+=======
+>>>>>>> 4cfa51dda00c2d2c36f402aa20081ad61a1f14fd
     "apicache": "^1.5.3",
     "bcrypt": "^3.0.7",
     "bcryptjs": "^2.4.3",
