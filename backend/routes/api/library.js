@@ -5,6 +5,10 @@ const config = require("config");
 const rp = require("request-promise");
 const _ = require("lodash");
 const cache = require("apicache").middleware;
+const yifysubtitles = require("yifysubtitles");
+const fs = require("fs");
+const { promisify } = require("util");
+const unlinkAsync = promisify(fs.unlink);
 
 const middleware = require("../../middleware/midlleware");
 const {
@@ -142,9 +146,18 @@ router.get(
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({ msg: "ID is required" });
-
     const imdb_code = req.params.imdb_code;
+    const subtitlePath = `../client/movies/subtitles/${imdb_code}`;
     try {
+      // Get subtitles
+      if (!fs.existsSync(subtitlePath)) {
+        fs.mkdirSync(subtitlePath);
+      }
+      const subtitles = await yifysubtitles(imdb_code, {
+        path: subtitlePath,
+        langs: ["en", "fr"]
+      });
+
       // get movie from yts api
       const ytsResult = await cloudscraper.get(
         `https://yts.lt/api/v2/list_movies.json?query_term=${imdb_code}`
@@ -152,31 +165,57 @@ router.get(
 
       const parsedMoviesYts = JSON.parse(ytsResult);
 
-      if (!parsedMoviesYts.data.movies)
+      if (!parsedMoviesYts.data.movies) {
+        if (fs.existsSync(subtitlePath)) {
+          fs.rmdirSync(subtitlePath);
+        }
         return res.status(404).json({ msg: "Movie not found" });
+      }
+
       // format response
       const ytsData = formatYtsResponse(parsedMoviesYts.data.movies);
-
+      if (ytsData.length > 0) ytsData[0].subtitles = subtitles;
       // get movie from popcorn api
       const popResult = await rp.get(
         `https://tv-v2.api-fetch.website/movie/${imdb_code}`
       );
-      if (!popResult) return res.json(ytsData);
+      if (!popResult && ytsData.length > 0) return res.json(ytsData);
+      else if (!popResult && ytsData.length === 0) {
+        if (fs.existsSync(subtitlePath)) {
+          fs.rmdirSync(subtitlePath);
+        }
+        return res.status(404).json({ msg: "Movie not found" });
+      }
 
       const parsedMoviesPop = [];
       parsedMoviesPop.push(JSON.parse(popResult));
 
-      if (_.isEmpty(parsedMoviesPop)) return res.json(ytsData);
+      if (_.isEmpty(parsedMoviesPop) && ytsData.length > 0)
+        return res.json(ytsData);
+      else if (_.isEmpty(parsedMoviesPop) && ytsData.length === 0) {
+        if (fs.existsSync(subtitlePath)) {
+          fs.rmdirSync(subtitlePath);
+        }
+        return res.status(404).json({ msg: "Movie not found" });
+      }
+
       // format response
       const popData = formatPopResponse(parsedMoviesPop);
+      if (popData.length > 0) popData[0].subtitles = subtitles;
+      if (popData.length === 0) return res.json(ytsData);
       // return best result depending on seeds number
       const result =
+        ytsData.length > 0 &&
         ytsData[0].torrents[0].seeds >= popData[0].torrents[0].seeds
           ? await getMovieMoreInfo(ytsData, true)
           : await getMovieMoreInfo(popData, true);
 
+      result[0]["subtitle"] = subtitles;
       return res.json(result);
     } catch (error) {
+      if (fs.existsSync(subtitlePath)) {
+        fs.rmdirSync(subtitlePath);
+      }
       return res.status(500).json({ msg: "Server error" });
     }
   }
@@ -186,27 +225,21 @@ router.get(
 // @desc    Search for a movie by imdb_code
 // @access  Private
 // return imdb_code, title, year, runtime, rating, genres, summary, language, large_cover_image, torrents
-router.get(
-  "/movies/genre/:genre",
-  middleware.moviesByGenre(),
-  async (req, res) => {
-    // Check if page id is exists and valid number
-    const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(400).json({ msg: "Not valid genre" });
-    const genre = req.params.genre;
+router.get("/movies/genre/:genre", async (req, res) => {
+  const genre = req.params.genre;
 
-    try {
-      // get movies from popcorn api
-      let popResult = await rp.get(
-        `https://tv-v2.api-fetch.website/movies/1?sort=trending&order=-1&genre=${genre}`
-      );
-      popResult = popResult ? formatPopResponse(JSON.parse(popResult)) : false;
-      return res.json(popResult);
-    } catch (error) {
-      return res.status(500).json({ msg: "Server error" });
-    }
+  try {
+    // get movies from popcorn api
+    let popResult = await rp.get(
+      `https://tv-v2.api-fetch.website/movies/1?sort=trending&order=-1&genre=${genre}`
+    );
+    if (popResult.length === 0)
+      return res.status(404).json({ msg: "Not valid genre" });
+    popResult = popResult ? formatPopResponse(JSON.parse(popResult)) : false;
+    return res.json(popResult);
+  } catch (error) {
+    return res.status(500).json({ msg: "Server error" });
   }
-);
+});
 
 module.exports = router;
