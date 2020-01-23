@@ -13,10 +13,6 @@ app.use("/api/users", require("./routes/api/users"));
 app.use("/api/auth", require("./routes/api/auth"));
 app.use("/api/profile", require("./routes/api/profile"));
 app.use("/api/library", require("./routes/api/library"));
-<<<<<<< HEAD
 app.use("/api/streaming", require("./routes/api/streaming"));
-=======
-app.use("/api/streming", require("./routes/api/streming"));
->>>>>>> 4cfa51dda00c2d2c36f402aa20081ad61a1f14fd
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

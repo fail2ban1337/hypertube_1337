@@ -6,11 +6,7 @@ import { CssBaseline } from "@material-ui/core";
 
 import Login from "./Components/user/login";
 import Register from "./Components/user/register";
-<<<<<<< HEAD
 import Streaming from "./Components/streaming/streaming";
-=======
-import Streming from "./Components/streming/streming";
->>>>>>> 4cfa51dda00c2d2c36f402aa20081ad61a1f14fd
 import Library from "./Components/pages/Library";
 import NavBar from "./Components/inc/NavBar";
 import Controllers from "./Components/inc/Controllers";
