@@ -9,7 +9,8 @@ import Register from "./Components/user/register";
 import Streaming from "./Components/streaming/streaming";
 import Library from "./Components/pages/Library";
 import NavBar from "./Components/inc/NavBar";
-import Controllers from "./Components/inc/Controllers";
+import Footer from "./Components/inc/Footer";
+import { Profile } from "./Components/profile/Profile";
 // Redux
 import { Provider } from "react-redux";
 import store from "./store";
@@ -17,12 +18,15 @@ import store from "./store";
 function App() {
   const [theme, setTheme] = useState({
     palette: {
-      type: "dark"
+      type: localStorage.getItem("darkMode")
+        ? localStorage.getItem("darkMode")
+        : "dark"
     }
   });
 
   const toggleDarkTheme = () => {
     let newPaletteType = theme.palette.type === "light" ? "dark" : "light";
+    localStorage.setItem("darkMode", newPaletteType);
     setTheme({
       palette: {
         type: newPaletteType
@@ -36,19 +40,27 @@ function App() {
     <MuiThemeProvider theme={muiTheme}>
       <Provider store={store}>
         <CssBaseline />
-        <Router>
-          <div className="App">
+        <div
+          style={{
+            display: "flex",
+            minHeight: "100vh",
+            flexDirection: "column"
+          }}
+        >
+          <Router>
             <NavBar setDarkMode={toggleDarkTheme} />
-            <div>
+            <div style={{ flex: 1 }}>
               <Switch>
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/register" component={Register} />
+                <Route exact path="/profile" component={Profile} />
                 <Route exact path="/library" component={Library} />
                 <Route exact path="/streaming/:imdb" component={Streaming} />
               </Switch>
             </div>
-          </div>
-        </Router>
+            <Footer style={{ flex: 1 }} />
+          </Router>
+        </div>
       </Provider>
     </MuiThemeProvider>
   );

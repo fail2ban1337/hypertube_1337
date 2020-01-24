@@ -80,7 +80,7 @@ const useStyles = makeStyles({
   }
 });
 
-const Thumb = ({ movies }) => {
+export const Thumb = ({ movies }) => {
   const classes = useStyles();
 
   return (
