@@ -175,10 +175,7 @@ const getMovieMoreInfo = async (result, fullData = false) => {
     const body = await rp(options);
     const { Director, Actors, Production, Poster } = JSON.parse(body);
 
-    result[index].Poster =
-      Poster === "N/A"
-        ? "http://www.bmd.gov.bd/file/img/nwp/notfound.png"
-        : Poster;
+    result[index].Poster = Poster === "N/A" ? "/img/notfound.png" : Poster;
 
     if (fullData) {
       result[index].Director = Director;

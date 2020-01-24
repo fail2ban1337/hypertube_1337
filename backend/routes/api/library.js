@@ -7,8 +7,6 @@ const _ = require("lodash");
 const cache = require("apicache").middleware;
 const yifysubtitles = require("yifysubtitles");
 const fs = require("fs");
-const { promisify } = require("util");
-const unlinkAsync = promisify(fs.unlink);
 
 const middleware = require("../../middleware/midlleware");
 const {
@@ -157,6 +155,13 @@ router.get(
         path: subtitlePath,
         langs: ["en", "fr"]
       });
+      for (let index = 0; index < subtitles.length; index++) {
+        subtitles[index].id = index;
+        subtitles[index].fileName = subtitles[index].fileName.replace(
+          /(\s+)/g,
+          "\\$1"
+        );
+      }
 
       // get movie from yts api
       const ytsResult = await cloudscraper.get(
