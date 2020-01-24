@@ -233,19 +233,25 @@ const getSubtitles = async imdb_code => {
     path: subtitlePath,
     langs: ["en", "fr"]
   });
+  // Rename subtitles to avoid spaces
   for (let index = 0; index < subtitles.length; index++) {
     subtitles[index].id = index;
-    subtitles[index].fileName = subtitles[index].fileName.replace(
-      /(\s+)/g,
-      "\\$1"
+    fs.rename(
+      subtitles[index].path,
+      subtitles[index].path.replace(/\s+/g, "."),
+      err => {
+        if (err) throw err;
+      }
     );
+    subtitles[index].fileName = subtitles[index].fileName.replace(/\s+/g, ".");
+    subtitles[index].path = subtitles[index].path.replace(/\s+/g, ".");
   }
   return subtitles;
 };
 
 // delete subtitles
 const deleteSubtitles = imdb_code => {
-  const subtitlePath = `../client/movies/subtitles/${imdb_code}`;
+  const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
   if (fs.existsSync(subtitlePath)) {
     fs.rmdirSync(subtitlePath, { recursive: true });
   }
