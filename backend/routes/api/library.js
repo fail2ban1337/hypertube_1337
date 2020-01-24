@@ -268,6 +268,7 @@ router.get(
       result[0]["subtitle"] = await getSubtitles(imdb_code);
       return res.json(result);
     } catch (error) {
+      console.log(error);
       deleteSubtitles(imdb_code);
       return res.status(500).json({ msg: "Server error" });
     }

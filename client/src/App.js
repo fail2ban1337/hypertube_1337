@@ -11,6 +11,7 @@ import Library from "./Components/pages/Library";
 import NavBar from "./Components/inc/NavBar";
 import Footer from "./Components/inc/Footer";
 import { Profile } from "./Components/profile/Profile";
+import { EditProfile } from "./Components/editProfile/EditProfile";
 // Redux
 import { Provider } from "react-redux";
 import store from "./store";
@@ -54,6 +55,7 @@ function App() {
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/profile" component={Profile} />
+                <Route exact path="/editprofile" component={EditProfile} />
                 <Route exact path="/library" component={Library} />
                 <Route exact path="/streaming/:imdb" component={Streaming} />
               </Switch>
