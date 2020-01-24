@@ -2,6 +2,8 @@ const _ = require("lodash");
 const rp = require("request-promise");
 const cloudscraper = require("cloudscraper");
 const config = require("config");
+const yifysubtitles = require("yifysubtitles");
+const fs = require("fs");
 
 // take torrent hash as a parameter, return magnet link
 const getHashFromMagnet = magnet => {
@@ -43,6 +45,7 @@ const filterPopResponse = response => {
 // Format PopCorn API response
 const formatPopResponse = response => {
   const result = [];
+  if (!response || response.length === 0) return result;
   response = filterPopResponse(response);
   response.map(item => {
     let obj = {};
@@ -130,7 +133,7 @@ const filterYtsResponse = response => {
 // Format YTS API response
 const formatYtsResponse = response => {
   const result = [];
-
+  if (!response || response.length === 0) return result;
   response = filterYtsResponse(response);
   response.map(item => {
     let obj = {};
@@ -220,10 +223,40 @@ const getMovies = async (
   return false;
 };
 
+// Get movie available subtitles
+const getSubtitles = async imdb_code => {
+  const subtitlePath = `../client/movies/subtitles/${imdb_code}`;
+  if (!fs.existsSync(subtitlePath)) {
+    fs.mkdirSync(subtitlePath);
+  }
+  const subtitles = await yifysubtitles(imdb_code, {
+    path: subtitlePath,
+    langs: ["en", "fr"]
+  });
+  for (let index = 0; index < subtitles.length; index++) {
+    subtitles[index].id = index;
+    subtitles[index].fileName = subtitles[index].fileName.replace(
+      /(\s+)/g,
+      "\\$1"
+    );
+  }
+  return subtitles;
+};
+
+// delete subtitles
+const deleteSubtitles = imdb_code => {
+  const subtitlePath = `../client/movies/subtitles/${imdb_code}`;
+  if (fs.existsSync(subtitlePath)) {
+    fs.rmdirSync(subtitlePath, { recursive: true });
+  }
+};
+
 module.exports = {
   retMax,
   getMovieMoreInfo,
   getMovies,
   formatPopResponse,
-  formatYtsResponse
+  formatYtsResponse,
+  getSubtitles,
+  deleteSubtitles
 };
