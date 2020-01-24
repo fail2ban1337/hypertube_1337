@@ -65,7 +65,8 @@ module.exports = middleware = {
         "Romance",
         "Science fiction",
         "Western",
-        "All"
+        "All",
+        "thriller"
       ])
     ];
   }

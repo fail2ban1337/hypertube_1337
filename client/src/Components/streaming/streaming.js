@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "@material-ui/core/Link";
 import { DefaultPlayer as Video } from "react-html5video";
 import "react-html5video/dist/styles.css";
@@ -19,65 +19,9 @@ import CardContent from "@material-ui/core/CardContent";
 import Divider from "@material-ui/core/Divider";
 import Fab from "@material-ui/core/Fab";
 import YouTubeIcon from "@material-ui/icons/YouTube";
-
-const movies = [
-  {
-    id: "1",
-    imdb_code: "tt0020985",
-    title_english: "Holiday",
-    medium_cover_image:
-      "https://yts.lt/assets/images/movies/holiday_1930/medium-cover.jpg"
-  },
-  {
-    id: "2",
-    imdb_code: "tt0337741",
-    title_english: "Something's Gotta Give",
-    medium_cover_image:
-      "https://yts.lt/assets/images/movies/somethings_gotta_give_2003/medium-cover.jpg"
-  },
-  {
-    id: "3",
-    imdb_code: "tt0107131",
-    title_english: "Homeward Bound: The Incredible Journey",
-    medium_cover_image:
-      "https://yts.lt/assets/images/movies/homeward_bound_the_incredible_journey_1993/medium-cover.jpg"
-  },
-  {
-    id: "4",
-    imdb_code: "tt10208198",
-    title_english: "The Gangster, the Cop, the Devil",
-    medium_cover_image:
-      "https://yts.lt/assets/images/movies/the_gangster_the_cop_the_devil_2019/medium-cover.jpg"
-  },
-  {
-    id: "5",
-    imdb_code: "tt3153582",
-    title_english: "Listening",
-    medium_cover_image:
-      "https://yts.lt/assets/images/movies/listening_2014/medium-cover.jpg"
-  },
-  {
-    id: "6",
-    imdb_code: "tt0116905",
-    title_english: "Lone Star",
-    medium_cover_image:
-      "https://yts.lt/assets/images/movies/lone_star_1996/medium-cover.jpg"
-  },
-  {
-    id: "7",
-    imdb_code: "tt8353466",
-    title_english: "Holiday",
-    medium_cover_image:
-      "https://yts.lt/assets/images/movies/speed_of_life_2019/medium-cover.jpg"
-  },
-  {
-    id: "8",
-    imdb_code: "tt7349896",
-    title_english: "Inherit the Viper",
-    medium_cover_image:
-      "https://yts.lt/assets/images/movies/inherit_the_viper_2019/medium-cover.jpg"
-  }
-];
+import { useParams } from "react-router";
+import { movieInfo, otherMovies } from "../../actions/streamingAction";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles(theme => ({
   StreamTrace: {
@@ -139,7 +83,7 @@ const useStyles = makeStyles(theme => ({
     }
   }
 }));
-function StreamTrace() {
+function StreamTrace({ title }) {
   const classes = useStyles();
   return (
     <Breadcrumbs aria-label="breadcrumb" className={classes.StreamTrace}>
@@ -153,15 +97,14 @@ function StreamTrace() {
       </Link>
       <Typography color="textPrimary" className={classes.link}>
         <GrainIcon className={classes.icon} />
-        Movie Name
+        {title}
       </Typography>
     </Breadcrumbs>
   );
 }
 
-function StrVedio() {
-  // console.log("This file is " + __filename);
-  // console.log("It's located in " + __dirname);
+function StrVedio({ torrentInfo }) {
+  console.log("torrentInfo", torrentInfo);
   return (
     <Video
       loop
@@ -174,21 +117,36 @@ function StrVedio() {
         "Captions"
       ]}
       onPlay={() => console.log("test")}
-      poster="https://i.ytimg.com/vi/n5bmAwbk9TI/maxresdefault.jpg"
+      poster="/img/movies-cover.jpeg"
       onCanPlayThrough={() => {
         // Do stuff
       }}
     >
       <source
-        src="http://localhost:5000/api/streaming/video/884B54B9241764354B9DC3FCB114D9B55BD95544"
+        src={`http://localhost:5000/api/streaming/video/${torrentInfo.torrents[0].hash}`}
         type="video/mp4"
       />
-      <track label="English" kind="subtitles" srcLang="en" src="" default />
+      {torrentInfo.subtitles.map(subtitle => {
+        return (
+          console.log(subtitle),
+          (
+            <track
+              key={subtitle.id}
+              label={subtitle.lang}
+              kind="subtitles"
+              srcLang={subtitle.langShort}
+              src={`/movies/subtitles/${torrentInfo.imdb_code}/${decodeURI(
+                subtitle.fileName
+              )}`}
+            />
+          )
+        );
+      })}
     </Video>
   );
 }
 
-function MovieInfo() {
+function MovieInfo({ movieInfo }) {
   const classes = useStyles();
 
   return (
@@ -203,7 +161,7 @@ function MovieInfo() {
           >
             <Grid item xs={2} className={classes.image}>
               <img
-                src="https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Movie_poster_for_%22Scary_Movie%22.jpg/220px-Movie_poster_for_%22Scary_Movie%22.jpg"
+                src={movieInfo.Poster}
                 alt="left"
                 style={{ width: "140px", height: "210px" }}
               />
@@ -221,15 +179,18 @@ function MovieInfo() {
                     component="h2"
                     style={{ fontFamily: "New Century Schoolbook, serif" }}
                   >
-                    Movie Name{" "}
-                    <Fab
-                      variant="extended"
-                      size="small"
-                      style={{ background: blue[500], color: "#fff" }}
-                    >
-                      <YouTubeIcon style={{ paddingRight: "5px" }} />
-                      <small>Trailler</small>
-                    </Fab>
+                    {movieInfo.title}{" "}
+                    {movieInfo.trailer && (
+                      <Fab
+                        variant="extended"
+                        size="small"
+                        style={{ background: blue[500], color: "#fff" }}
+                        onClick={() => window.open(movieInfo.trailer, "_blank")}
+                      >
+                        <YouTubeIcon style={{ paddingRight: "5px" }} />
+                        <small>Trailler</small>
+                      </Fab>
+                    )}
                   </Typography>
                 </Grid>
                 <Grid xs={12} container item>
@@ -237,12 +198,8 @@ function MovieInfo() {
                     variant="caption"
                     style={{ fontFamily: "Helvetica Neue" }}
                   >
-                    <big style={{ color: blue[500] }}>Desciption</big> : Lorem
-                    Ipsum is simply dummy text of the printing and typesetting
-                    industry. Lorem Ipsum has been the industry's standard dummy
-                    text ever since the 1500s, when an unknown printer took a
-                    galley of type and scrambled it to make a type specimen
-                    book.
+                    <big style={{ color: blue[500] }}>Desciption</big> :{" "}
+                    {movieInfo.summary}
                   </Typography>
                 </Grid>
                 <Grid
@@ -253,32 +210,52 @@ function MovieInfo() {
                 >
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption" component="h2">
-                      <big style={{ color: blue[500] }}>Actor</big>:
+                      <big style={{ color: blue[500] }}>Actor:</big>{" "}
+                      {movieInfo.Actors}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption" component="h2">
-                      <big style={{ color: blue[500] }}>Duration:</big>
+                      <big style={{ color: blue[500] }}>Duration:</big>{" "}
+                      {movieInfo.runtime} min
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption" component="h2">
-                      <big style={{ color: blue[500] }}>Duration:</big>
+                      <big style={{ color: blue[500] }}>Director:</big>{" "}
+                      {movieInfo.Director}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption" component="h2">
-                      <big style={{ color: blue[500] }}>Quality:</big>
+                      <big style={{ color: blue[500] }}>Quality:</big>{" "}
+                      {movieInfo.torrents[0].quality}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption" component="h2">
-                      <big style={{ color: blue[500] }}>Country:</big>
+                      <big style={{ color: blue[500] }}>genres:</big>{" "}
+                      {movieInfo.genres.map(item => {
+                        return item + " ";
+                      })}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption" component="h2">
-                      <big style={{ color: blue[500] }}>Release:</big>
+                      <big style={{ color: blue[500] }}>Production:</big>{" "}
+                      {movieInfo.Production}
+                    </Typography>
+                  </Grid>
+                  <Grid sm={6} xs={12} container item>
+                    <Typography variant="caption" component="h2">
+                      <big style={{ color: blue[500] }}>language:</big>{" "}
+                      {movieInfo.language}
+                    </Typography>
+                  </Grid>
+                  <Grid sm={6} xs={12} container item>
+                    <Typography variant="caption" component="h2">
+                      <big style={{ color: blue[500] }}>Release:</big>{" "}
+                      {movieInfo.year}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -292,6 +269,7 @@ function MovieInfo() {
 }
 
 const MovieContainer = ({ children }) => {
+  console.log(__dirname);
   const classes = useStyles();
   return (
     <>
@@ -307,8 +285,23 @@ const MovieContainer = ({ children }) => {
   );
 };
 
-function OtherMovie() {
+function OtherMovie({ genre }) {
   const classes = useStyles();
+  const [othersMovie, setOthersMovie] = useState({
+    result: [],
+    loading: true
+  });
+  useEffect(() => {
+    async function getMovies() {
+      setOthersMovie({
+        ...othersMovie,
+        result: await otherMovies(genre[0]),
+        loading: false
+      });
+    }
+    getMovies();
+  }, []);
+  if (othersMovie.loading) return null;
   return (
     <>
       <Grid container style={{ paddingTop: "50px", paddingBottom: "20px" }}>
@@ -320,10 +313,10 @@ function OtherMovie() {
           YOU MAY ALSO LIKE
         </Box>
       </Grid>
-      {movies.map(movie => {
+      {othersMovie.result.map(movie => {
         return (
           <Box
-            key={movie.id}
+            key={movie.imdb_code}
             maxWidth={200}
             maxHeight={280}
             style={{ margin: "2% 4%" }}
@@ -332,24 +325,26 @@ function OtherMovie() {
           >
             <img
               className={classes.movies}
-              src={movie.medium_cover_image}
+              src={movie.Poster ? movie.Poster : "/img/"}
               alt="Smiley face"
               style={{ height: "280px", width: "100%" }}
             />
-
             <div className={classes.details}>
-              <img
-                src="./img/btn-overlay-blue.png"
-                style={{
-                  position: "relative",
-                  top: "50%",
-                  width: "40px",
-                  transform: "translateY(-50%)"
-                }}
-              />
+              <Link href={`/streaming/${movie.imdb_code}`}>
+                <img
+                  src="/img/btn-overlay-blue.png"
+                  alt="play"
+                  style={{
+                    position: "relative",
+                    top: "50%",
+                    width: "40px",
+                    transform: "translateY(-50%)"
+                  }}
+                />
+              </Link>
             </div>
             <span className={classes.movieName}>
-              <h6>Movie</h6>
+              <h6>{movie.title}</h6>
             </span>
             <span className={classes.quality}>HD</span>
           </Box>
@@ -360,13 +355,88 @@ function OtherMovie() {
 }
 
 function Streming() {
+  const [movie, setMovie] = useState({
+    result: {
+      title: "",
+      year: "",
+      trailer: "",
+      rating: "",
+      genres: [],
+      summary: "",
+      language: "",
+      Poster: "",
+      torrents: [{}],
+      Director: "",
+      Actors: "",
+      Production: ""
+    },
+    loading: true
+  });
+  let { imdb } = useParams();
+  useEffect(() => {
+    async function getResult() {
+      setMovie({
+        ...movie,
+        result: await movieInfo(imdb),
+        loading: false
+      });
+    }
+    getResult();
+  }, []);
+  if (movie.loading) {
+    return (
+      <Card style={{ backgroundColor: "transparent" }}>
+        <CardContent>
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid xs={12} container item justify="center">
+              <Typography variant="overline" id="range-slider" gutterBottom>
+                loading...
+              </Typography>
+            </Grid>
+            <Grid xs={12} container item justify="center">
+              <CircularProgress disableShrink style={{ color: "#e74c3c" }} />
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    );
+  }
+  console.log("movie result :", movie.result);
+  if (movie.result === "Server error" || movie.result === "Movie not found") {
+    return (
+      <Card style={{ backgroundColor: "transparent" }}>
+        <CardContent>
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid xs={12} container item justify="center">
+              <Typography variant="overline" id="range-slider" gutterBottom>
+                {movie.result}
+              </Typography>
+            </Grid>
+            <Grid xs={12} container item justify="center">
+              <CircularProgress disableShrink style={{ color: "#e74c3c" }} />
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    );
+  }
   return (
     <Container maxWidth="lg">
-      <StreamTrace />
-      <StrVedio />
-      <MovieInfo />
+      <StreamTrace title={movie.result.title} />
+      <StrVedio torrentInfo={movie.result} />
+      <MovieInfo movieInfo={movie.result} />
       <MovieContainer>
-        <OtherMovie />
+        <OtherMovie genre={movie.result.genres} />
       </MovieContainer>
     </Container>
   );
