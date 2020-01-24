@@ -22,9 +22,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { getMovieByKeyword } from "../../actions/libraryAction";
 
 const useStyles = makeStyles(theme => ({
-  grow: {
-    flexGrow: 1
-  },
   title: {
     display: "none",
     color: blue[500],
