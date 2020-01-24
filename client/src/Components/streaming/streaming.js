@@ -104,6 +104,7 @@ function StreamTrace({ title }) {
 }
 
 function StrVedio({ torrentInfo }) {
+  console.log("torrentInfo", torrentInfo);
   return (
     <Video
       loop
@@ -116,22 +117,36 @@ function StrVedio({ torrentInfo }) {
         "Captions"
       ]}
       onPlay={() => console.log("test")}
-      poster="https://i.ytimg.com/vi/n5bmAwbk9TI/maxresdefault.jpg"
+      poster="/img/movies-cover.jpeg"
       onCanPlayThrough={() => {
         // Do stuff
       }}
     >
       <source
-        src={`http://localhost:5000/api/streaming/video/${torrentInfo[0].hash}`}
+        src={`http://localhost:5000/api/streaming/video/${torrentInfo.torrents[0].hash}`}
         type="video/mp4"
       />
-      <track label="English" kind="subtitles" srcLang="en" src="" default />
+      {torrentInfo.subtitles.map(subtitle => {
+        return (
+          console.log(subtitle),
+          (
+            <track
+              key={subtitle.id}
+              label={subtitle.lang}
+              kind="subtitles"
+              srcLang={subtitle.langShort}
+              src={`/movies/subtitles/${torrentInfo.imdb_code}/${decodeURI(
+                subtitle.fileName
+              )}`}
+            />
+          )
+        );
+      })}
     </Video>
   );
 }
 
 function MovieInfo({ movieInfo }) {
-  console.log(movieInfo);
   const classes = useStyles();
 
   return (
@@ -254,6 +269,7 @@ function MovieInfo({ movieInfo }) {
 }
 
 const MovieContainer = ({ children }) => {
+  console.log(__dirname);
   const classes = useStyles();
   return (
     <>
@@ -285,7 +301,6 @@ function OtherMovie({ genre }) {
     }
     getMovies();
   }, []);
-  console.log(othersMovie);
   if (othersMovie.loading) return null;
   return (
     <>
@@ -299,7 +314,6 @@ function OtherMovie({ genre }) {
         </Box>
       </Grid>
       {othersMovie.result.map(movie => {
-        console.log("movie", movie);
         return (
           <Box
             key={movie.imdb_code}
@@ -311,15 +325,14 @@ function OtherMovie({ genre }) {
           >
             <img
               className={classes.movies}
-              src={movie.Poster}
+              src={movie.Poster ? movie.Poster : "/img/"}
               alt="Smiley face"
               style={{ height: "280px", width: "100%" }}
             />
             <div className={classes.details}>
               <Link href={`/streaming/${movie.imdb_code}`}>
                 <img
-                  onClick={() => console.log("test")}
-                  src="/./img/btn-overlay-blue.png"
+                  src="/img/btn-overlay-blue.png"
                   alt="play"
                   style={{
                     position: "relative",
@@ -393,7 +406,8 @@ function Streming() {
       </Card>
     );
   }
-  if (movie.result === "Server error") {
+  console.log("movie result :", movie.result);
+  if (movie.result === "Server error" || movie.result === "Movie not found") {
     return (
       <Card style={{ backgroundColor: "transparent" }}>
         <CardContent>
@@ -419,7 +433,7 @@ function Streming() {
   return (
     <Container maxWidth="lg">
       <StreamTrace title={movie.result.title} />
-      <StrVedio torrentInfo={movie.result.torrents} />
+      <StrVedio torrentInfo={movie.result} />
       <MovieInfo movieInfo={movie.result} />
       <MovieContainer>
         <OtherMovie genre={movie.result.genres} />

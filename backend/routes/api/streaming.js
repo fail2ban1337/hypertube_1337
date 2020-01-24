@@ -33,7 +33,7 @@ const getTorrentFile = hash =>
   new Promise(function(resolve, reject) {
     const engine = torrentStream(`magnet:?xt=urn:btih:${hash}`, {
       connections: 30,
-      tmp: "../client/movies",
+      tmp: "../client/public/movies",
       trackers: allTracker
     });
     engine.on("ready", function() {
