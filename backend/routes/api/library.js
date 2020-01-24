@@ -281,7 +281,6 @@ router.get(
 // return imdb_code, title, year, runtime, rating, genres, summary, language, large_cover_image, torrents
 router.get("/movies/genre/:genre", async (req, res) => {
   const genre = req.params.genre;
-
   try {
     // get movies from popcorn api
     let popResult = await rp.get(
