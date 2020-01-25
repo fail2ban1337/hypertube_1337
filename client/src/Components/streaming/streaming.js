@@ -36,16 +36,31 @@ const useStyles = makeStyles(theme => ({
       overflow: "visible"
     }
   },
+  title: {
+    display: "block",
+    fontSize: "14px",
+    fontWeight: "400",
+    textAlign: "center",
+    color: "#fff",
+    textShadow: "0 0 2px rgba(0,0,0,.6)"
+  },
   movies: {
     maxWidth: "100%",
     marginBottom: "50px",
     transition: "transform 2s"
   },
+  imdbtext: {
+    padding: "2px",
+    backgroundColor: "black",
+    color: "#fed700",
+    fontWeight: "900",
+    borderRadius: "5px"
+  },
   imgBox: {
     position: "relative",
     overflow: "hidden"
   },
-  quality: {
+  imdb: {
     position: "absolute",
     top: "8px",
     right: "8px",
@@ -81,6 +96,9 @@ const useStyles = makeStyles(theme => ({
       opacity: "1",
       transform: "scale(1.6)"
     }
+  },
+  test: {
+    color: "white"
   }
 }));
 function StreamTrace({ title }) {
@@ -126,7 +144,7 @@ function StrVedio({ torrentInfo }) {
         src={`http://localhost:5000/api/streaming/video/${torrentInfo.torrents[0].hash}`}
         type="video/mp4"
       />
-      {torrentInfo.subtitles.map(subtitle => {
+      {torrentInfo.subtitle.map(subtitle => {
         return (
           console.log(subtitle),
           (
@@ -175,9 +193,10 @@ function MovieInfo({ movieInfo }) {
               >
                 <Grid xs={12} container item justify={"center"}>
                   <Typography
-                    variant="h5"
-                    component="h2"
-                    style={{ fontFamily: "New Century Schoolbook, serif" }}
+                    style={{
+                      fontFamily: "New Century Schoolbook, serif",
+                      fontSize: "30px"
+                    }}
                   >
                     {movieInfo.title}{" "}
                     {movieInfo.trailer && (
@@ -209,31 +228,31 @@ function MovieInfo({ movieInfo }) {
                   alignItems="center"
                 >
                   <Grid sm={6} xs={12} container item>
-                    <Typography variant="caption" component="h2">
+                    <Typography variant="caption">
                       <big style={{ color: blue[500] }}>Actor:</big>{" "}
                       {movieInfo.Actors}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
-                    <Typography variant="caption" component="h2">
+                    <Typography variant="caption">
                       <big style={{ color: blue[500] }}>Duration:</big>{" "}
                       {movieInfo.runtime} min
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
-                    <Typography variant="caption" component="h2">
+                    <Typography variant="caption">
                       <big style={{ color: blue[500] }}>Director:</big>{" "}
                       {movieInfo.Director}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
-                    <Typography variant="caption" component="h2">
+                    <Typography variant="caption">
                       <big style={{ color: blue[500] }}>Quality:</big>{" "}
                       {movieInfo.torrents[0].quality}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
-                    <Typography variant="caption" component="h2">
+                    <Typography variant="caption">
                       <big style={{ color: blue[500] }}>genres:</big>{" "}
                       {movieInfo.genres.map(item => {
                         return item + " ";
@@ -241,19 +260,19 @@ function MovieInfo({ movieInfo }) {
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
-                    <Typography variant="caption" component="h2">
+                    <Typography variant="caption">
                       <big style={{ color: blue[500] }}>Production:</big>{" "}
                       {movieInfo.Production}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
-                    <Typography variant="caption" component="h2">
+                    <Typography variant="caption">
                       <big style={{ color: blue[500] }}>language:</big>{" "}
                       {movieInfo.language}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
-                    <Typography variant="caption" component="h2">
+                    <Typography variant="caption">
                       <big style={{ color: blue[500] }}>Release:</big>{" "}
                       {movieInfo.year}
                     </Typography>
@@ -344,9 +363,14 @@ function OtherMovie({ genre }) {
               </Link>
             </div>
             <span className={classes.movieName}>
-              <h6>{movie.title}</h6>
+              <span className={classes.title}>{movie.title}</span>
+              <span className={classes.title}>{`(${movie.year})`}</span>
             </span>
-            <span className={classes.quality}>HD</span>
+            <span className={classes.imdb}>
+              <span className={classes.imdbtext}>
+                {movie.rating.toFixed(1)}
+              </span>
+            </span>{" "}
           </Box>
         );
       })}

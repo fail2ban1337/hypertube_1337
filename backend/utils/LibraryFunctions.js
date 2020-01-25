@@ -225,7 +225,7 @@ const getMovies = async (
 
 // Get movie available subtitles
 const getSubtitles = async imdb_code => {
-  const subtitlePath = `../client/movies/subtitles/${imdb_code}`;
+  const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
   if (!fs.existsSync(subtitlePath)) {
     fs.mkdirSync(subtitlePath);
   }
