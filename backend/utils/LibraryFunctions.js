@@ -229,24 +229,31 @@ const getSubtitles = async imdb_code => {
   if (!fs.existsSync(subtitlePath)) {
     fs.mkdirSync(subtitlePath);
   }
-  const subtitles = await yifysubtitles(imdb_code, {
-    path: subtitlePath,
-    langs: ["en", "fr"]
-  });
-  // Rename subtitles to avoid spaces
-  for (let index = 0; index < subtitles.length; index++) {
-    subtitles[index].id = index;
-    fs.rename(
-      subtitles[index].path,
-      subtitles[index].path.replace(/\s+/g, "."),
-      err => {
-        if (err) throw err;
-      }
-    );
-    subtitles[index].fileName = subtitles[index].fileName.replace(/\s+/g, ".");
-    subtitles[index].path = subtitles[index].path.replace(/\s+/g, ".");
+  try {
+    const subtitles = await yifysubtitles(imdb_code, {
+      path: subtitlePath,
+      langs: ["en", "fr"]
+    });
+    // Rename subtitles to avoid spaces
+    for (let index = 0; index < subtitles.length; index++) {
+      subtitles[index].id = index;
+      fs.rename(
+        subtitles[index].path,
+        subtitles[index].path.replace(/\s+/g, "."),
+        err => {
+          if (err) throw err;
+        }
+      );
+      subtitles[index].fileName = subtitles[index].fileName.replace(
+        /\s+/g,
+        "."
+      );
+      subtitles[index].path = subtitles[index].path.replace(/\s+/g, ".");
+    }
+    return subtitles;
+  } catch (error) {
+    return [];
   }
-  return subtitles;
 };
 
 // delete subtitles

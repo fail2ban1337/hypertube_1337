@@ -259,11 +259,11 @@ router.get(
       // format response
       const popData = formatPopResponse(parsedMoviesPop);
 
-      if (popData.length === 0 && ytsData.length === 0)
-        return res.status(404).json({ msg: "Movie not found" });
       let result = _.concat(popData, ytsData);
       result = _.uniqWith(popData, retMax);
       result = await getMovieMoreInfo(result, true);
+      if (!result || result.length === 0)
+        return res.status(404).json({ msg: "Movie not found" });
       // Get subtitles
       result[0]["subtitle"] = await getSubtitles(imdb_code);
       return res.json(result);
