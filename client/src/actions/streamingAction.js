@@ -15,7 +15,8 @@ export const otherMovies = async genre => {
   try {
     const res = await axios.get(`/api/library/movies/genre/${genre}`);
     return _.sampleSize(res.data, 8);
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    const errors = err.response.data.msg;
+    return errors;
   }
 };
