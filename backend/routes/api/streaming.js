@@ -6,7 +6,10 @@ const path = require("path");
 const ffmpegInstaller = require("@ffmpeg-installer/ffmpeg");
 const FFmpeg = require("fluent-ffmpeg");
 const allTracker = require("../../helpers/trackers");
+const _ = require("lodash");
+
 FFmpeg.setFfmpegPath(ffmpegInstaller.path);
+let engines = [];
 
 const convertFile = file => {
   try {
@@ -31,48 +34,83 @@ const needToConvert = ext => {
 
 const getTorrentFile = hash =>
   new Promise(function(resolve, reject) {
-    const engine = torrentStream(`magnet:?xt=urn:btih:${hash}`, {
-      connections: 30,
-      tmp: "../client/public/movies",
-      trackers: allTracker
-    });
-    engine.on("ready", function() {
+    let b = _.find(engines, ["hash", hash]);
+    if (_.isObject(b)) {
+      console.log("existe");
+
+      let engine = b.engine;
       engine.files.forEach(function(file, idx) {
         const ext = path.extname(file.name).slice(1);
         if (
-          ext === "mkv" ||
-          ext === "mp4" ||
-          ext === "webm" ||
-          ext === "flv" ||
-          ext === "vob" ||
-          ext === "ogv" ||
-          ext === "ogg" ||
-          ext === "mpg" ||
-          ext === "mvc" ||
-          ext === "mov" ||
-          ext === "rm" ||
-          ext === "rmvb" ||
-          ext === "3gb" ||
-          ext === "divx" ||
-          ext === "m2ts" ||
-          ext === "wmv" ||
-          ext === "vro" ||
-          ext === "mpeg" ||
-          ext === "mode"
+          [
+            "mkv",
+            "mp4",
+            "webm",
+            "flv",
+            "vob",
+            "ogv",
+            "ogg",
+            "mpg",
+            "mvc",
+            "mov",
+            "rm",
+            "rmvb",
+            "3gb",
+            "divx",
+            "m2ts",
+            "wmv",
+            "vro",
+            "mpeg",
+            "mode"
+          ].includes(ext)
         ) {
           file.ext = ext;
           resolve(file);
         }
       });
-    });
+    } else {
+      const engine = torrentStream(`magnet:?xt=urn:btih:${hash}`, {
+        connections: 30,
+        tmp: "../client/public/movies",
+        trackers: allTracker
+      });
+      engine.on("ready", function() {
+        engine.files.forEach(function(file, idx) {
+          const ext = path.extname(file.name).slice(1);
+          if (
+            ext === "mkv" ||
+            ext === "mp4" ||
+            ext === "webm" ||
+            ext === "flv" ||
+            ext === "vob" ||
+            ext === "ogv" ||
+            ext === "ogg" ||
+            ext === "mpg" ||
+            ext === "mvc" ||
+            ext === "mov" ||
+            ext === "rm" ||
+            ext === "rmvb" ||
+            ext === "3gb" ||
+            ext === "divx" ||
+            ext === "m2ts" ||
+            ext === "wmv" ||
+            ext === "vro" ||
+            ext === "mpeg" ||
+            ext === "mode"
+          ) {
+            engines.push({ engine, hash });
+            file.ext = ext;
+            resolve(file);
+          }
+        });
+      });
+    }
   });
 
 router.get("/video/:hash", async (req, res) => {
   getTorrentFile(req.params.hash)
     .then(function(file) {
-      console.log(file.length);
       const converte = needToConvert(file.ext);
-      console.table(file);
 
       if (!converte) {
         res.setHeader("Content-Length", file.length);
@@ -81,7 +119,6 @@ router.get("/video/:hash", async (req, res) => {
           combine: true
         });
         if (ranges === -1) {
-          console.log("1");
           // 416 Requested Range Not Satisfiable client makes a range request that is out of bounds
           // A 416 status code indicates that the server was unable to fulfill the request. This may
           // be, for example, because the client asked for the 800th-900th bytes of
@@ -93,13 +130,10 @@ router.get("/video/:hash", async (req, res) => {
           ranges.type !== "bytes" ||
           ranges.length > 1
         ) {
-          console.log("2");
           // 200 OK requested range malformed or multiple ranges requested, stream entire video
           if (req.method !== "GET") return res.end();
           return file.createReadStream().pipe(res);
         } else {
-          console.log("3");
-
           // 206 Partial Content valid range requested
           const range = ranges[0];
           console.log(range);
@@ -113,7 +147,6 @@ router.get("/video/:hash", async (req, res) => {
           return file.createReadStream(range).pipe(res);
         }
       } else {
-        console.log("range header", req.headers.range);
         const range = req.headers.range || "";
         const parts = range.replace(/bytes=/, "").split("-");
         const partialstart = parts[0];
@@ -129,8 +162,8 @@ router.get("/video/:hash", async (req, res) => {
       }
     })
     .catch(function(e) {
-      console.error(e);
-      res.end(e);
+      console.log(e);
+      res.status(500).end({ error: "something blew up" });
     });
 });
 module.exports = router;
