@@ -83,7 +83,16 @@ export default function Controllers() {
         <Card className={classes.card}>
           <CardContent style={{ minHeight: "139px" }}>
             <Grid item xs={12}>
-              <h6 style={{ textAlign: "center" }}>Sort</h6>
+              <span
+                style={{
+                  fontSize: "14px",
+                  fontWeight: "700",
+                  textAlign: "center",
+                  display: "block"
+                }}
+              >
+                Sort
+              </span>
             </Grid>
             <Grid item xs={12}>
               <RadioGroup
@@ -124,7 +133,16 @@ export default function Controllers() {
         <Card className={classes.card}>
           <CardContent style={{ minHeight: "139px" }}>
             <Grid item xs={12}>
-              <h6 style={{ textAlign: "center" }}>Filter</h6>
+              <span
+                style={{
+                  fontSize: "14px",
+                  fontWeight: "700",
+                  textAlign: "center",
+                  display: "block"
+                }}
+              >
+                Filter
+              </span>
             </Grid>
             <Grid
               container
