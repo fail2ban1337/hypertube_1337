@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Link from "@material-ui/core/Link";
-import { DefaultPlayer as Video } from "react-html5video";
-import "react-html5video/dist/styles.css";
+import ReactPlayer from "react-player";
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
 import { blue } from "@material-ui/core/colors";
@@ -9,19 +8,17 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import GrainIcon from "@material-ui/icons/Grain";
 import WhatshotIcon from "@material-ui/icons/Whatshot";
-import FaceIcon from "@material-ui/icons/Face";
 import HomeIcon from "@material-ui/icons/Home";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
-import Chip from "@material-ui/core/Chip";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import Divider from "@material-ui/core/Divider";
 import Fab from "@material-ui/core/Fab";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import { useParams } from "react-router";
 import { movieInfo, otherMovies } from "../../actions/streamingAction";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Img from "react-image";
 
 const useStyles = makeStyles(theme => ({
   StreamTrace: {
@@ -97,8 +94,13 @@ const useStyles = makeStyles(theme => ({
       transform: "scale(1.6)"
     }
   },
-  test: {
-    color: "white"
+  playerwrapper: {
+    position: "relative"
+  },
+  reactplayer: {
+    position: "absoulte",
+    top: "0",
+    left: "0"
   }
 }));
 function StreamTrace({ title }) {
@@ -122,45 +124,29 @@ function StreamTrace({ title }) {
 }
 
 function StrVedio({ torrentInfo }) {
-  console.log("torrentInfo", torrentInfo);
+  const classes = useStyles();
+  const tracks = torrentInfo.subtitle.map(subtitle => ({
+    kind: "subtitles",
+    src: `/movies/subtitles/${torrentInfo.imdb_code}/${decodeURI(
+      subtitle.fileName
+    )}`,
+    srcLang: subtitle.lang
+  }));
   return (
-    <Video
-      loop
-      controls={[
-        "PlayPause",
-        "Seek",
-        "Time",
-        "Volume",
-        "Fullscreen",
-        "Captions"
-      ]}
-      onPlay={() => console.log("test")}
-      poster="/img/movies-cover.jpeg"
-      onCanPlayThrough={() => {
-        // Do stuff
-      }}
-    >
-      <source
-        src={`http://localhost:5000/api/streaming/video/${torrentInfo.torrents[0].hash}`}
-        type="video/mp4"
+    <div className={classes.playerwrapper}>
+      <ReactPlayer
+        className={classes.reactplayer}
+        url={`http://localhost:5000/api/streaming/video/${torrentInfo.torrents[0].hash}`}
+        controls={true}
+        width="100%"
+        height="100%"
+        config={{
+          file: {
+            tracks
+          }
+        }}
       />
-      {torrentInfo.subtitle.map(subtitle => {
-        return (
-          console.log(subtitle),
-          (
-            <track
-              key={subtitle.id}
-              label={subtitle.lang}
-              kind="subtitles"
-              srcLang={subtitle.langShort}
-              src={`/movies/subtitles/${torrentInfo.imdb_code}/${decodeURI(
-                subtitle.fileName
-              )}`}
-            />
-          )
-        );
-      })}
-    </Video>
+    </div>
   );
 }
 
@@ -178,8 +164,8 @@ function MovieInfo({ movieInfo }) {
             alignItems="flex-start"
           >
             <Grid item xs={2} className={classes.image}>
-              <img
-                src={movieInfo.Poster}
+              <Img
+                src={[movieInfo.Poster, "/img/notfound.png"]}
                 alt="left"
                 style={{ width: "140px", height: "210px" }}
               />
@@ -288,7 +274,6 @@ function MovieInfo({ movieInfo }) {
 }
 
 const MovieContainer = ({ children }) => {
-  console.log(__dirname);
   const classes = useStyles();
   return (
     <>
@@ -321,6 +306,29 @@ function OtherMovie({ genre }) {
     getMovies();
   }, []);
   if (othersMovie.loading) return null;
+  if (
+    othersMovie.result === "Server error" ||
+    othersMovie.result === "Not valid genre"
+  ) {
+    return (
+      <Card style={{ backgroundColor: "transparent" }}>
+        <CardContent>
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid xs={12} container item justify="center">
+              <Typography variant="overline" id="range-slider" gutterBottom>
+                {othersMovie.result}
+              </Typography>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    );
+  }
   return (
     <>
       <Grid container style={{ paddingTop: "50px", paddingBottom: "20px" }}>
@@ -342,9 +350,9 @@ function OtherMovie({ genre }) {
             flexGrow={1}
             className={classes.imgBox}
           >
-            <img
+            <Img
               className={classes.movies}
-              src={movie.Poster ? movie.Poster : "/img/"}
+              src={[movie.Poster, "/img/notfound.png"]}
               alt="Smiley face"
               style={{ height: "280px", width: "100%" }}
             />
@@ -430,7 +438,6 @@ function Streming() {
       </Card>
     );
   }
-  console.log("movie result :", movie.result);
   if (movie.result === "Server error" || movie.result === "Movie not found") {
     return (
       <Card style={{ backgroundColor: "transparent" }}>

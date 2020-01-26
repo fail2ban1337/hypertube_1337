@@ -4,6 +4,7 @@ import { makeStyles, Box } from "@material-ui/core";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
+import Img from "react-image";
 
 import Controllers from "../inc/Controllers";
 import AlertComponents from "../inc/AlertComponents";
@@ -93,7 +94,11 @@ export const Thumb = ({ movies }) => {
           flexGrow={1}
           className={classes.imgBox}
         >
-          <img className={classes.movies} src={movie.Poster} alt="Thumbnail" />
+          <Img
+            className={classes.movies}
+            src={[movie.Poster, "/img/notfound.png"]}
+            alt="Thumbnail"
+          />
 
           <div className={classes.details}>
             <Link to={`/streaming/${movie.imdb_code}`}>
