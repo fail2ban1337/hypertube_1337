@@ -1,5 +1,8 @@
 import React from "react";
-import { Upload, Icon, message } from "antd";
+import { Upload, message } from "antd";
+import axios from "axios";
+
+import { Avatar } from "@material-ui/core";
 
 import "antd/dist/antd.css";
 
@@ -26,29 +29,35 @@ class UploadProfile extends React.Component {
     loading: false
   };
 
-  handleChange = info => {
+  handleChange = async info => {
     if (info.file.status === "uploading") {
       this.setState({ loading: true });
       return;
     }
     if (info.file.status === "done") {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, imageUrl =>
+      const formData = new FormData();
+      formData.append("profileImage", info.file.originFileObj);
+      const config = {
+        header: {
+          "Content-Type": "multipart/form-data"
+        }
+      };
+      try {
+        const res = await axios.post("api/profile/image", formData, config);
         this.setState({
-          imageUrl,
+          imageUrl: `/img/profiles/${res.data}`,
           loading: false
-        })
-      );
+        });
+      } catch (error) {
+        this.setState({
+          loading: false
+        });
+      }
     }
   };
 
   render() {
-    const uploadButton = (
-      <div>
-        <Icon type={this.state.loading ? "loading" : "plus"} />
-        <div className="ant-upload-text">Upload</div>
-      </div>
-    );
     const { imageUrl } = this.state;
     return (
       <Upload
@@ -62,9 +71,19 @@ class UploadProfile extends React.Component {
         onChange={this.handleChange}
       >
         {imageUrl ? (
-          <img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
+          <Avatar
+            src={imageUrl}
+            alt="avatar"
+            style={{ width: "150px", height: "150px" }}
+            variant="square"
+          />
         ) : (
-          uploadButton
+          <Avatar
+            src="https://writestylesonline.com/wp-content/uploads/2016/08/Follow-These-Steps-for-a-Flawless-Professional-Profile-Picture-1024x1024.jpg"
+            alt="avatar"
+            style={{ width: "150px", height: "150px" }}
+            variant="square"
+          />
         )}
       </Upload>
     );

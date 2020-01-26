@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { makeStyles, Box } from "@material-ui/core";
+import Img from "react-image";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import Img from "react-image";
 
 import Controllers from "../inc/Controllers";
 import AlertComponents from "../inc/AlertComponents";

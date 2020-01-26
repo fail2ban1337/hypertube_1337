@@ -62,7 +62,8 @@ const formatPopResponse = response => {
       Object.keys(item.torrents)[0] === "en"
         ? "English"
         : Object.keys(item.torrents)[0];
-    obj.Poster = item.images.poster;
+    obj.Poster = item.images.poster || "";
+    obj.cover = item.images.fanart || "";
     const highQuality = item.torrents.en["1080p"]
       ? item.torrents.en["1080p"]
       : false;
@@ -112,7 +113,7 @@ const filterYtsResponse = response => {
       !_.isEmpty(item.language) &&
       item.large_cover_image &&
       !_.isEmpty(item.large_cover_image) &&
-      item.torrents[0] &&
+      item.torrents.length &&
       item.torrents[0].hash &&
       !_.isEmpty(item.torrents[0].hash) &&
       item.torrents[0].quality &&
@@ -147,7 +148,14 @@ const formatYtsResponse = response => {
     obj.genres = item.genres;
     obj.summary = item.summary;
     obj.language = item.language;
-    obj.large_cover_image = item.large_cover_image;
+    obj.Poster =
+      item.large_cover_image.replace(
+        "https://yts.lt/",
+        "https://img.yts.lt/"
+      ) || "";
+    obj.cover =
+      item.background_image.replace("https://yts.lt/", "https://img.yts.lt/") ||
+      "";
     obj.torrents = item.torrents;
     // push object contain movie info to the response data
     result.push(obj);
@@ -162,7 +170,7 @@ const retMax = (a, b) => {
 };
 
 // Get cover image for each movie using IMDb API
-const getMovieMoreInfo = async (result, fullData = false) => {
+const getMovieMoreInfo = async result => {
   const rapidApiKey = config.get("rapidApiKey");
   for (let index = 0; index < result.length; index++) {
     const options = {
@@ -176,16 +184,12 @@ const getMovieMoreInfo = async (result, fullData = false) => {
     };
     // Get more info from imdb api, append it to result
     const body = await rp(options);
-    const { Director, Actors, Production, Poster } = JSON.parse(body);
+    const { Director, Actors, Production } = JSON.parse(body);
 
-    result[index].Poster = Poster === "N/A" ? "/img/notfound.png" : Poster;
-
-    if (fullData) {
-      result[index].Director = Director;
-      result[index].Actors = Actors;
-      result[index].Production = Production;
-      result[index].Poster = Poster;
-    }
+    result[index].Director = Director;
+    result[index].Actors = Actors;
+    result[index].Production = Production;
+    result[index].Poster = Poster;
   }
   return result;
 };
@@ -229,24 +233,17 @@ const getSubtitles = async imdb_code => {
   if (!fs.existsSync(subtitlePath)) {
     fs.mkdirSync(subtitlePath);
   }
-  const subtitles = await yifysubtitles(imdb_code, {
-    path: subtitlePath,
-    langs: ["en", "fr"]
-  });
-  // Rename subtitles to avoid spaces
-  for (let index = 0; index < subtitles.length; index++) {
-    subtitles[index].id = index;
-    fs.rename(
-      subtitles[index].path,
-      subtitles[index].path.replace(/\s+/g, "."),
-      err => {
-        if (err) throw err;
-      }
-    );
-    subtitles[index].fileName = subtitles[index].fileName.replace(/\s+/g, ".");
-    subtitles[index].path = subtitles[index].path.replace(/\s+/g, ".");
+  try {
+    const subtitles = await yifysubtitles(imdb_code, {
+      path: subtitlePath,
+      langs: ["en", "fr"]
+    });
+    // Rename subtitles to avoid spaces
+
+    return subtitles;
+  } catch (error) {
+    return [];
   }
-  return subtitles;
 };
 
 // delete subtitles
