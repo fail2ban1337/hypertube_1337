@@ -195,21 +195,24 @@ router.post("/watchedUpdate/", async (req, res) => {
       });
       await stream.save();
     }
+
     let d = new Date();
     d.setMonth(d.getMonth() - 1);
     const myData = await streamModel.find({ lastWatchedTime: { $lte: d } });
-    myData.forEach(function(arrayItem) {
+    myData.forEach(async function(arrayItem) {
+      await streamModel.findOneAndDelete({ hashCode: arrayItem.hashCode });
       let moviePath = `../client/public/movies/torrent-stream/${arrayItem.hashCode}`;
       let subtitlePath = `../client/public/movies/subtitles/${arrayItem.imdbCode}`;
-      let torrentFilePath = `../client/public/movies/${arrayItem.hashCode}`;
+      let torrentFilePath = `../client/public/movies/torrent-stream/${arrayItem.hashCode}.torrent`;
       if (fs.existsSync(torrentFilePath)) {
+        console.log("existe file");
         fs.unlinkSync(torrentFilePath);
       }
       if (fs.existsSync(moviePath)) {
         fs.rmdirSync(moviePath, { recursive: true });
       }
       if (fs.existsSync(subtitlePath)) {
-        fs.unlinkSync(subtitlePath);
+        fs.rmdirSync(subtitlePath, { recursive: true });
       }
     });
     res.send("Every-Thing goes Well");
