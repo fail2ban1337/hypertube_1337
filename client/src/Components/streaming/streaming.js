@@ -16,6 +16,12 @@ import CardContent from "@material-ui/core/CardContent";
 import Fab from "@material-ui/core/Fab";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import { useParams } from "react-router";
+import Avatar from "@material-ui/core/Avatar";
+import StarIcon from "@material-ui/icons/Star";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
+import TextField from "@material-ui/core/TextField";
+
 import {
   movieInfo,
   otherMovies,
@@ -24,6 +30,55 @@ import {
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Img from "react-image";
 
+const userLogged = [
+  {
+    userName: "abelomar",
+    img:
+      "https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
+  }
+];
+const CommentsArray = [
+  {
+    id: 1,
+    userName: "User Name",
+    likeNumber: 15,
+    img:
+      "https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
+    comment:
+      "Considered discovered ye sentiments projecting entreaties of melancholy is. In expression an solicitude principles in do. Hard do me sigh with west same lady. Their saved linen downs tears son add",
+    time: "November 02, 2019 at 11:48 pm"
+  },
+  {
+    id: 2,
+    userName: "User Name",
+    likeNumber: 2,
+    img:
+      "https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
+    comment:
+      "Considered discovered ye sentiments projecting entreaties of melancholy is. In expression an solicitude principles in do. Hard do me sigh with west same lady. Their saved linen downs tears son add",
+    time: "November 02, 2019 at 11:48 pm"
+  },
+  {
+    id: 3,
+    userName: "User Name",
+    likeNumber: 52,
+    img:
+      "https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
+    comment:
+      "Considered discovered ye sentiments projecting entreaties of melancholy is. In expression an solicitude principles in do. Hard do me sigh with west same lady. Their saved linen downs tears son add",
+    time: "November 02, 2019 at 11:48 pm"
+  },
+  {
+    id: 4,
+    userName: "User Name",
+    likeNumber: 5,
+    img:
+      "https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
+    comment:
+      "Considered discovered ye sentiments projecting entreaties of melancholy is. In expression an solicitude principles in do. Hard do me sigh with west same lady. Their saved linen downs tears son add",
+    time: "November 02, 2019 at 11:48 pm"
+  }
+];
 const useStyles = makeStyles(theme => ({
   StreamTrace: {
     paddingBottom: "20px",
@@ -105,6 +160,12 @@ const useStyles = makeStyles(theme => ({
     position: "absoulte",
     top: "0",
     left: "0"
+  },
+  cardComponent: {
+    background: "#171717"
+  },
+  dataAndName: {
+    color: "#919191"
   }
 }));
 function StreamTrace({ title }) {
@@ -396,6 +457,113 @@ function OtherMovie({ genre }) {
   );
 }
 
+function Comments({ movieInfo }) {
+  const classes = useStyles();
+  const Comments = CommentsArray.length;
+  return (
+    <Grid item xs={12} style={{ paddingTop: "20px" }}>
+      <Card>
+        <CardContent>
+          <Grid
+            container
+            item
+            xs={12}
+            justify={"center"}
+            style={{ paddingBottom: "10px" }}
+          >
+            <ChatBubbleIcon style={{ color: blue[500] }} />
+            <Typography style={{ marginLeft: "10px" }}>
+              {Comments} Comments
+            </Typography>
+          </Grid>
+          {CommentsArray.map(value => {
+            return (
+              <Card
+                key={value.id}
+                className={classes.cardComponent}
+                style={{ marginBottom: "10px" }}
+              >
+                <CardContent>
+                  <Grid
+                    container
+                    direction="row"
+                    justify="flex-start"
+                    alignItems="flex-start"
+                  >
+                    <Grid item xs={1} className={classes.image}>
+                      <Avatar
+                        src={value.img}
+                        alt="left"
+                        style={{ width: "60px", height: "60px" }}
+                      />
+                    </Grid>
+                    <Grid item xs={11}>
+                      <Grid
+                        container
+                        direction="row"
+                        justify="flex-start"
+                        alignItems="flex-start"
+                      >
+                        <Grid
+                          container
+                          direction="row"
+                          justify="flex-start"
+                          alignItems="flex-start"
+                        >
+                          <Grid item xs={5}>
+                            <Typography className={classes.dataAndName}>
+                              {value.userName}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={5} className={classes.dataAndName}>
+                            <Typography>{value.time}</Typography>
+                          </Grid>
+                          <Grid item xs={2}>
+                            <div style={{ float: "right" }}>
+                              {value.likeNumber}
+                              <FavoriteIcon />
+                            </div>
+                          </Grid>
+                        </Grid>
+                        <Grid xs={12} container item>
+                          <Typography
+                            variant="caption"
+                            style={{ fontFamily: "Helvetica Neue" }}
+                          >
+                            {movieInfo.summary}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            );
+          })}
+          <Grid xs={12} container item justify={"center"} alignItems="center">
+            <Grid item>
+              <Avatar src={userLogged[0].img} />
+            </Grid>
+            <Grid item xs={10}>
+              <TextField
+                id="outlined-full-width"
+                style={{ margin: 8 }}
+                placeholder="New Comment"
+                fullWidth
+                margin="normal"
+                InputLabelProps={{
+                  shrink: true
+                }}
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    </Grid>
+  );
+}
+
 function Streming() {
   const [movie, setMovie] = useState({
     result: {
@@ -476,6 +644,7 @@ function Streming() {
       <StreamTrace title={movie.result.title} />
       <StrVedio torrentInfo={movie.result} />
       <MovieInfo movieInfo={movie.result} />
+      <Comments movieInfo={movie.result} />
       <MovieContainer>
         <OtherMovie genre={movie.result.genres} />
       </MovieContainer>
