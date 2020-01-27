@@ -16,7 +16,11 @@ import CardContent from "@material-ui/core/CardContent";
 import Fab from "@material-ui/core/Fab";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import { useParams } from "react-router";
-import { movieInfo, otherMovies } from "../../actions/streamingAction";
+import {
+  movieInfo,
+  otherMovies,
+  watchedUpdate
+} from "../../actions/streamingAction";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Img from "react-image";
 
@@ -125,6 +129,12 @@ function StreamTrace({ title }) {
 
 function StrVedio({ torrentInfo }) {
   const classes = useStyles();
+  useEffect(() => {
+    async function updateW() {
+      await watchedUpdate(torrentInfo.torrents[0].hash, torrentInfo.imdb_code);
+    }
+    updateW();
+  }, []);
   const tracks = torrentInfo.subtitle.map(subtitle => ({
     kind: "subtitles",
     src: `/movies/subtitles/${torrentInfo.imdb_code}/${decodeURI(

@@ -7,6 +7,8 @@ const ffmpegInstaller = require("@ffmpeg-installer/ffmpeg");
 const FFmpeg = require("fluent-ffmpeg");
 const allTracker = require("../../helpers/trackers");
 const _ = require("lodash");
+const streamModel = require("../../models/Streming");
+const fs = require("fs");
 
 FFmpeg.setFfmpegPath(ffmpegInstaller.path);
 let engines = [];
@@ -98,6 +100,11 @@ const getTorrentFile = hash =>
             ext === "mpeg" ||
             ext === "mode"
           ) {
+            // const stream = new streamModel({
+            //   hashCode: hash,
+            //   lastWatchedTime: Date.now()
+            // });
+            // stream.save();
             engines.push({ engine, hash });
             file.ext = ext;
             resolve(file);
@@ -165,5 +172,50 @@ router.get("/video/:hash", async (req, res) => {
       console.log(e);
       res.status(500).end({ error: "something blew up" });
     });
+});
+
+router.post("/watchedUpdate/", async (req, res) => {
+  try {
+    let { hash_code, imdb_code } = req.body;
+    // first we gonna check our database if there already
+    // the movie  so we gonna update his time
+    let result = await streamModel.findOne({
+      hashCode: hash_code
+    });
+    if (result) {
+      await streamModel.findOneAndUpdate(
+        { hashCode: hash_code },
+        { lastWatchedTime: new Date() }
+      );
+    } else {
+      let stream = new streamModel({
+        hashCode: hash_code,
+        imdbCode: imdb_code,
+        lastWatchedTime: new Date()
+      });
+      await stream.save();
+    }
+    let d = new Date();
+    d.setMonth(d.getMonth() - 1);
+    const myData = await streamModel.find({ lastWatchedTime: { $lte: d } });
+    myData.forEach(function(arrayItem) {
+      let moviePath = `../client/public/movies/torrent-stream/${arrayItem.hashCode}`;
+      let subtitlePath = `../client/public/movies/subtitles/${arrayItem.imdbCode}`;
+      let torrentFilePath = `../client/public/movies/${arrayItem.hashCode}`;
+      if (fs.existsSync(torrentFilePath)) {
+        fs.unlinkSync(torrentFilePath);
+      }
+      if (fs.existsSync(moviePath)) {
+        fs.rmdirSync(moviePath, { recursive: true });
+      }
+      if (fs.existsSync(subtitlePath)) {
+        fs.unlinkSync(subtitlePath);
+      }
+    });
+    res.send("Every-Thing goes Well");
+  } catch (error) {
+    console.log(error);
+    res.status(500).end({ error: "something blew up" });
+  }
 });
 module.exports = router;
