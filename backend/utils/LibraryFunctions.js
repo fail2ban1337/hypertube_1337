@@ -189,7 +189,6 @@ const getMovieMoreInfo = async result => {
     result[index].Director = Director;
     result[index].Actors = Actors;
     result[index].Production = Production;
-    result[index].Poster = Poster;
   }
   return result;
 };
