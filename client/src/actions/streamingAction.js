@@ -20,3 +20,17 @@ export const otherMovies = async genre => {
     return errors;
   }
 };
+
+export const watchedUpdate = async (hash_code, imdb_code) => {
+  const config = {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+  const body = JSON.stringify({ hash_code, imdb_code });
+  try {
+    const res = await axios.post("/api/streaming/watchedUpdate", body, config);
+  } catch (error) {
+    console.log(error);
+  }
+};
