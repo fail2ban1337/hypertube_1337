@@ -35,6 +35,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: "profile_default_image.png"
   },
+
   isVerified: {
     type: Boolean,
     default: false
