@@ -62,7 +62,7 @@ const formatPopResponse = response => {
       Object.keys(item.torrents)[0] === "en"
         ? "English"
         : Object.keys(item.torrents)[0];
-    obj.Poster = item.images.poster || "";
+    obj.poster = item.images.poster || "";
     obj.cover = item.images.fanart || "";
     const highQuality = item.torrents.en["1080p"]
       ? item.torrents.en["1080p"]
@@ -148,7 +148,7 @@ const formatYtsResponse = response => {
     obj.genres = item.genres;
     obj.summary = item.summary;
     obj.language = item.language;
-    obj.Poster =
+    obj.poster =
       item.large_cover_image.replace(
         "https://yts.lt/",
         "https://img.yts.lt/"
@@ -189,7 +189,6 @@ const getMovieMoreInfo = async result => {
     result[index].Director = Director;
     result[index].Actors = Actors;
     result[index].Production = Production;
-    result[index].Poster = Poster;
   }
   return result;
 };
