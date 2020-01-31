@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { makeStyles, Box } from "@material-ui/core";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import Img from "react-image";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useSelector } from "react-redux";
@@ -13,6 +14,11 @@ import { getMovies } from "../../actions/libraryAction";
 import { REMOVE_ALERT } from "../../actions/actionTypes";
 
 const useStyles = makeStyles({
+  moviesContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center"
+  },
   imgBox: {
     position: "relative",
     overflow: "hidden",
@@ -47,6 +53,13 @@ const useStyles = makeStyles({
     fontWeight: "500",
     height: "auto",
     padding: "4px 6px"
+  },
+  watched: {
+    position: "absolute",
+    top: "8px",
+    left: "8px",
+    color: "#2196f3",
+    fontSize: "8px"
   },
   imdbtext: {
     padding: "2px",
@@ -85,7 +98,7 @@ export const Thumb = ({ movies }) => {
   const classes = useStyles();
 
   return (
-    <div>
+    <div className={classes.moviesContainer}>
       {movies.map(movie => (
         <Box
           key={movie.imdb_code}
@@ -96,7 +109,7 @@ export const Thumb = ({ movies }) => {
         >
           <Img
             className={classes.movies}
-            src={[movie.Poster, "/img/notfound.png"]}
+            src={[movie.poster, "/img/notfound.png"]}
             alt="Thumbnail"
           />
 
@@ -120,6 +133,11 @@ export const Thumb = ({ movies }) => {
           </span>
           <span className={classes.imdb}>
             <span className={classes.imdbtext}>{movie.rating.toFixed(1)}</span>
+          </span>
+          <span className={classes.watched}>
+            {/* {
+              movie.watched && <VisibilityIcon />
+            } */}
           </span>
         </Box>
       ))}
@@ -147,6 +165,7 @@ export default function Library() {
   }, [initialized, loadMovies]);
 
   useEffect(() => {
+    console.log("load");
     if (initialized) {
       loadMovies();
     }

@@ -6,12 +6,6 @@ import { Avatar } from "@material-ui/core";
 
 import "antd/dist/antd.css";
 
-function getBase64(img, callback) {
-  const reader = new FileReader();
-  reader.addEventListener("load", () => callback(reader.result));
-  reader.readAsDataURL(img);
-}
-
 function beforeUpload(file) {
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
   if (!isJpgOrPng) {
@@ -44,12 +38,13 @@ class UploadProfile extends React.Component {
         }
       };
       try {
-        const res = await axios.post("api/profile/image", formData, config);
+        const res = await axios.post("api/users/image", formData, config);
         this.setState({
           imageUrl: `/img/profiles/${res.data}`,
           loading: false
         });
       } catch (error) {
+        message.error(error.response.data.msg);
         this.setState({
           loading: false
         });
@@ -59,33 +54,36 @@ class UploadProfile extends React.Component {
 
   render() {
     const { imageUrl } = this.state;
+    const { img } = this.props;
     return (
-      <Upload
-        style={{ margin: "0 auto" }}
-        name="avatar"
-        listType="picture-card"
-        className="avatar-uploader"
-        showUploadList={false}
-        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-        beforeUpload={beforeUpload}
-        onChange={this.handleChange}
-      >
-        {imageUrl ? (
-          <Avatar
-            src={imageUrl}
-            alt="avatar"
-            style={{ width: "150px", height: "150px" }}
-            variant="square"
-          />
-        ) : (
-          <Avatar
-            src="https://writestylesonline.com/wp-content/uploads/2016/08/Follow-These-Steps-for-a-Flawless-Professional-Profile-Picture-1024x1024.jpg"
-            alt="avatar"
-            style={{ width: "150px", height: "150px" }}
-            variant="square"
-          />
-        )}
-      </Upload>
+      <>
+        <Upload
+          style={{ margin: "0 auto" }}
+          name="avatar"
+          listType="picture-card"
+          className="avatar-uploader"
+          showUploadList={false}
+          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+          beforeUpload={beforeUpload}
+          onChange={this.handleChange}
+        >
+          {imageUrl ? (
+            <Avatar
+              src={imageUrl}
+              alt="avatar"
+              style={{ width: "150px", height: "150px" }}
+              variant="square"
+            />
+          ) : (
+            <Avatar
+              src={img}
+              alt="avatar"
+              style={{ width: "150px", height: "150px" }}
+              variant="square"
+            />
+          )}
+        </Upload>
+      </>
     );
   }
 }

@@ -236,7 +236,7 @@ function MovieInfo({ movieInfo }) {
           >
             <Grid item xs={2} className={classes.image}>
               <Img
-                src={[movieInfo.Poster, "/img/notfound.png"]}
+                src={[movieInfo.poster, "/img/notfound.png"]}
                 alt="left"
                 style={{ width: "140px", height: "210px" }}
               />
@@ -423,7 +423,7 @@ function OtherMovie({ genre }) {
           >
             <Img
               className={classes.movies}
-              src={[movie.Poster, "/img/notfound.png"]}
+              src={[movie.poster, "/img/notfound.png"]}
               alt="Smiley face"
               style={{ height: "280px", width: "100%" }}
             />
@@ -574,7 +574,7 @@ function Streming() {
       genres: [],
       summary: "",
       language: "",
-      Poster: "",
+      poster: "",
       torrents: [{}],
       Director: "",
       Actors: "",
