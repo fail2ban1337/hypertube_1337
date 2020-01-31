@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { makeStyles, Box } from "@material-ui/core";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import Img from "react-image";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useSelector } from "react-redux";
@@ -52,6 +53,13 @@ const useStyles = makeStyles({
     fontWeight: "500",
     height: "auto",
     padding: "4px 6px"
+  },
+  watched: {
+    position: "absolute",
+    top: "8px",
+    left: "8px",
+    color: "#2196f3",
+    fontSize: "8px"
   },
   imdbtext: {
     padding: "2px",
@@ -125,6 +133,11 @@ export const Thumb = ({ movies }) => {
           </span>
           <span className={classes.imdb}>
             <span className={classes.imdbtext}>{movie.rating.toFixed(1)}</span>
+          </span>
+          <span className={classes.watched}>
+            {/* {
+              movie.watched && <VisibilityIcon />
+            } */}
           </span>
         </Box>
       ))}

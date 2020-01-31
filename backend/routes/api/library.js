@@ -4,6 +4,7 @@ const cloudscraper = require("cloudscraper");
 const config = require("config");
 const rp = require("request-promise");
 const _ = require("lodash");
+const watchedMovies = require("../../models/WatchedMovies");
 
 const middleware = require("../../middleware/midlleware");
 const {
@@ -27,6 +28,17 @@ router.get("/movies/page/", [middleware.moviesByPage()], async (req, res) => {
     return res.status(400).json({ msg: "Parameter Error" });
 
   try {
+    // get watched movies
+    // const id = req.id;
+    // const watched = await watchedMovies.find({ id });
+    // const merged = _.map(movies, function(obj) {
+    //   return _.assign(
+    //     obj,
+    //     _.find(watched, {
+    //       imdb_code: obj.imdb_code
+    //     })
+    //   );
+    // });
     // get movies from yts api
     let ytsResult = await getMovies(req.query, "yts");
     //ytsResult = await getMovieMoreInfo(ytsResult);
