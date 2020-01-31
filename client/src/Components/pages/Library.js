@@ -13,6 +13,11 @@ import { getMovies } from "../../actions/libraryAction";
 import { REMOVE_ALERT } from "../../actions/actionTypes";
 
 const useStyles = makeStyles({
+  moviesContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center"
+  },
   imgBox: {
     position: "relative",
     overflow: "hidden",
@@ -85,7 +90,7 @@ export const Thumb = ({ movies }) => {
   const classes = useStyles();
 
   return (
-    <div>
+    <div className={classes.moviesContainer}>
       {movies.map(movie => (
         <Box
           key={movie.imdb_code}
@@ -96,7 +101,7 @@ export const Thumb = ({ movies }) => {
         >
           <Img
             className={classes.movies}
-            src={[movie.Poster, "/img/notfound.png"]}
+            src={[movie.poster, "/img/notfound.png"]}
             alt="Thumbnail"
           />
 
@@ -147,6 +152,7 @@ export default function Library() {
   }, [initialized, loadMovies]);
 
   useEffect(() => {
+    console.log("load");
     if (initialized) {
       loadMovies();
     }

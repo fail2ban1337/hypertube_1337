@@ -66,7 +66,10 @@ export default function Controllers() {
   };
 
   const submitFilter = async () => {
-    if (!library.loading) {
+    if (
+      !library.loading &&
+      (genre !== library.genre || rating !== library.rating)
+    ) {
       dispatch({
         type: SET_FILTERS,
         payload: {
