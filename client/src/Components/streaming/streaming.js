@@ -21,11 +21,18 @@ import StarIcon from "@material-ui/icons/Star";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
 import TextField from "@material-ui/core/TextField";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import Button from "@material-ui/core/Button";
+import { useSelector, useDispatch } from "react-redux";
+import { withNamespaces } from 'react-i18next';
+
 
 import {
   movieInfo,
   otherMovies,
-  watchedUpdate
+  watchedUpdate,
+  addComment,
+  getComments
 } from "../../actions/streamingAction";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Img from "react-image";
@@ -162,10 +169,15 @@ const useStyles = makeStyles(theme => ({
     left: "0"
   },
   cardComponent: {
-    background: "#171717"
+    background:
+      localStorage.getItem("darkMode") === "dark" ? "#171717" : "#f5f5f5"
   },
   dataAndName: {
     color: "#919191"
+  },
+  notchedOutline: {
+    borderWidth: "1px",
+    borderColor: "yellow !important"
   }
 }));
 function StreamTrace({ title }) {
@@ -213,7 +225,10 @@ function StrVedio({ torrentInfo }) {
         height="100%"
         config={{
           file: {
-            tracks
+            tracks,
+            attributes: {
+              controlsList: "nodownload"
+            }
           }
         }}
       />
@@ -459,6 +474,34 @@ function OtherMovie({ genre }) {
 
 function Comments({ movieInfo }) {
   const classes = useStyles();
+  const [displayState, setDisplayState] = useState("none");
+  const [Comment_text, setCommentText] = useState("");
+  const dispatch = useDispatch();
+  const { comments } = useSelector(state => state);
+
+  console.log(comments);
+  const handleSubmit = form => {
+    form.preventDefault();
+    async function setComment() {
+      await dispatch(addComment(movieInfo.imdb_code, Comment_text));
+      setCommentText("");
+    }
+    setComment();
+  };
+  const handleInputChange = event => {
+    event.persist();
+    setCommentText(event.target.value);
+  };
+  const threeDots = () => {
+    if (displayState === "none") setDisplayState("block");
+    else setDisplayState("none");
+  };
+  useEffect(() => {
+    async function getAllComments() {
+      await getComments(movieInfo.imdb_code);
+    }
+    getAllComments();
+  }, []);
   const Comments = CommentsArray.length;
   return (
     <Grid item xs={12} style={{ paddingTop: "20px" }}>
@@ -476,87 +519,113 @@ function Comments({ movieInfo }) {
               {Comments} Comments
             </Typography>
           </Grid>
-          {CommentsArray.map(value => {
-            return (
-              <Card
-                key={value.id}
-                className={classes.cardComponent}
-                style={{ marginBottom: "10px" }}
-              >
-                <CardContent>
-                  <Grid
-                    container
-                    direction="row"
-                    justify="flex-start"
-                    alignItems="flex-start"
-                  >
-                    <Grid item xs={1} className={classes.image}>
-                      <Avatar
-                        src={value.img}
-                        alt="left"
-                        style={{ width: "60px", height: "60px" }}
-                      />
-                    </Grid>
-                    <Grid item xs={11}>
-                      <Grid
-                        container
-                        direction="row"
-                        justify="flex-start"
-                        alignItems="flex-start"
-                      >
+          <div style={{ display: displayState }}>
+            {CommentsArray.map(value => {
+              return (
+                <Card
+                  key={value.id}
+                  className={classes.cardComponent}
+                  style={{ marginBottom: "10px" }}
+                >
+                  <CardContent>
+                    <Grid
+                      container
+                      direction="row"
+                      justify="flex-start"
+                      alignItems="flex-start"
+                    >
+                      <Grid item xs={1} className={classes.image}>
+                        <Avatar
+                          src={value.img}
+                          alt="left"
+                          style={{ width: "60px", height: "60px" }}
+                        />
+                      </Grid>
+                      <Grid item xs={11}>
                         <Grid
                           container
                           direction="row"
                           justify="flex-start"
                           alignItems="flex-start"
                         >
-                          <Grid item xs={5}>
-                            <Typography className={classes.dataAndName}>
-                              {value.userName}
+                          <Grid
+                            container
+                            direction="row"
+                            justify="flex-start"
+                            alignItems="flex-start"
+                          >
+                            <Grid item xs={5}>
+                              <Typography className={classes.dataAndName}>
+                                {value.userName}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={5} className={classes.dataAndName}>
+                              <Typography>{value.time}</Typography>
+                            </Grid>
+                            <Grid item xs={2}>
+                              <div style={{ float: "right" }}>
+                                {value.likeNumber}
+                                <FavoriteIcon />
+                              </div>
+                            </Grid>
+                          </Grid>
+                          <Grid xs={12} container item>
+                            <Typography
+                              variant="caption"
+                              style={{ fontFamily: "Helvetica Neue" }}
+                            >
+                              {movieInfo.summary}
                             </Typography>
                           </Grid>
-                          <Grid item xs={5} className={classes.dataAndName}>
-                            <Typography>{value.time}</Typography>
-                          </Grid>
-                          <Grid item xs={2}>
-                            <div style={{ float: "right" }}>
-                              {value.likeNumber}
-                              <FavoriteIcon />
-                            </div>
-                          </Grid>
-                        </Grid>
-                        <Grid xs={12} container item>
-                          <Typography
-                            variant="caption"
-                            style={{ fontFamily: "Helvetica Neue" }}
-                          >
-                            {movieInfo.summary}
-                          </Typography>
                         </Grid>
                       </Grid>
                     </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            );
-          })}
-          <Grid xs={12} container item justify={"center"} alignItems="center">
-            <Grid item>
-              <Avatar src={userLogged[0].img} />
-            </Grid>
-            <Grid item xs={10}>
-              <TextField
-                id="outlined-full-width"
-                style={{ margin: 8 }}
-                placeholder="New Comment"
-                fullWidth
-                margin="normal"
-                InputLabelProps={{
-                  shrink: true
-                }}
-                variant="outlined"
-              />
-            </Grid>
+                  </CardContent>
+                </Card>
+              );
+            })}
+            <form onSubmit={form => handleSubmit(form)}>
+              <Grid
+                xs={12}
+                container
+                item
+                justify={"center"}
+                alignItems="center"
+              >
+                <Grid item>
+                  <Avatar src={userLogged[0].img} />
+                </Grid>
+                <Grid item xs={10}>
+                  <TextField
+                    id="outlined-full-width"
+                    style={{ margin: 8 }}
+                    placeholder="New Comment"
+                    value={Comment_text}
+                    onChange={handleInputChange}
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                      classes: { notchedOutline: classes.notchedOutline },
+                      shrink: true
+                    }}
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
+              <Grid xs={12} container item justify="center">
+                <Button
+                  variant="outlined"
+                  type="submit"
+                  style={{ color: blue[500] }}
+                >
+                  submit
+                </Button>
+              </Grid>
+            </form>
+          </div>
+
+          <Grid xs={12} container item justify="center">
+            <MoreHorizIcon onClick={() => threeDots()} />
           </Grid>
         </CardContent>
       </Card>
@@ -564,7 +633,7 @@ function Comments({ movieInfo }) {
   );
 }
 
-function Streming() {
+function Streming({t}) {
   const [movie, setMovie] = useState({
     result: {
       title: "",
@@ -652,4 +721,4 @@ function Streming() {
   );
 }
 
-export default Streming;
+export default withNamespaces() (Streming);
