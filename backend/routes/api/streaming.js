@@ -8,7 +8,9 @@ const FFmpeg = require("fluent-ffmpeg");
 const allTracker = require("../../helpers/trackers");
 const _ = require("lodash");
 const streamModel = require("../../models/Streming");
+const CommentsModel = require("../../models/Comments");
 const fs = require("fs");
+const mongoose = require("mongoose");
 
 FFmpeg.setFfmpegPath(ffmpegInstaller.path);
 let engines = [];
@@ -114,12 +116,20 @@ const getTorrentFile = hash =>
     }
   });
 
+// @route   Get api/streaming/video/:hash
+// @desc    streaming the chossen movie
+// @access  Private
 router.get("/video/:hash", async (req, res) => {
   getTorrentFile(req.params.hash)
     .then(function(file) {
       const converte = needToConvert(file.ext);
 
       if (!converte) {
+        res.header("Access-Control-Allow-Origin", "10.12.7.8");
+        res.header(
+          "Access-Control-Allow-Headers",
+          "Origin, X-Requested-With, Content-Type, Accept"
+        );
         res.setHeader("Content-Length", file.length);
         res.setHeader("Content-Type", `video/${file.ext}`);
         const ranges = parseRange(file.length, req.headers.range, {
@@ -170,10 +180,13 @@ router.get("/video/:hash", async (req, res) => {
     })
     .catch(function(e) {
       console.log(e);
-      res.status(500).end({ error: "something blew up" });
+      res.status(500).end({ error: "something blew up (video)" });
     });
 });
 
+// @route   Get api/streaming/watchedUpdate
+// @desc    add or update movie last watch time
+// @access  Private
 router.post("/watchedUpdate/", async (req, res) => {
   try {
     let { hash_code, imdb_code } = req.body;
@@ -195,7 +208,6 @@ router.post("/watchedUpdate/", async (req, res) => {
       });
       await stream.save();
     }
-
     let d = new Date();
     d.setMonth(d.getMonth() - 1);
     const myData = await streamModel.find({ lastWatchedTime: { $lte: d } });
@@ -215,10 +227,83 @@ router.post("/watchedUpdate/", async (req, res) => {
         fs.rmdirSync(subtitlePath, { recursive: true });
       }
     });
-    res.send("Every-Thing goes Well");
+    return res.send("Every-Thing goes Well");
   } catch (error) {
     console.log(error);
-    res.status(500).end({ error: "something blew up" });
+    res.status(500).end({ error: "something blew up(watchedUpdate)" });
+  }
+});
+
+// @route   Get api/streaming/AddComment
+// @desc    add new comments from the chossen movie
+// @access  Private
+router.post("/AddComment", async (req, res) => {
+  try {
+    const { imdb_code, comment_text } = req.body;
+    let comment = new CommentsModel({
+      imdbCode: imdb_code,
+      commentText: comment_text.trim(),
+      userInfo: mongoose.Types.ObjectId("5e1649b404f1501433ae16a5")
+    });
+    await comment.save();
+
+    return res.send(comment);
+  } catch (error) {
+    console.log(error);
+    res.status(500).end({ error: "something blew up(AddComment)" });
+  }
+});
+
+// @route   Get api/streaming/likePost
+// @desc    add like or remove it for the chossen comments
+// @access  Private
+router.post("/likePost", async (req, res) => {
+  try {
+    const { imdb_code, Comment_id } = req.body;
+    let result = await CommentsModel.find({
+      imdbCode: imdb_code,
+      likes: {
+        $elemMatch: { $eq: mongoose.Types.ObjectId("5e13bada4dd6fc4455082e4a") }
+      }
+    });
+    if (result.length === 0) {
+      await CommentsModel.updateOne(
+        { imdbCode: imdb_code },
+        {
+          $inc: { likeCount: 1 },
+          $push: { likes: mongoose.Types.ObjectId("5e13bada4dd6fc4455082e4a") }
+        }
+      );
+    } else {
+      await CommentsModel.updateOne(
+        { imdbCode: imdb_code },
+        {
+          $inc: { likeCount: -1 },
+          $pull: { likes: mongoose.Types.ObjectId("5e13bada4dd6fc4455082e4a") }
+        }
+      );
+    }
+    return res.send("Every-Thing goes Well");
+  } catch (error) {
+    console.log(error);
+    res.status(500).end({ error: "something blew up(likePost)" });
+  }
+});
+
+// @route   Get api/streaming/getComments
+// @desc    get all the comments for the chossen movie
+// @access  Private
+router.get("/getComments/:imdb_code", async (req, res) => {
+  try {
+    const { imdb_code } = req.params;
+    const result = await CommentsModel.find({ imdbCode: "tt0316654" }).populate(
+      "userInfo",
+      "userName"
+    );
+    return res.json(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).end({ error: "something blew up(getComments)" });
   }
 });
 module.exports = router;
