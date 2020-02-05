@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
-  userName: {
+  username: {
     type: String,
     required: true
   },
-  firstName: {
+  first_name: {
     type: String,
     required: true
   },
-  lastName: {
+  last_name: {
     type: String,
     required: true
   },
@@ -28,6 +28,14 @@ const UserSchema = new mongoose.Schema({
   recoveryKey: {
     type: String
   },
+  bio: {
+    type: String
+  },
+  profileImage: {
+    type: String,
+    default: "profile_default_image.png"
+  },
+
   isVerified: {
     type: Boolean,
     default: false

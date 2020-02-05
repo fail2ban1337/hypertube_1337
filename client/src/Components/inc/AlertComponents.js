@@ -7,7 +7,7 @@ const AlertComponents = ({ alerts }) =>
   alerts !== null &&
   alerts.length > 0 &&
   alerts.map(alert => (
-    <div key={alert.id} style={{ width: "30%", margin: "0 auto" }}>
+    <div key={alert.id} style={{ width: "50%", margin: "0 auto" }}>
       <Alert severity={alert.alertType} message={{ textAlign: "center" }}>
         {alert.msg}
       </Alert>

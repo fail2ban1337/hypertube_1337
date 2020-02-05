@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -12,7 +12,9 @@ const useStyles = makeStyles({
   }
 });
 
-export const ProfileHeader = () => {
+export const ProfileHeader = ({
+  img = "https://writestylesonline.com/wp-content/uploads/2016/08/Follow-These-Steps-for-a-Flawless-Professional-Profile-Picture-1024x1024.jpg"
+}) => {
   const classes = useStyles();
 
   return (
@@ -23,7 +25,7 @@ export const ProfileHeader = () => {
       style={{ padding: 20 }}
     >
       <Grid item xs={12} style={{ position: "relative" }}>
-        <UploadProfile />
+        <UploadProfile img={img} />
         {/* 
           if not user own profile
         <Avatar

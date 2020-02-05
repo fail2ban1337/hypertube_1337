@@ -5,6 +5,10 @@ import { ProfileHeader } from "./ProfileHeader";
 import { ProfileListWatches } from "./ProfileListWatches";
 
 export const Profile = () => {
+  /*
+   * pass profile image to ProfileHeader Component
+   * call watched movies route, pass movies to ProfileListWatches
+   */
   return (
     <div>
       <Grid container>
