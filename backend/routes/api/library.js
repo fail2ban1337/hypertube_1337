@@ -205,6 +205,7 @@ router.get("/movies/genre/:genre", async (req, res) => {
     popResult = popResult ? formatPopResponse(JSON.parse(popResult)) : false;
     return res.json(popResult);
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ msg: "Server error" });
   }
 });

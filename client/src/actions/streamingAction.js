@@ -7,8 +7,10 @@ var _ = require("lodash");
 export const movieInfo = async imdb_code => {
   try {
     const res = await axios.get(`/api/library/movies/imdb_code/${imdb_code}`);
+    console.log("result", res)
     return res.data[0];
   } catch (err) {
+    console.log("error", err);
     const errors = err.response.data.msg;
     return errors;
   }
@@ -19,6 +21,7 @@ export const otherMovies = async genre => {
     const res = await axios.get(`/api/library/movies/genre/${genre}`);
     return _.sampleSize(res.data, 8);
   } catch (err) {
+    console.log(err);
     const errors = err.response.data.msg;
     return errors;
   }
@@ -65,7 +68,6 @@ export const getComments = async imdb_code => {
   try {
     const res = await axios.get(`/api/streaming/getComments/${imdb_code}`);
     return res.data;
-    console.log("getComments ", res);
   } catch (error) {
     console.log(error);
   }

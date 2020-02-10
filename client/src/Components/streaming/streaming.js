@@ -633,7 +633,7 @@ function Comments({ movieInfo }) {
   );
 }
 
-function Streming({t}) {
+function Streming() {
   const [movie, setMovie] = useState({
     result: {
       title: "",
@@ -652,7 +652,9 @@ function Streming({t}) {
     loading: true
   });
   let { imdb } = useParams();
+  console.log(movie);
   useEffect(() => {
+    console.log("test");
     async function getResult() {
       setMovie({
         ...movie,
@@ -685,6 +687,7 @@ function Streming({t}) {
       </Card>
     );
   }
+  console.log(movie.result, movie.result);
   if (movie.result === "Server error" || movie.result === "Movie not found") {
     return (
       <Card style={{ backgroundColor: "transparent" }}>
@@ -721,4 +724,4 @@ function Streming({t}) {
   );
 }
 
-export default withNamespaces() (Streming);
+export default Streming;
