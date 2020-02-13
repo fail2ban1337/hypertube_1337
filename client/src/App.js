@@ -5,7 +5,9 @@ import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
 
 import Login from "./Components/user/login";
+import Forget from "./Components/user/Forget";
 import Register from "./Components/user/register";
+import Reset from "./Components/user/Reset";
 import Streaming from "./Components/streaming/streaming";
 import Library from "./Components/pages/Library";
 import NavBar from "./Components/inc/NavBar";
@@ -14,7 +16,9 @@ import { Profile } from "./Components/profile/Profile";
 import { EditProfile } from "./Components/editProfile/EditProfile";
 // Redux
 import { Provider } from "react-redux";
+
 import store from "./store";
+
 
 function App() {
   const [theme, setTheme] = useState({
@@ -54,6 +58,8 @@ function App() {
               <Switch>
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/register" component={Register} />
+                <Route exact path="/forgetpassword" component={Forget} />
+                <Route exact path="/reset_password/:token" component={Reset} />
                 <Route exact path="/profile" component={Profile} />
                 <Route exact path="/editprofile" component={EditProfile} />
                 <Route exact path="/library" component={Library} />

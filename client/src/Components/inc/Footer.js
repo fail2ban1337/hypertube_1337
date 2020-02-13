@@ -2,6 +2,8 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
+import { t } from '../../i18n';
+
 
 const useStyles = makeStyles(theme => ({
   footer: {
@@ -36,11 +38,11 @@ const Footer = () => {
         color="textSecondary"
         component="p"
       >
-        Made with{" "}
+        {t("footer.made_with")}{" "}
         <span role="img" aria-label="love">
           ❤️
         </span>{" "}
-        in 1337
+        {t("footer.in_1337")}
       </Typography>
       <Copyright />
     </footer>

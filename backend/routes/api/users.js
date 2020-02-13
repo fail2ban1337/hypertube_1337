@@ -3,6 +3,7 @@ const router = express.Router();
 const userModel = require("../../models/User");
 const watchedMovies = require("../../models/WatchedMovies");
 const bcrypt = require("bcryptjs");
+var crypto = require("crypto");
 const middleware = require("../../middleware/midlleware");
 const config = require("config");
 const { check, validationResult } = require("express-validator");
@@ -14,6 +15,15 @@ const path = require("path");
 const multer = require("multer");
 const Jimp = require("jimp");
 const _ = require("lodash");
+const passport = require("passport");
+const utils = require("../../utils");
+
+const { forwardAuthenticated } = require("../../Auth/auth");
+
+// router.post('/login', forwardAuthenticated, (req, res) => res.render('login'));
+// router.get("/register", forwardAuthenticated, (req, res) =>
+//   res.render("register")
+// );
 
 // Configure storage for multer
 const storage = multer.diskStorage({
@@ -51,13 +61,54 @@ const upload = multer({
   }
 }).single("profileImage");
 
+router.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  console.log(username, password);
+  userModel.findOne({ username: username }, function(err, user) {
+    if (err) {
+      return res.status(500).send("Server error");
+    }
+    if (!user) {
+      return res.status(400).json({
+        erros: [
+          {
+            msg: "User Not Exise"
+          }
+        ]
+      });
+    }
+    if (!userModel.verifyPassword(password)) {
+      return res.status(400).json({
+        erros: [
+          {
+            msg: "Passowrd Error"
+          }
+        ]
+      });
+    }
+    passport.authenticate("local", {
+      successRedirect: "/",
+      failureRedirect: "/login",
+      failureFlash: true
+    }),
+      (req, res) => {
+        console.log("logged in", req.user);
+        var userInfo = {
+          username: req.user.username
+        };
+        res.send(userInfo);
+      };
+  });
+});
+
 // @route   Post api/users
 // @desc    Register user
 // @access  Public
 router.post(
-  "/",
+  "/register",
   [
-    check("userName", "Name is requird")
+    check("profileImage", "profileImage is requird").isEmpty(),
+    check("username", "Name is requird")
       .not()
       .isEmpty(),
     check("firstName", "Please entre a valide a valide first-name").isLength({
@@ -87,12 +138,14 @@ router.post(
       });
     }
     const {
-      userName,
+      profileImage,
+      username,
       firstName,
       lastName,
       email,
       password,
-      confirmPassword
+      confirmPassword,
+      verificationKey
     } = req.body;
     try {
       let user = await userModel.findOne({
@@ -108,39 +161,45 @@ router.post(
         });
       }
       user = new userModel({
-        userName,
+        profileImage,
+        username,
         firstName,
         lastName,
         email,
-        password
+        password,
+        verificationKey
       });
       // Encrypte password
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(password, salt);
-      await user.save();
-      const payload = {
-        user: {
-          id: user.id
-        }
-      };
-      jwt.sign(
-        payload,
-        config.get("jwtSecret"),
-        {
-          expiresIn: 360000
-        },
-        (err, token) => {
-          if (err) throw err;
-          res.json({
-            token
+      user.verificationKey = await crypto.randomBytes(16).toString("hex");
+      await user
+        .save()
+        .then(user => {
+          utils.sendConfirmationEmail(
+            email,
+            user.userName,
+            user.verificationKey
+          );
+          res.status(200).json({
+            message: "user inserted successfully, verification email is sent"
           });
-        }
-      );
+        })
+        .catch(err => res.status(500).json({ message: ">>>" + err.message }));
     } catch (err) {
       res.status(500).send("Server error");
     }
   }
 );
+
+//login Handle
+router.post("/login", (req, res, next) => {
+  passport.authenticate("local", {
+    successRedirect: "",
+    failureRedirect: "/login",
+    failureFlash: true
+  })(req, res, next);
+});
 
 // @route   GET api/users/me
 // @desc    Test route
