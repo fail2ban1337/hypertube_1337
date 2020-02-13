@@ -243,46 +243,57 @@ router.post("/AddComment", async (req, res) => {
     let comment = new CommentsModel({
       imdbCode: imdb_code,
       commentText: comment_text.trim(),
-      userInfo: mongoose.Types.ObjectId("5e1649b404f1501433ae16a5")
+      userInfo: mongoose.Types.ObjectId("5e40c8b99351a936fa777e7d")
     });
     await comment.save();
 
-    return res.send(comment);
+    const result = await CommentsModel.find({ _id: comment._id }).populate(
+      "userInfo",
+      "username"
+    );
+    return res.send(result);
   } catch (error) {
     console.log(error);
     res.status(500).end({ error: "something blew up(AddComment)" });
   }
 });
 
-// @route   Get api/streaming/likePost
+// @route   Get api/streaming/likeComment
 // @desc    add like or remove it for the chossen comments
 // @access  Private
-router.post("/likePost", async (req, res) => {
+router.post("/likeComment", async (req, res) => {
   try {
-    const { imdb_code, Comment_id } = req.body;
+    const { imdb_code, comment_id } = req.body;
+    console.log(imdb_code, comment_id);
     let result = await CommentsModel.find({
+      _id: comment_id,
       imdbCode: imdb_code,
       likes: {
-        $elemMatch: { $eq: mongoose.Types.ObjectId("5e13bada4dd6fc4455082e4a") }
+        $elemMatch: { $eq: mongoose.Types.ObjectId("5e40c8b99351a936fa777e7d") }
       }
     });
     if (result.length === 0) {
       await CommentsModel.updateOne(
-        { imdbCode: imdb_code },
+        { imdbCode: imdb_code, _id: comment_id},
         {
           $inc: { likeCount: 1 },
-          $push: { likes: mongoose.Types.ObjectId("5e13bada4dd6fc4455082e4a") }
+          $push: { likes: mongoose.Types.ObjectId("5e40c8b99351a936fa777e7d") }
         }
       );
     } else {
       await CommentsModel.updateOne(
-        { imdbCode: imdb_code },
+        { imdbCode: imdb_code, _id: comment_id },
         {
           $inc: { likeCount: -1 },
-          $pull: { likes: mongoose.Types.ObjectId("5e13bada4dd6fc4455082e4a") }
+          $pull: { likes: mongoose.Types.ObjectId("5e40c8b99351a936fa777e7d") }
         }
       );
     }
+    const resultFinall = await CommentsModel.find({ _id: comment_id }).populate(
+      "userInfo",
+      "username"
+    );
+    console.log(resultFinall);
     return res.send("Every-Thing goes Well");
   } catch (error) {
     console.log(error);
@@ -296,10 +307,22 @@ router.post("/likePost", async (req, res) => {
 router.get("/getComments/:imdb_code", async (req, res) => {
   try {
     const { imdb_code } = req.params;
-    const result = await CommentsModel.find({ imdbCode: "tt0316654" }).populate(
+    let result = await CommentsModel.find({ imdbCode: imdb_code }).lean().populate(
       "userInfo",
-      "userName"
+      "username"
     );
+    result.map(element => {
+      console.log(element.likes.includes("5e40c8b99351a936fa777e7d"));
+    // for (let value of element.likes)
+    // {
+    //   if (value == "5e40c8b99351a936fa777e7d")
+    //   {
+    //     console.log(true);
+    //   }else {
+    //     console.log(false);
+    //   }
+    // }
+  })
     return res.json(result);
   } catch (error) {
     console.log(error);

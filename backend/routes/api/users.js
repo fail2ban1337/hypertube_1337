@@ -57,14 +57,14 @@ const upload = multer({
 router.post(
   "/",
   [
-    check("userName", "Name is requird")
+    check("username", "Name is requird")
       .not()
       .isEmpty(),
-    check("firstName", "Please entre a valide a valide first-name").isLength({
+    check("first_name", "Please entre a valide a valide first-name").isLength({
       min: 3,
       max: 10
     }),
-    check("lastName", "Please entre a valide last_name").isLength({
+    check("last_name", "Please entre a valide last_name").isLength({
       min: 3,
       max: 10
     }),
@@ -87,9 +87,9 @@ router.post(
       });
     }
     const {
-      userName,
-      firstName,
-      lastName,
+      username,
+      first_name,
+      last_name,
       email,
       password,
       confirmPassword
@@ -108,9 +108,9 @@ router.post(
         });
       }
       user = new userModel({
-        userName,
-        firstName,
-        lastName,
+        username,
+        first_name,
+        last_name,
         email,
         password
       });
@@ -137,6 +137,7 @@ router.post(
         }
       );
     } catch (err) {
+      console.log(err);
       res.status(500).send("Server error");
     }
   }
