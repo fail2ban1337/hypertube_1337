@@ -30,7 +30,8 @@ import {
   otherMovies,
   watchedUpdate,
   addComment,
-  getComments
+  getComments,
+  likComment
 } from "../../actions/streamingAction";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Img from "react-image";
@@ -475,9 +476,8 @@ function Comments({ movieInfo }) {
   const [displayState, setDisplayState] = useState("none");
   const [Comment_text, setCommentText] = useState("");
   const dispatch = useDispatch();
-  const { comments } = useSelector(state => state);
+  const { commentsData } = useSelector(state => state);
 
-  console.log(comments);
   const handleSubmit = form => {
     form.preventDefault();
     async function setComment() {
@@ -486,6 +486,14 @@ function Comments({ movieInfo }) {
     }
     setComment();
   };
+
+  const handleLike = (comment_id) => {
+    async function lComment(){
+      await dispatch(likComment(movieInfo.imdb_code, comment_id));
+    }
+    lComment();
+  }
+
   const handleInputChange = event => {
     event.persist();
     setCommentText(event.target.value);
@@ -496,11 +504,12 @@ function Comments({ movieInfo }) {
   };
   useEffect(() => {
     async function getAllComments() {
-      await getComments(movieInfo.imdb_code);
+      await dispatch(getComments(movieInfo.imdb_code));
     }
     getAllComments();
   }, []);
-  const Comments = CommentsArray.length;
+  console.log(commentsData.allComments);
+  const Comments = commentsData.allComments.length;
   return (
     <Grid item xs={12} style={{ paddingTop: "20px" }}>
       <Card>
@@ -518,10 +527,10 @@ function Comments({ movieInfo }) {
             </Typography>
           </Grid>
           <div style={{ display: displayState }}>
-            {CommentsArray.map(value => {
+            {commentsData.allComments.map(value => {
               return (
                 <Card
-                  key={value.id}
+                  key={value._id}
                   className={classes.cardComponent}
                   style={{ marginBottom: "10px" }}
                 >
@@ -534,7 +543,7 @@ function Comments({ movieInfo }) {
                     >
                       <Grid item xs={1} className={classes.image}>
                         <Avatar
-                          src={value.img}
+                          src="https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
                           alt="left"
                           style={{ width: "60px", height: "60px" }}
                         />
@@ -554,7 +563,7 @@ function Comments({ movieInfo }) {
                           >
                             <Grid item xs={5}>
                               <Typography className={classes.dataAndName}>
-                                {value.userName}
+                                {value.userInfo.username}
                               </Typography>
                             </Grid>
                             <Grid item xs={5} className={classes.dataAndName}>
@@ -562,8 +571,8 @@ function Comments({ movieInfo }) {
                             </Grid>
                             <Grid item xs={2}>
                               <div style={{ float: "right" }}>
-                                {value.likeNumber}
-                                <FavoriteIcon />
+                                {value.likeCount}
+                                <FavoriteIcon onClick={() => handleLike(value._id)} />
                               </div>
                             </Grid>
                           </Grid>
@@ -572,7 +581,7 @@ function Comments({ movieInfo }) {
                               variant="caption"
                               style={{ fontFamily: "Helvetica Neue" }}
                             >
-                              {movieInfo.summary}
+                              {value.commentText}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -631,7 +640,7 @@ function Comments({ movieInfo }) {
   );
 }
 
-function Streming({t}) {
+function Streming() {
   const [movie, setMovie] = useState({
     result: {
       title: "",
@@ -650,7 +659,9 @@ function Streming({t}) {
     loading: true
   });
   let { imdb } = useParams();
+  console.log(movie);
   useEffect(() => {
+    console.log("test");
     async function getResult() {
       setMovie({
         ...movie,
@@ -683,6 +694,7 @@ function Streming({t}) {
       </Card>
     );
   }
+  console.log(movie.result, movie.result);
   if (movie.result === "Server error" || movie.result === "Movie not found") {
     return (
       <Card style={{ backgroundColor: "transparent" }}>
