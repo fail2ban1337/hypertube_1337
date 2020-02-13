@@ -24,8 +24,6 @@ import TextField from "@material-ui/core/TextField";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Button from "@material-ui/core/Button";
 import { useSelector, useDispatch } from "react-redux";
-import { withNamespaces } from 'react-i18next';
-
 
 import {
   movieInfo,
