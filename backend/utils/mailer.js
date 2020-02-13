@@ -5,7 +5,7 @@ exports.sendMail = (to, subject, html) => {
       service: "gmail",
       auth: {
         user: "boumalekyounes@gmail.com",
-        pass: "inboxteamdev22"
+        pass: "dvkbzeqarozdejti"
       }
     });
   

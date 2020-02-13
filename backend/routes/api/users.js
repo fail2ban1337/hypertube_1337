@@ -64,7 +64,7 @@ const upload = multer({
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
   console.log(username, password);
-  userModel.findOne({ userName: username }, function(err, user) {
+  userModel.findOne({ username: username }, function(err, user) {
     if (err) {
       return res.status(500).send("Server error");
     }
@@ -108,7 +108,7 @@ router.post(
   "/register",
   [
     check("profileImage", "profileImage is requird").isEmpty(),
-    check("userName", "Name is requird")
+    check("username", "Name is requird")
       .not()
       .isEmpty(),
     check("firstName", "Please entre a valide a valide first-name").isLength({
@@ -139,7 +139,7 @@ router.post(
     }
     const {
       profileImage,
-      userName,
+      username,
       firstName,
       lastName,
       email,
@@ -162,7 +162,7 @@ router.post(
       }
       user = new userModel({
         profileImage,
-        userName,
+        username,
         firstName,
         lastName,
         email,

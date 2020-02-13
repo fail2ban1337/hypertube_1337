@@ -124,7 +124,7 @@ class Login extends Component {
               margin="normal"
               fullWidth
               id="username"
-              label="Username"
+              label={t("login_screen.username")}
               name="username"
               type="text"
               value={this.state.username || ""}
@@ -137,7 +137,7 @@ class Login extends Component {
               margin="normal"
               fullWidth
               name="password"
-              label="Password"
+              label={t("login_screen.password")}
               type="password"
               id="password"
               value={this.state.password || ""}
@@ -157,7 +157,7 @@ class Login extends Component {
               {t('login_screen.sign_in')}
             </Button>
               <Grid item>
-                <Typography style={{textAlign:'center',marginTop:10}}>OR</Typography>
+                <Typography style={{textAlign:'center',marginTop:10}}>{t("login_screen.or")}</Typography>
               </Grid>
               <Button
                 type="submit"
@@ -179,7 +179,7 @@ class Login extends Component {
               </Button>
             <Grid container>
               <Grid item >
-                <Link to="/register">{"Don't have an account? Sign Up"}</Link>
+                <Link to="/register">{t("login_screen.dont_have_an_account")}</Link>
               </Grid>
             </Grid>
           </form>
