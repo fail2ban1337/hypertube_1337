@@ -18,8 +18,10 @@ import blue from "@material-ui/core/colors/blue";
 import Grid from "@material-ui/core/Grid";
 import { Container } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
-
 import { getMovieByKeyword } from "../../actions/libraryAction";
+import { FlagIcon } from "react-flag-kit";
+import { t, setLocale } from '../../i18n';
+
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -120,7 +122,10 @@ function NavBar({ setDarkMode }) {
       dispatch(getMovieByKeyword(keyword));
     }
   };
-
+  const changeLanguage = async (lang)=> {
+    await setLocale(lang);
+    window.location.reload();
+  }
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -239,6 +244,12 @@ function NavBar({ setDarkMode }) {
                 color="inherit"
               >
                 <AccountCircle />
+              </IconButton>
+              <IconButton aria-label="show 4 new mails" onClick={()=> changeLanguage('en')}>
+                <FlagIcon code="US" size={25} />
+              </IconButton>
+              <IconButton aria-label="show 4 new mails" onClick={()=> changeLanguage('fr')}>
+                <FlagIcon code="FR" size={25} />
               </IconButton>
             </div>
             <div className={classes.sectionMobile}>
