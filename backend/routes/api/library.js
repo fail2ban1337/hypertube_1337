@@ -40,21 +40,23 @@ router.get("/movies/page/", [middleware.moviesByPage()], async (req, res) => {
     //   );
     // });
     // get movies from yts api
-    let ytsResult = await getMovies(req.query, "yts");
+    //let ytsResult = await getMovies(req.query, "yts");
     //ytsResult = await getMovieMoreInfo(ytsResult);
 
     // if movies not returned due to page number not exist in API
-    if (!ytsResult) return res.status(404).json({ msg: "Result not found" });
+    //if (!ytsResult) return res.status(404).json({ msg: "Result not found" });
 
     // get movies from popcorn api
     let popResult = await getMovies(req.query, "pop");
-    if (!popResult || _.isEmpty(popResult)) return res.json(ytsResult);
+    if (!popResult || _.isEmpty(popResult)) res.status(404).json({ msg: "Result not found" });
+    return res.json(popResult);
+    //if (!popResult || _.isEmpty(popResult)) return res.json(ytsResult);
 
     // Merge the two arrays, Delete duplicate movies by imdb code, order by
-    const result = _.concat(ytsResult, popResult);
-    let filtred = _.uniqBy(result, "imdb_code");
-    filtred = _.orderBy(filtred, req.query.sort_by, ["desc"]);
-    return res.json(filtred);
+    // const result = _.concat(ytsResult, popResult);
+    // let filtred = _.uniqBy(result, "imdb_code");
+    // filtred = _.orderBy(filtred, req.query.sort_by, ["desc"]);
+    // return res.json(filtred);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ msg: "Server error" });
@@ -154,12 +156,12 @@ router.get(
     const imdb_code = req.params.imdb_code;
     try {
       // get movie from yts api
-      const ytsResult = await cloudscraper.get(
-        `https://yts.lt/api/v2/list_movies.json?query_term=${imdb_code}`
-      );
+      // const ytsResult = await cloudscraper.get(
+      //   `https://yts.lt/api/v2/list_movies.json?query_term=${imdb_code}`
+      // );
 
-      const parsedMoviesYts = JSON.parse(ytsResult);
-      const ytsData = formatYtsResponse(parsedMoviesYts.data.movies);
+      // const parsedMoviesYts = JSON.parse(ytsResult);
+      // const ytsData = formatYtsResponse(parsedMoviesYts.data.movies);
 
       // get movie from popcorn api
       const popResult = await rp.get(
@@ -172,15 +174,22 @@ router.get(
       // format response
       const popData = formatPopResponse(parsedMoviesPop);
 
-      let result = [...popData, ...ytsData];
-      if (ytsData.length > 0 && popData.length > 0)
-        result = _.uniqWith(popData, retMax);
-      result = await getMovieMoreInfo(result);
+      const result = await getMovieMoreInfo(popData);
       if (!result || result.length === 0)
         return res.status(404).json({ msg: "Movie not found" });
       // Get subtitles
       result[0]["subtitle"] = await getSubtitles(imdb_code);
       return res.json(result);
+
+      // let result = [...popData, ...ytsData];
+      // if (ytsData.length > 0 && popData.length > 0)
+      //   result = _.uniqWith(popData, retMax);
+      // result = await getMovieMoreInfo(result);
+      // if (!result || result.length === 0)
+      //   return res.status(404).json({ msg: "Movie not found" });
+      // // Get subtitles
+      // result[0]["subtitle"] = await getSubtitles(imdb_code);
+      // return res.json(result);
     } catch (error) {
       console.log(error);
       deleteSubtitles(imdb_code);

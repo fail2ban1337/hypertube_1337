@@ -85,7 +85,7 @@ export default function Controllers() {
       <Grid item md={6} xs={12}>
         <Card className={classes.card}>
           <CardContent style={{ minHeight: "139px" }}>
-            <Grid item xs={12}>
+            <Grid xs={12} container item justify={"center"}>
               <span
                 style={{
                   fontSize: "14px",
@@ -97,45 +97,49 @@ export default function Controllers() {
                 Sort
               </span>
             </Grid>
-            <Grid item xs={12}>
-              <RadioGroup
-                name="sort_by"
-                value={sort}
-                onChange={handleChange}
-                style={{ height: "100%" }}
+
+            <RadioGroup
+              name="sort_by"
+              value={sort}
+              onChange={handleChange}
+              style={{ height: "100%" }}
+            >
+              <Grid
+                container
+                direction="row"
+                justify="center"
+                alignItems="center"
               >
-                <Grid container direction="row" justify="center">
-                  <Grid item md={4} xs={12}>
-                    <FormControlLabel
-                      value="title"
-                      control={<Radio style={{ color: "#2196f3" }} />}
-                      label="Title"
-                    />
-                  </Grid>
-                  <Grid item md={4} xs={12}>
-                    <FormControlLabel
-                      value="rating"
-                      control={<Radio style={{ color: "#2196f3" }} />}
-                      label="Rating"
-                    />
-                  </Grid>
-                  <Grid item md={4} xs={12}>
-                    <FormControlLabel
-                      value="year"
-                      control={<Radio style={{ color: "#2196f3" }} />}
-                      label="Year"
-                    />
-                  </Grid>
+                <Grid xs={12} md={4} container item justify={"center"}>
+                  <FormControlLabel
+                    value="title"
+                    control={<Radio style={{ color: "#2196f3" }} />}
+                    label="Title"
+                  />
                 </Grid>
-              </RadioGroup>
-            </Grid>
+                <Grid xs={12} md={4} container item justify={"center"}>
+                  <FormControlLabel
+                    value="rating"
+                    control={<Radio style={{ color: "#2196f3" }} />}
+                    label="Rating"
+                  />
+                </Grid>
+                <Grid xs={12} md={4} container item justify={"center"}>
+                  <FormControlLabel
+                    value="year"
+                    control={<Radio style={{ color: "#2196f3" }} />}
+                    label="Year"
+                  />
+                </Grid>
+              </Grid>
+            </RadioGroup>
           </CardContent>
         </Card>
       </Grid>
       <Grid item md={6} xs={12}>
         <Card className={classes.card}>
           <CardContent style={{ minHeight: "139px" }}>
-            <Grid item xs={12}>
+            <Grid xs={12} container item justify={"center"}>
               <span
                 style={{
                   fontSize: "14px",
@@ -180,41 +184,46 @@ export default function Controllers() {
                   max={9}
                 />
               </Grid>
-              <Grid item md={1} xs={12}>
-                <span
-                  style={{
-                    fontSize: "8px",
-                    fontWeight: "900",
-                    textAlign: "center",
-                    display: "block"
-                  }}
-                >
-                  Genre
-                </span>
-                <FormControl className={classes.formControl}>
-                  <Select
-                    style={{ height: "10px" }}
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={genre}
-                    onChange={handleChangeGenre}
+              <Grid item md={3} xs={12}>
+                <Grid xs={12} container item justify={"center"}>
+                  <span
+                    style={{
+                      fontSize: "8px",
+                      fontWeight: "900",
+                      textAlign: "center",
+                      display: "block"
+                    }}
                   >
-                    <MenuItem value={"Action"}>Action</MenuItem>
-                    <MenuItem value={"Adventure"}>Adventure</MenuItem>
-                    <MenuItem value={"Comedy"}>Comedy</MenuItem>
-                    <MenuItem value={"Drama"}>Drama</MenuItem>
-                    <MenuItem value={"Fantasy"}>Fantasy</MenuItem>
-                    <MenuItem value={"Historical"}>Historical</MenuItem>
-                    <MenuItem value={"Romance"}>Romance</MenuItem>
-                    <MenuItem value={"Science fiction"}>
-                      Science fiction
-                    </MenuItem>
-                    <MenuItem value={"Western"}>Western</MenuItem>
-                    <MenuItem value={"All"}>All</MenuItem>
-                  </Select>
-                </FormControl>
+                    Genre
+                  </span>
+                </Grid>
+                <Grid xs={12} container item justify={"center"}>
+                  <FormControl className={classes.formControl}>
+                    <Select
+                      style={{ height: "10px" }}
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={genre}
+                      onChange={handleChangeGenre}
+                    >
+                      <MenuItem value={"Action"}>Action</MenuItem>
+                      <MenuItem value={"Adventure"}>Adventure</MenuItem>
+                      <MenuItem value={"Comedy"}>Comedy</MenuItem>
+                      <MenuItem value={"Drama"}>Drama</MenuItem>
+                      <MenuItem value={"Fantasy"}>Fantasy</MenuItem>
+                      <MenuItem value={"Historical"}>Historical</MenuItem>
+                      <MenuItem value={"Romance"}>Romance</MenuItem>
+                      <MenuItem value={"Science fiction"}>
+                        Science fiction
+                      </MenuItem>
+                      <MenuItem value={"Western"}>Western</MenuItem>
+                      <MenuItem value={"All"}>All</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
               </Grid>
-              <Grid item md={2} xs={12}>
+
+              <Grid xs={12} md={3} container item justify={"center"}>
                 <Button
                   variant="contained"
                   style={{ backgroundColor: "#2196f3", color: "white" }}

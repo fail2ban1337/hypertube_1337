@@ -203,8 +203,8 @@ const getMovies = async (
       filterGenre === "All"
         ? ""
         : filterGenre === "Science fiction"
-        ? "&genre=sci-fi"
-        : `&genre=${filterGenre}`;
+          ? "&genre=sci-fi"
+          : `&genre=${filterGenre}`;
 
     const url = `https://yts.lt/api/v2/list_movies.json?page=${pid}&sort_by=${sort_by}&minimum_rating=${filterRatingMin}${genre}`;
     const result = await cloudscraper.get(url);
