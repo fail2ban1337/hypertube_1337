@@ -1,5 +1,6 @@
 import axios from "axios";
-import { ADD_NEW_COMMENT, GET_COMMENTS } from "./actionTypes";
+import { ADD_NEW_COMMENT, GET_COMMENTS, LIKE_COMMENT } from "./actionTypes";
+import { setAlert } from "./alert";
 
 var _ = require("lodash");
 
@@ -7,7 +8,7 @@ var _ = require("lodash");
 export const movieInfo = async imdb_code => {
   try {
     const res = await axios.get(`/api/library/movies/imdb_code/${imdb_code}`);
-    console.log("result", res)
+    console.log("result", res);
     return res.data[0];
   } catch (err) {
     console.log("error", err);
@@ -64,7 +65,7 @@ export const addComment = (imdb_code, comment_text) => async disptach => {
 };
 
 // @desc get all comments on the chossen movie
-export const getComments =  imdb_code => async disptach => {
+export const getComments = imdb_code => async disptach => {
   try {
     const res = await axios.get(`/api/streaming/getComments/${imdb_code}`);
     disptach({
@@ -83,11 +84,18 @@ export const likComment = (imdb_code, comment_id) => async disptach => {
     headers: {
       "Content-Type": "application/json"
     }
-  }
-  const body = JSON.stringify({imdb_code, comment_id});
+  };
+  const body = JSON.stringify({ imdb_code, comment_id });
   try {
     const res = await axios.post("/api/streaming/likeComment", body, config);
+    console.log(res.data[0]);
+    disptach({
+      type: LIKE_COMMENT,
+      payload: res.data[0]
+    });
   } catch (error) {
-    console.log(error);
+    const msg = error.response.data.msg;
+    console.log("msg", msg);
+    disptach(setAlert(msg, "error"));
   }
-} 
+};

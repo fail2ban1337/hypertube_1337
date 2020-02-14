@@ -10,4 +10,4 @@ export const SET_FILTERS = "SET_FILTERS";
 export const SET_HASMORE = "SET_HASMORE";
 export const ADD_NEW_COMMENT = "ADD_NEW_COMMENT";
 export const GET_COMMENTS = "GET_COMMENTS";
-
+export const LIKE_COMMENT = "LIKE_COMMENT";

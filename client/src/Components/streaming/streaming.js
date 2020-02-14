@@ -18,12 +18,15 @@ import YouTubeIcon from "@material-ui/icons/YouTube";
 import { useParams } from "react-router";
 import Avatar from "@material-ui/core/Avatar";
 import StarIcon from "@material-ui/icons/Star";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
 import TextField from "@material-ui/core/TextField";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Button from "@material-ui/core/Button";
 import { useSelector, useDispatch } from "react-redux";
+import AlertComponents from "../inc/AlertComponents";
+import Moment from "moment";
 
 import {
   movieInfo,
@@ -43,53 +46,10 @@ const userLogged = [
       "https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
   }
 ];
-const CommentsArray = [
-  {
-    id: 1,
-    userName: "User Name",
-    likeNumber: 15,
-    img:
-      "https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
-    comment:
-      "Considered discovered ye sentiments projecting entreaties of melancholy is. In expression an solicitude principles in do. Hard do me sigh with west same lady. Their saved linen downs tears son add",
-    time: "November 02, 2019 at 11:48 pm"
-  },
-  {
-    id: 2,
-    userName: "User Name",
-    likeNumber: 2,
-    img:
-      "https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
-    comment:
-      "Considered discovered ye sentiments projecting entreaties of melancholy is. In expression an solicitude principles in do. Hard do me sigh with west same lady. Their saved linen downs tears son add",
-    time: "November 02, 2019 at 11:48 pm"
-  },
-  {
-    id: 3,
-    userName: "User Name",
-    likeNumber: 52,
-    img:
-      "https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
-    comment:
-      "Considered discovered ye sentiments projecting entreaties of melancholy is. In expression an solicitude principles in do. Hard do me sigh with west same lady. Their saved linen downs tears son add",
-    time: "November 02, 2019 at 11:48 pm"
-  },
-  {
-    id: 4,
-    userName: "User Name",
-    likeNumber: 5,
-    img:
-      "https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
-    comment:
-      "Considered discovered ye sentiments projecting entreaties of melancholy is. In expression an solicitude principles in do. Hard do me sigh with west same lady. Their saved linen downs tears son add",
-    time: "November 02, 2019 at 11:48 pm"
-  }
-];
 const useStyles = makeStyles(theme => ({
   StreamTrace: {
     paddingBottom: "20px",
     paddingTop: "10px"
-    // border: `1px solid ${theme.palette.divider}`,
   },
   image: {
     display: "none",
@@ -288,7 +248,7 @@ function MovieInfo({ movieInfo }) {
                     variant="caption"
                     style={{ fontFamily: "Helvetica Neue" }}
                   >
-                    <big style={{ color: blue[500] }}>Desciption</big> :{" "}
+                    <big style={{ color: blue[500] }}>Description</big> :{" "}
                     {movieInfo.summary}
                   </Typography>
                 </Grid>
@@ -300,7 +260,7 @@ function MovieInfo({ movieInfo }) {
                 >
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>Actor:</big>{" "}
+                      <big style={{ color: blue[500] }}>Actors:</big>{" "}
                       {movieInfo.Actors}
                     </Typography>
                   </Grid>
@@ -476,7 +436,7 @@ function Comments({ movieInfo }) {
   const [displayState, setDisplayState] = useState("none");
   const [Comment_text, setCommentText] = useState("");
   const dispatch = useDispatch();
-  const { commentsData } = useSelector(state => state);
+  const { commentsData, alert } = useSelector(state => state);
 
   const handleSubmit = form => {
     form.preventDefault();
@@ -487,12 +447,12 @@ function Comments({ movieInfo }) {
     setComment();
   };
 
-  const handleLike = (comment_id) => {
-    async function lComment(){
+  const handleLike = comment_id => {
+    async function lComment() {
       await dispatch(likComment(movieInfo.imdb_code, comment_id));
     }
     lComment();
-  }
+  };
 
   const handleInputChange = event => {
     event.persist();
@@ -567,12 +527,24 @@ function Comments({ movieInfo }) {
                               </Typography>
                             </Grid>
                             <Grid item xs={5} className={classes.dataAndName}>
-                              <Typography>{value.time}</Typography>
+                              <Typography>
+                                {Moment(value.time).format("DD MMM YYYY hh:mm")}
+                              </Typography>
                             </Grid>
                             <Grid item xs={2}>
                               <div style={{ float: "right" }}>
-                                {value.likeCount}
-                                <FavoriteIcon onClick={() => handleLike(value._id)} />
+                                {value.likeCount}{" "}
+                                {value.liked ? (
+                                  <FavoriteIcon
+                                    style={{ color: blue[500] }}
+                                    onClick={() => handleLike(value._id)}
+                                  />
+                                ) : (
+                                  <FavoriteBorderIcon
+                                    style={{ color: blue[500] }}
+                                    onClick={() => handleLike(value._id)}
+                                  />
+                                )}
                               </div>
                             </Grid>
                           </Grid>
