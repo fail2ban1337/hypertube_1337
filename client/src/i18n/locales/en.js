@@ -27,6 +27,20 @@ const en = {
             all:'All',
         }
     },
+    streaming:{
+        home:'Home',
+        library:'Library',
+        trailler:'Trailer',
+        description:'Description',
+        actor : 'Actor',
+        duration : 'Duration',
+        director : 'Director',
+        quality : 'Quality',
+        genres : 'genres',
+        production : 'Production',
+        language : 'language',
+        release : 'Release',
+    },
     footer:{
         made_with:'Made with',
         in_1337:'in 1337'

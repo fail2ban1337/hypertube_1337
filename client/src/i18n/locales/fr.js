@@ -27,6 +27,20 @@ const fr = {
             all:'Tout',
         }
     },
+    streaming:{
+        home:'Accueil',
+        library:'Bibliothèque',
+        trailler:'Bande annonce',
+        description:'La description',
+        actor : 'Acteur',
+        duration : 'Durée',
+        director : 'Réalisateur',
+        quality : 'Qualité',
+        genres : 'genres',
+        production : 'Production',
+        language : 'Langue',
+        release : 'Libération',
+    },
     footer:{
         made_with:'Fabriqué avec',
         in_1337:' 1337'

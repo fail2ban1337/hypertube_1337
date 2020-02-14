@@ -24,6 +24,7 @@ import TextField from "@material-ui/core/TextField";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Button from "@material-ui/core/Button";
 import { useSelector, useDispatch } from "react-redux";
+import { t } from '../../i18n';
 
 import {
   movieInfo,
@@ -184,11 +185,11 @@ function StreamTrace({ title }) {
     <Breadcrumbs aria-label="breadcrumb" className={classes.StreamTrace}>
       <Link color="inherit" href="/" className={classes.link}>
         <HomeIcon className={classes.icon} />
-        Home
+        {t("streaming.home")}
       </Link>
       <Link color="inherit" href="/library" className={classes.link}>
         <WhatshotIcon className={classes.icon} />
-        Library
+        {t("streaming.library")}
       </Link>
       <Typography color="textPrimary" className={classes.link}>
         <GrainIcon className={classes.icon} />
@@ -277,7 +278,7 @@ function MovieInfo({ movieInfo }) {
                         onClick={() => window.open(movieInfo.trailer, "_blank")}
                       >
                         <YouTubeIcon style={{ paddingRight: "5px" }} />
-                        <small>Trailler</small>
+                        <small>{t("streaming.trailler")}</small>
                       </Fab>
                     )}
                   </Typography>
@@ -287,7 +288,7 @@ function MovieInfo({ movieInfo }) {
                     variant="caption"
                     style={{ fontFamily: "Helvetica Neue" }}
                   >
-                    <big style={{ color: blue[500] }}>Desciption</big> :{" "}
+                    <big style={{ color: blue[500] }}>{t("streaming.description")}</big> :{" "}
                     {movieInfo.summary}
                   </Typography>
                 </Grid>
@@ -299,31 +300,31 @@ function MovieInfo({ movieInfo }) {
                 >
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>Actor:</big>{" "}
+                      <big style={{ color: blue[500] }}>{t("streaming.actor")}</big> :{" "}
                       {movieInfo.Actors}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>Duration:</big>{" "}
+                      <big style={{ color: blue[500] }}>{t("streaming.duration")}</big> :{" "}
                       {movieInfo.runtime} min
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>Director:</big>{" "}
+                      <big style={{ color: blue[500] }}>{t("streaming.director")}</big> :{" "}
                       {movieInfo.Director}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>Quality:</big>{" "}
+                      <big style={{ color: blue[500] }}>{t("streaming.quality")}</big> :{" "}
                       {movieInfo.torrents[0].quality}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>genres:</big>{" "}
+                      <big style={{ color: blue[500] }}>{t("streaming.genres")}</big> :{" "}
                       {movieInfo.genres.map(item => {
                         return item + " ";
                       })}
@@ -331,19 +332,19 @@ function MovieInfo({ movieInfo }) {
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>Production:</big>{" "}
+                      <big style={{ color: blue[500] }}>{t("streaming.production")}</big> :{" "}
                       {movieInfo.Production}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>language:</big>{" "}
+                      <big style={{ color: blue[500] }}>{t("streaming.language")}</big> :{" "}
                       {movieInfo.language}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>Release:</big>{" "}
+                      <big style={{ color: blue[500] }}>{t("streaming.release")}</big> :{" "}
                       {movieInfo.year}
                     </Typography>
                   </Grid>
