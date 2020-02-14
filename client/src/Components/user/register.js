@@ -24,6 +24,7 @@ import { Upload, message } from "antd";
 import axios from "axios";
 import "antd/dist/antd.css";
 import Swal from "sweetalert2";
+import { t } from '../../i18n';
 // import { Avatar } from "@material-ui/core";
 
 const Styles = {
@@ -185,7 +186,7 @@ class Register extends Component {
               <AccountCircle />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Sign up
+            {t("register_screen.sign_up")}
             </Typography>
             <div style={Styles.Image}>
               <Upload
@@ -222,7 +223,7 @@ class Register extends Component {
                     variant="outlined"
                     required
                     fullWidth
-                    label="Username"
+                    label={t("register_screen.username")}
                     name="userName"
                     onChange={e => this.onChange(e)}
                     value={this.state.userName}
@@ -238,7 +239,7 @@ class Register extends Component {
                     fullWidth
                     onChange={e => this.onChange(e)}
                     value={this.state.firstName}
-                    label="First Name"
+                    label={t("register_screen.first_name")}
                     inputProps={{ maxLength: 20 }}
                   />
                 </Grid>
@@ -247,7 +248,7 @@ class Register extends Component {
                     variant="outlined"
                     required
                     fullWidth
-                    label="Last Name"
+                    label={t("register_screen.last_name")}
                     name="lastName"
                     autoComplete="lname"
                     onChange={e => this.onChange(e)}
@@ -260,7 +261,7 @@ class Register extends Component {
                     variant="outlined"
                     required
                     fullWidth
-                    label="Email Address"
+                    label={t("register_screen.email_address")}
                     name="email"
                     autoComplete="email"
                     onChange={e => this.onChange(e)}
@@ -274,7 +275,7 @@ class Register extends Component {
                     required
                     fullWidth
                     name="password"
-                    label="Password"
+                    label={t("register_screen.password")}
                     type={this.state.showPassword ? "text" : "password"}
                     autoComplete="new-password"
                     onChange={e => this.onChange(e)}
@@ -304,7 +305,7 @@ class Register extends Component {
                     required
                     fullWidth
                     name="confirmPassword"
-                    label="Confirm  Password"
+                    label={t("register_screen.confirm_password")}
                     autoComplete="new-password"
                     type={this.state.showConfPassword ? "text" : "password"}
                     onChange={e => this.onChange(e)}
@@ -336,34 +337,11 @@ class Register extends Component {
                 color="primary"
                 style={Styles.submit}
               >
-                Sign Up
+                {t("register_screen.sign_up")}
               </Button>
-              {/* <Grid container justify="center">
-                <Grid item>
-                  <Typography>OR</Typography>
-                </Grid>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  style={Styles.submitfacebook}
-                >
-                  Facebook
-                </Button>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  style={Styles.submitgoogle}
-                >
-                  Google
-                </Button>
-              </Grid> */}
               <Grid container justify="center" style={{marginBottom:80}}>
                 <Grid item>
-                  <Link to="/login">Already have an account? Sign in</Link>
+                  <Link to="/login">{t("register_screen.have_an_account")}</Link>
                 </Grid>
               </Grid>
             </form>

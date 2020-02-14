@@ -5,7 +5,17 @@ const fr = {
         sign_in:'Se connecter',
         forget_password:'Mot de passe oublié',
         dont_have_an_account:'Vous n\'avez pas de compte? S\'inscrire',
-        or:'OU'
+        or:'OU' 
+    },
+    register_screen:{
+        sign_up:'S\'inscrire',
+        username:'Nom d\'utilisateur',
+        first_name:'Prénom',
+        last_name:'nom de famille',
+        email_address:'adresse e-mail',
+        password:'mot de passe',
+        confirm_password:'Confirmez le mot de passe',
+        have_an_account:'Vous avez déjà un compte? se connecter',
     },
     controller:{
         sort:'Trier',
@@ -43,7 +53,7 @@ const fr = {
     },
     footer:{
         made_with:'Fabriqué avec',
-        in_1337:' 1337'
+        in_1337:' 1337',
 
     },
 }

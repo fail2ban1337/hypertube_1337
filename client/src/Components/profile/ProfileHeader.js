@@ -24,7 +24,7 @@ export const ProfileHeader = ({
       alignItems="center"
       style={{ padding: 20 }}
     >
-      <Grid item xs={12} style={{ position: "relative" }}>
+      <Grid item xs={3} style={{ position: "relative" }}>
         <UploadProfile img={img} />
         {/* 
           if not user own profile
@@ -34,7 +34,7 @@ export const ProfileHeader = ({
             style={{ width: "150px", height: "150px" }}
           /> */}
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={3}>
         <Typography variant="h5" className={classes.title}>
           Jhon Doe
         </Typography>
