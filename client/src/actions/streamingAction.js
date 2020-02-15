@@ -8,21 +8,18 @@ var _ = require("lodash");
 export const movieInfo = async imdb_code => {
   try {
     const res = await axios.get(`/api/library/movies/imdb_code/${imdb_code}`);
-    console.log("result", res);
     return res.data[0];
   } catch (err) {
-    console.log("error", err);
     const errors = err.response.data.msg;
     return errors;
   }
 };
 // @desc get other movies by genre
-export const otherMovies = async genre => {
+export const otherMovies = async (genre = "horror") => {
   try {
     const res = await axios.get(`/api/library/movies/genre/${genre}`);
     return _.sampleSize(res.data, 8);
   } catch (err) {
-    console.log(err);
     const errors = err.response.data.msg;
     return errors;
   }
@@ -38,9 +35,7 @@ export const watchedUpdate = async (hash_code, imdb_code) => {
   const body = JSON.stringify({ hash_code, imdb_code });
   try {
     const res = await axios.post("/api/streaming/watchedUpdate", body, config);
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 // @desc add new comment on the chossen movie
@@ -51,17 +46,13 @@ export const addComment = (imdb_code, comment_text) => async disptach => {
     }
   };
   const body = JSON.stringify({ imdb_code, comment_text });
-  console.log(imdb_code, comment_text);
   try {
     const res = await axios.post("/api/streaming/AddComment", body, config);
-    console.log(res.data);
     disptach({
       type: ADD_NEW_COMMENT,
       payload: res.data
     });
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 // @desc get all comments on the chossen movie
@@ -72,14 +63,11 @@ export const getComments = imdb_code => async disptach => {
       type: GET_COMMENTS,
       payload: res.data
     });
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 // @desc Like a comment on the chossen movie
 export const likComment = (imdb_code, comment_id) => async disptach => {
-  console.log(imdb_code, comment_id);
   const config = {
     headers: {
       "Content-Type": "application/json"
@@ -88,14 +76,12 @@ export const likComment = (imdb_code, comment_id) => async disptach => {
   const body = JSON.stringify({ imdb_code, comment_id });
   try {
     const res = await axios.post("/api/streaming/likeComment", body, config);
-    console.log(res.data[0]);
     disptach({
       type: LIKE_COMMENT,
       payload: res.data[0]
     });
   } catch (error) {
     const msg = error.response.data.msg;
-    console.log("msg", msg);
     disptach(setAlert(msg, "error"));
   }
 };
