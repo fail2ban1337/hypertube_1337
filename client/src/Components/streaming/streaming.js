@@ -17,7 +17,6 @@ import Fab from "@material-ui/core/Fab";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import { useParams } from "react-router";
 import Avatar from "@material-ui/core/Avatar";
-import StarIcon from "@material-ui/icons/Star";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
@@ -25,7 +24,6 @@ import TextField from "@material-ui/core/TextField";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Button from "@material-ui/core/Button";
 import { useSelector, useDispatch } from "react-redux";
-import AlertComponents from "../inc/AlertComponents";
 import Moment from "moment";
 
 import {
@@ -197,7 +195,6 @@ function StrVedio({ torrentInfo }) {
 
 function MovieInfo({ movieInfo }) {
   const classes = useStyles();
-
   return (
     <Grid item xs={12}>
       <Card className={classes.card}>
