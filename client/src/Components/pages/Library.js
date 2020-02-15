@@ -12,7 +12,7 @@ import AlertComponents from "../inc/AlertComponents";
 import { Loading } from "../inc/Loading";
 import { getMovies } from "../../actions/libraryAction";
 import { REMOVE_ALERT } from "../../actions/actionTypes";
-
+import { t } from '../../i18n';
 
 const useStyles = makeStyles({
   moviesContainer: {
