@@ -27,7 +27,7 @@ const convertFile = file => {
       .on("error", err => {});
     return convertedFile;
   } catch (err) {
-    console.log(err);
+    return file.createReadStream();
   }
 };
 
@@ -40,8 +40,6 @@ const getTorrentFile = hash =>
   new Promise(function(resolve, reject) {
     let b = _.find(engines, ["hash", hash]);
     if (_.isObject(b)) {
-      console.log("existe");
-
       let engine = b.engine;
       engine.files.forEach(function(file, idx) {
         const ext = path.extname(file.name).slice(1);
@@ -153,7 +151,6 @@ router.get("/video/:hash", async (req, res) => {
         } else {
           // 206 Partial Content valid range requested
           const range = ranges[0];
-          console.log(range);
           res.statusCode = 206;
           res.setHeader("Content-Length", 1 + (range.end - range.start));
           res.setHeader(
@@ -179,8 +176,7 @@ router.get("/video/:hash", async (req, res) => {
       }
     })
     .catch(function(e) {
-      console.log(e);
-      res.status(500).end({ error: "something blew up (video)" });
+      res.status(500).end("something blew up (video)");
     });
 });
 
@@ -217,7 +213,6 @@ router.post("/watchedUpdate/", async (req, res) => {
       let subtitlePath = `../client/public/movies/subtitles/${arrayItem.imdbCode}`;
       let torrentFilePath = `../client/public/movies/torrent-stream/${arrayItem.hashCode}.torrent`;
       if (fs.existsSync(torrentFilePath)) {
-        console.log("existe file");
         fs.unlinkSync(torrentFilePath);
       }
       if (fs.existsSync(moviePath)) {
@@ -229,8 +224,7 @@ router.post("/watchedUpdate/", async (req, res) => {
     });
     return res.send("Every-Thing goes Well");
   } catch (error) {
-    console.log(error);
-    res.status(500).end({ error: "something blew up(watchedUpdate)" });
+    res.status(500).json({ error: "something blew up(watchedUpdate)" });
   }
 });
 
@@ -253,7 +247,7 @@ router.post("/AddComment", async (req, res) => {
     );
     return res.send(result);
   } catch (error) {
-    res.status(500).end({ error: "Error on Adding New Comment" });
+    res.status(500).json({ error: "Error on Adding New Comment" });
   }
 });
 
@@ -316,7 +310,6 @@ router.get("/getComments/:imdb_code", async (req, res) => {
       .lean()
       .populate("userInfo", "username");
     result.map(element => {
-      console.log(element.likes.includes("5e45bbcd85cfbd0ce6d55a51"));
       element.liked = false;
       for (let value of element.likes) {
         if (value == "5e45bbcd85cfbd0ce6d55a51") {
@@ -328,8 +321,7 @@ router.get("/getComments/:imdb_code", async (req, res) => {
     });
     return res.json(result);
   } catch (error) {
-    console.log(error);
-    res.status(500).end({ error: "something blew up" });
+    res.status(500).json({ error: "something blew up" });
   }
 });
 module.exports = router;
