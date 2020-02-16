@@ -20,8 +20,8 @@ import { Container } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import { getMovieByKeyword } from "../../actions/libraryAction";
 import { FlagIcon } from "react-flag-kit";
-import { t, setLocale } from '../../i18n';
-
+import { setLocale } from "../../i18n";
+import i18n from "i18n-js";
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -85,7 +85,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function NavBar({ setDarkMode }) {
+function NavBar({ setDarkMode, Langage }) {
   const classes = useStyles();
   const [keyword, setKeyword] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
@@ -122,10 +122,6 @@ function NavBar({ setDarkMode }) {
       dispatch(getMovieByKeyword(keyword));
     }
   };
-  const changeLanguage = async (lang)=> {
-    await setLocale(lang);
-    window.location.reload();
-  }
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -245,11 +241,13 @@ function NavBar({ setDarkMode }) {
               >
                 <AccountCircle />
               </IconButton>
-              <IconButton aria-label="show 4 new mails" onClick={()=> changeLanguage('en')}>
-                <FlagIcon code="US" size={25} />
-              </IconButton>
-              <IconButton aria-label="show 4 new mails" onClick={()=> changeLanguage('fr')}>
-                <FlagIcon code="FR" size={25} />
+
+              <IconButton aria-label="show 4 new mails" onClick={Langage}>
+                {localStorage.getItem("LANGUAGE") === "en" ? (
+                  <FlagIcon code="FR" size={25} />
+                ) : (
+                  <FlagIcon code="US" size={25} />
+                )}
               </IconButton>
             </div>
             <div className={classes.sectionMobile}>

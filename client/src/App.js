@@ -16,9 +16,9 @@ import { Profile } from "./Components/profile/Profile";
 import { EditProfile } from "./Components/editProfile/EditProfile";
 // Redux
 import { Provider } from "react-redux";
-
+import { t, setLocale,getLocale } from "../src/i18n";
 import store from "./store";
-
+import i18n from "i18n-js";
 
 function App() {
   const [theme, setTheme] = useState({
@@ -26,6 +26,13 @@ function App() {
       type: localStorage.getItem("darkMode")
         ? localStorage.getItem("darkMode")
         : "light"
+    }
+  });
+  const [Lang, setLang] = useState({
+    langage: {
+      type: localStorage.getItem("LANGUAGE")
+      ? localStorage.getItem("LANGUAGE") 
+      : "fr"
     }
   });
 
@@ -38,8 +45,19 @@ function App() {
       }
     });
   };
-
-  const muiTheme = createMuiTheme(theme);
+  
+  const toggleLanguage = async () => {
+    let newLangType = Lang.langage.type === "en" ? "fr" : "en";
+    await setLocale(Lang.langage.type);
+    await setLang({
+      langage: {
+        type: newLangType
+      }
+    });
+  };
+  console.log("ss",localStorage.getItem('sss'))
+  let deflang = localStorage.getItem('LANGUAGE') ? localStorage.getItem('LANGUAGE') : getLocale(i18n.locale)
+  const muiTheme = createMuiTheme(theme, deflang);
 
   return (
     <MuiThemeProvider theme={muiTheme}>
@@ -53,7 +71,7 @@ function App() {
           }}
         >
           <Router>
-            <NavBar setDarkMode={toggleDarkTheme} />
+            <NavBar setDarkMode={toggleDarkTheme} Langage={toggleLanguage} />
             <div style={{ flex: 1 }}>
               <Switch>
                 <Route exact path="/login" component={Login} />

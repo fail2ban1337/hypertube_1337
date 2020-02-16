@@ -10,7 +10,7 @@ i18n.translations = { en, fr };
 i18n.defaultLocale = 'en';
 
 const loadLanguage = async () => {
-  i18n.locale = (await localStorage.getItem('LANGUAGE')) || 'en';
+  i18n.locale = await localStorage.getItem("LANGUAGE") ;
   moment.locale(i18n.locale);
 };
 
