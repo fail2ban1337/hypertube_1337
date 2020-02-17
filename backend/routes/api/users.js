@@ -111,11 +111,11 @@ router.post(
     check("username", "Name is requird")
       .not()
       .isEmpty(),
-    check("firstName", "Please entre a valide a valide first-name").isLength({
+    check("first_name", "Please entre a valide a valide first-name").isLength({
       min: 3,
       max: 10
     }),
-    check("lastName", "Please entre a valide last_name").isLength({
+    check("last_name", "Please entre a valide last_name").isLength({
       min: 3,
       max: 10
     }),
@@ -187,6 +187,7 @@ router.post(
         })
         .catch(err => res.status(500).json({ message: ">>>" + err.message }));
     } catch (err) {
+      console.log(err);
       res.status(500).send("Server error");
     }
   }

@@ -1,17 +1,32 @@
-import { ADD_NEW_COMMENT } from "../actions/actionTypes";
+import {
+  ADD_NEW_COMMENT,
+  GET_COMMENTS,
+  LIKE_COMMENT
+} from "../actions/actionTypes";
 
 const initialState = {
-  Comments: []
+  allComments: []
 };
 
 export default function(state = initialState, action) {
   const { type, payload } = action;
+  console.log("payload", payload);
   switch (type) {
     case ADD_NEW_COMMENT:
-      let result = [...state.Comments, ...payload];
+      let result = [...state.allComments, ...payload];
       return {
         ...state,
-        Comments: result
+        allComments: result
+      };
+    case GET_COMMENTS:
+      return { ...state, allComments: payload };
+    case LIKE_COMMENT:
+      return {
+        ...state,
+        allComments: state.allComments.map(comment => {
+          if (comment._id === payload._id) return payload;
+          return comment;
+        })
       };
     default:
       return state;

@@ -27,7 +27,7 @@ const convertFile = file => {
       .on("error", err => {});
     return convertedFile;
   } catch (err) {
-    console.log(err);
+    return file.createReadStream();
   }
 };
 
@@ -40,8 +40,6 @@ const getTorrentFile = hash =>
   new Promise(function(resolve, reject) {
     let b = _.find(engines, ["hash", hash]);
     if (_.isObject(b)) {
-      console.log("existe");
-
       let engine = b.engine;
       engine.files.forEach(function(file, idx) {
         const ext = path.extname(file.name).slice(1);
@@ -153,7 +151,6 @@ router.get("/video/:hash", async (req, res) => {
         } else {
           // 206 Partial Content valid range requested
           const range = ranges[0];
-          console.log(range);
           res.statusCode = 206;
           res.setHeader("Content-Length", 1 + (range.end - range.start));
           res.setHeader(
@@ -179,8 +176,7 @@ router.get("/video/:hash", async (req, res) => {
       }
     })
     .catch(function(e) {
-      console.log(e);
-      res.status(500).end({ error: "something blew up (video)" });
+      res.status(500).end("something blew up (video)");
     });
 });
 
@@ -217,7 +213,6 @@ router.post("/watchedUpdate/", async (req, res) => {
       let subtitlePath = `../client/public/movies/subtitles/${arrayItem.imdbCode}`;
       let torrentFilePath = `../client/public/movies/torrent-stream/${arrayItem.hashCode}.torrent`;
       if (fs.existsSync(torrentFilePath)) {
-        console.log("existe file");
         fs.unlinkSync(torrentFilePath);
       }
       if (fs.existsSync(moviePath)) {
@@ -229,8 +224,7 @@ router.post("/watchedUpdate/", async (req, res) => {
     });
     return res.send("Every-Thing goes Well");
   } catch (error) {
-    console.log(error);
-    res.status(500).end({ error: "something blew up(watchedUpdate)" });
+    res.status(500).json({ error: "something blew up(watchedUpdate)" });
   }
 });
 
@@ -243,50 +237,66 @@ router.post("/AddComment", async (req, res) => {
     let comment = new CommentsModel({
       imdbCode: imdb_code,
       commentText: comment_text.trim(),
-      userInfo: mongoose.Types.ObjectId("5e1649b404f1501433ae16a5")
+      userInfo: mongoose.Types.ObjectId("5e45bbcd85cfbd0ce6d55a51")
     });
     await comment.save();
 
-    return res.send(comment);
+    const result = await CommentsModel.find({ _id: comment._id }).populate(
+      "userInfo",
+      "username"
+    );
+    return res.send(result);
   } catch (error) {
-    console.log(error);
-    res.status(500).end({ error: "something blew up(AddComment)" });
+    res.status(500).json({ error: "Error on Adding New Comment" });
   }
 });
 
-// @route   Get api/streaming/likePost
+// @route   Get api/streaming/likeComment
 // @desc    add like or remove it for the chossen comments
 // @access  Private
-router.post("/likePost", async (req, res) => {
+router.post("/likeComment", async (req, res) => {
   try {
-    const { imdb_code, Comment_id } = req.body;
+    const { imdb_code, comment_id } = req.body;
     let result = await CommentsModel.find({
+      _id: comment_id,
       imdbCode: imdb_code,
       likes: {
-        $elemMatch: { $eq: mongoose.Types.ObjectId("5e13bada4dd6fc4455082e4a") }
+        $elemMatch: { $eq: mongoose.Types.ObjectId("5e45bbcd85cfbd0ce6d55a51") }
       }
     });
     if (result.length === 0) {
       await CommentsModel.updateOne(
-        { imdbCode: imdb_code },
+        { imdbCode: imdb_code, _id: comment_id },
         {
           $inc: { likeCount: 1 },
-          $push: { likes: mongoose.Types.ObjectId("5e13bada4dd6fc4455082e4a") }
+          $push: { likes: mongoose.Types.ObjectId("5e45bbcd85cfbd0ce6d55a51") }
         }
       );
     } else {
       await CommentsModel.updateOne(
-        { imdbCode: imdb_code },
+        { imdbCode: imdb_code, _id: comment_id },
         {
           $inc: { likeCount: -1 },
-          $pull: { likes: mongoose.Types.ObjectId("5e13bada4dd6fc4455082e4a") }
+          $pull: { likes: mongoose.Types.ObjectId("5e45bbcd85cfbd0ce6d55a51") }
         }
       );
     }
-    return res.send("Every-Thing goes Well");
+    const resultFinall = await CommentsModel.find({ _id: comment_id })
+      .lean()
+      .populate("userInfo", "username");
+    resultFinall.map(element => {
+      element.liked = false;
+      for (let value of element.likes) {
+        if (value == "5e45bbcd85cfbd0ce6d55a51") {
+          element.liked = true;
+        } else {
+          element.liked = false;
+        }
+      }
+    });
+    return res.send(resultFinall);
   } catch (error) {
-    console.log(error);
-    res.status(500).end({ error: "something blew up(likePost)" });
+    return res.status(500).json({ msg: "Error On Adding Like" });
   }
 });
 
@@ -296,14 +306,22 @@ router.post("/likePost", async (req, res) => {
 router.get("/getComments/:imdb_code", async (req, res) => {
   try {
     const { imdb_code } = req.params;
-    const result = await CommentsModel.find({ imdbCode: "tt0316654" }).populate(
-      "userInfo",
-      "userName"
-    );
+    let result = await CommentsModel.find({ imdbCode: imdb_code })
+      .lean()
+      .populate("userInfo", "username");
+    result.map(element => {
+      element.liked = false;
+      for (let value of element.likes) {
+        if (value == "5e45bbcd85cfbd0ce6d55a51") {
+          element.liked = true;
+        } else {
+          element.liked = false;
+        }
+      }
+    });
     return res.json(result);
   } catch (error) {
-    console.log(error);
-    res.status(500).end({ error: "something blew up(getComments)" });
+    res.status(500).json({ error: "something blew up" });
   }
 });
 module.exports = router;
