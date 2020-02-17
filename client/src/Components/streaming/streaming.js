@@ -632,7 +632,7 @@ function Comments({ movieInfo }) {
   );
 }
 
-function Streming({t}) {
+function Streming() {
   const [movie, setMovie] = useState({
     result: {
       title: "",
