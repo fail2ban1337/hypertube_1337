@@ -24,8 +24,13 @@ import { Upload, message } from "antd";
 import axios from "axios";
 import "antd/dist/antd.css";
 import Swal from "sweetalert2";
-import { t } from '../../i18n';
+import { t } from "../../i18n";
 // import { Avatar } from "@material-ui/core";
+
+import handleError from "../../utils/ErrorHandler";
+import handleSuccess from "../../utils/SuccessHandler";
+
+const API_URL = "http://localhost:5000";
 
 const Styles = {
   paper: {
@@ -82,61 +87,22 @@ const Styles = {
 class Register extends Component {
   constructor(props) {
     super(props);
-    this.state={
-      profileImage:null,
-      userName:'',
-      firstName:'',
-      lastName:'',
-      email:'',
-      password:'',
-      confirmPassword:'',
-      showPassword:'',
-      showConfPassword:'',
-      loading:false
-    }
+    this.state = {
+      userName: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      showPassword: "",
+      showConfPassword: "",
+      loading: false
+    };
   }
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
-  beforeUpload(file) {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-    if (!isJpgOrPng) {
-      message.error("You can only upload JPG/PNG file!");
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error("Image must smaller than 2MB!");
-    }
-    return isJpgOrPng && isLt2M;
-  }
-  handleChange = async info => {
-    if (info.file.status === "uploading") {
-      this.setState({ loading: true });
-      return;
-    }
-    if (info.file.status === "done") {
-      // Get this url from response in real world.
-      const formData = new FormData();
-      formData.append("profileImage", info.file.originFileObj);
-      const config = {
-        header: {
-          "Content-Type": "multipart/form-data"
-        }
-      };
-      try {
-        const res = await axios.post("api/users/image", formData, config);
-        this.setState({
-          profileImage: `/img/profiles/${res.data}`,
-          loading: false
-        });
-      } catch (error) {
-        message.error(error.response.data.msg);
-        this.setState({
-          loading: false
-        });
-      }
-    }
-  };
+
   submitForm = async form => {
     form.preventDefault();
     const config = {
@@ -145,35 +111,44 @@ class Register extends Component {
       }
     };
     const data = {
-      profileImage:this.state.profileImage,
-      userName:this.state.userName,
-      firstName:this.state.firstName,
-      lastName:this.state.lastName,
-      email:this.state.email,
-      password:this.state.password,
-      confirmPassword:this.state.confirmPassword
+      username: this.state.userName,
+      first_name: this.state.firstName,
+      last_name: this.state.lastName,
+      email: this.state.email,
+      password: this.state.password,
+      confirmPassword: this.state.confirmPassword
+    };
+
+    // check if two passwords are matched
+    if (data.password && data.password.trim().length > 0) {
+      if (data.password !== data.confirmPassword) {
+        handleError({
+          response: {
+            data: { errors: [{ msg: "password_mismatch" }] }
+          }
+        });
+        return;
+      }
+    } else {
+      handleError({
+        response: {
+          data: { errors: [{ msg: "put_valid_password" }] }
+        }
+      });
+      return;
     }
-    console.log(data);
-    if(this.state.profileImage === null)
-      return Swal.fire({
-        icon: "error",
-        title: `Image is required !!`,
+
+    // register user
+    await axios
+      .post(`${API_URL}/api/guest/local/register`, data, config)
+      .then(response => {
+        handleSuccess(response.data.message).then(() => {
+          this.props.history.push(`/login`);
+        });
+      })
+      .catch(err => {
+        handleError(err);
       });
-    await axios.post('http://localhost:5000/api/users/register',data,config)
-    .then(response =>{
-      Swal.fire({
-        title: `<strong>Welcome - ${data.firstName} ${data.lastName}</strong>`,
-        icon: "success",
-        html:
-          `Check you email<br/>` +
-          "A verification link has been sent to your email account",
-        focusConfirm: false
-      });
-      this.props.history.push(`/login`);
-    })
-    .catch(err =>{
-      console.log(err);
-    })
   };
   render() {
     return (
@@ -186,35 +161,9 @@ class Register extends Component {
               <AccountCircle />
             </Avatar>
             <Typography component="h1" variant="h5">
-            {t("register_screen.sign_up")}
+              {t("register_screen.sign_up")}
             </Typography>
-            <div style={Styles.Image}>
-              <Upload
-                style={{ margin: "0 auto", width: "0%" }}
-                name="avatar"
-                listType="picture-card"
-                showUploadList={false}
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                beforeUpload={this.beforeUpload}
-                onChange={this.handleChange}
-              >
-                {this.state.profileImage ? (
-                  <Avatar
-                    src={this.state.profileImage}
-                    alt="avatar"
-                    style={{ width: "150px", height: "150px" }}
-                    variant="square"
-                  />
-                ) : (
-                  <Avatar
-                    src={this.state.profileImage}
-                    alt="avatar"
-                    style={{ width: "150px", height: "150px" }}
-                    variant="square"
-                  />
-                )}
-              </Upload>
-            </div>
+
             <form style={Styles.form} onSubmit={form => this.submitForm(form)}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -339,9 +288,11 @@ class Register extends Component {
               >
                 {t("register_screen.sign_up")}
               </Button>
-              <Grid container justify="center" style={{marginBottom:80}}>
+              <Grid container justify="center" style={{ marginBottom: 80 }}>
                 <Grid item>
-                  <Link to="/login">{t("register_screen.have_an_account")}</Link>
+                  <Link to="/login">
+                    {t("register_screen.have_an_account")}
+                  </Link>
                 </Grid>
               </Grid>
             </form>
