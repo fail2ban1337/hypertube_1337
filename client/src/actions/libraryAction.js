@@ -19,13 +19,16 @@ export const getMovies = (
     disptach(setHasMore(true));
     disptach(setLoading());
 
+    const source = axios.CancelToken.source();
+
     const result = await axios.get("/api/library/movies/page/", {
       params: {
         pid,
         sort_by,
         filterGenre,
         filterRatingMin
-      }
+      },
+      cancelToken: source.token,
     });
     if (result.data.length < 15) disptach(setHasMore(false));
     disptach({
@@ -33,12 +36,14 @@ export const getMovies = (
       payload: result.data
     });
   } catch (error) {
-    const msg = error.response.data.msg;
     disptach({
       type: SET_HASMORE,
       payload: false
     });
-    disptach(setAlert(msg, "error"));
+    if (!axios.isCancel(error)) {
+      const msg = error.response.data.msg;
+      disptach(setAlert(msg, "error"));
+    }
   }
 };
 

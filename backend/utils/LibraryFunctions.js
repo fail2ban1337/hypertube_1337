@@ -15,41 +15,46 @@ const getHashFromMagnet = magnet => {
   return magnet.split(":")[3].split("&")[0];
 };
 
+const isValidPopMovie = (item) => {
+  return (
+    item.imdb_id &&
+    !_.isEmpty(item.imdb_id) &&
+    item.title &&
+    !_.isEmpty(item.title) &&
+    item.year &&
+    !_.isEmpty(item.year) &&
+    item.rating.percentage &&
+    _.isNumber(item.rating.percentage) &&
+    item.synopsis &&
+    !_.isEmpty(item.synopsis) &&
+    !_.isEmpty(Object.keys(item.torrents)[0]) &&
+    item.images.poster &&
+    !_.isEmpty(item.images.poster) &&
+    item.torrents.en["1080p"] &&
+    item.torrents.en["1080p"].url &&
+    !_.isEmpty(item.torrents.en["1080p"].url) &&
+    item.torrents.en["1080p"].seed &&
+    _.isNumber(item.torrents.en["1080p"].seed) &&
+    item.torrents.en["1080p"].peer &&
+    _.isNumber(item.torrents.en["1080p"].peer) &&
+    item.torrents.en["1080p"].filesize &&
+    !_.isEmpty(item.torrents.en["1080p"].filesize)
+  );
+}
+
 // filter response if it has a empty element
 const filterPopResponse = response => {
   const filtredResponse = _.filter(response, item => {
-    return (
-      item.imdb_id &&
-      !_.isEmpty(item.imdb_id) &&
-      item.title &&
-      !_.isEmpty(item.title) &&
-      item.year &&
-      !_.isEmpty(item.year) &&
-      item.rating.percentage &&
-      _.isNumber(item.rating.percentage) &&
-      item.synopsis &&
-      !_.isEmpty(item.synopsis) &&
-      !_.isEmpty(Object.keys(item.torrents)[0]) &&
-      item.images.poster &&
-      !_.isEmpty(item.images.poster) &&
-      item.torrents.en["1080p"] &&
-      item.torrents.en["1080p"].url &&
-      !_.isEmpty(item.torrents.en["1080p"].url) &&
-      item.torrents.en["1080p"].seed &&
-      _.isNumber(item.torrents.en["1080p"].seed) &&
-      item.torrents.en["1080p"].peer &&
-      _.isNumber(item.torrents.en["1080p"].peer) &&
-      item.torrents.en["1080p"].filesize &&
-      !_.isEmpty(item.torrents.en["1080p"].filesize)
-    );
+    return (isValidPopMovie(item));
   });
   return filtredResponse;
 };
 
 // Format PopCorn API response
 const formatPopResponse = response => {
-  const result = [];
   if (!response || response.length === 0) return result;
+
+  const result = [];
   response = filterPopResponse(response);
   response.map(item => {
     let obj = {};
@@ -99,46 +104,51 @@ const formatPopResponse = response => {
   return result;
 };
 
+const isValidYtsMovie = (item) => {
+  return (
+    item.imdb_code &&
+    !_.isEmpty(item.imdb_code) &&
+    item.title &&
+    !_.isEmpty(item.title) &&
+    item.year &&
+    _.isNumber(item.year) &&
+    item.rating &&
+    _.isNumber(item.rating) &&
+    item.summary &&
+    !_.isEmpty(item.summary) &&
+    item.language &&
+    !_.isEmpty(item.language) &&
+    item.large_cover_image &&
+    !_.isEmpty(item.large_cover_image) &&
+    item.torrents.length &&
+    item.torrents[0].hash &&
+    !_.isEmpty(item.torrents[0].hash) &&
+    item.torrents[0].quality &&
+    !_.isEmpty(item.torrents[0].quality) &&
+    item.torrents[0].type &&
+    !_.isEmpty(item.torrents[0].type) &&
+    item.torrents[0].seeds &&
+    _.isNumber(item.torrents[0].seeds) &&
+    item.torrents[0].peers &&
+    _.isNumber(item.torrents[0].peers) &&
+    item.torrents[0].size &&
+    !_.isEmpty(item.torrents[0].size)
+  )
+}
+
 // filter response if it has a empty element
 const filterYtsResponse = response => {
   const filtredResponse = _.filter(response, item => {
-    return (
-      item.imdb_code &&
-      !_.isEmpty(item.imdb_code) &&
-      item.title &&
-      !_.isEmpty(item.title) &&
-      item.year &&
-      _.isNumber(item.year) &&
-      item.rating &&
-      _.isNumber(item.rating) &&
-      item.summary &&
-      !_.isEmpty(item.summary) &&
-      item.language &&
-      !_.isEmpty(item.language) &&
-      item.large_cover_image &&
-      !_.isEmpty(item.large_cover_image) &&
-      item.torrents.length &&
-      item.torrents[0].hash &&
-      !_.isEmpty(item.torrents[0].hash) &&
-      item.torrents[0].quality &&
-      !_.isEmpty(item.torrents[0].quality) &&
-      item.torrents[0].type &&
-      !_.isEmpty(item.torrents[0].type) &&
-      item.torrents[0].seeds &&
-      _.isNumber(item.torrents[0].seeds) &&
-      item.torrents[0].peers &&
-      _.isNumber(item.torrents[0].peers) &&
-      item.torrents[0].size &&
-      !_.isEmpty(item.torrents[0].size)
-    );
+    return (isValidYtsMovie(item));
   });
   return filtredResponse;
 };
 
 // Format YTS API response
 const formatYtsResponse = response => {
-  const result = [];
   if (!response || response.length === 0) return result;
+
+  const result = [];
   response = filterYtsResponse(response);
   response.map(item => {
     let obj = {};
@@ -175,24 +185,19 @@ const retMax = (a, b) => {
 
 // Get cover image for each movie using IMDb API
 const getMovieMoreInfo = async result => {
-  const rapidApiKey = config.get("rapidApiKey");
   for (let index = 0; index < result.length; index++) {
-    const options = {
-      method: "GET",
-      url: IMDB_API,
-      qs: { i: result[index].imdb_code, r: "json" },
-      headers: {
-        "x-rapidapi-host": "movie-database-imdb-alternative.p.rapidapi.com",
-        "x-rapidapi-key": rapidApiKey
-      }
-    };
-    // Get more info from imdb api, append it to result
-    const body = await rp(options);
-    const { Director, Actors, Production } = JSON.parse(body);
+    // const url = `${IMDB_API}&i=${result[index].imdb_code}&plot=full`;
 
-    result[index].Director = Director;
-    result[index].Actors = Actors;
-    result[index].Production = Production;
+    // // Get more info from imdb api, append it to result
+    // const body = await rp.get(url);
+    // const { Director, Actors, Production } = JSON.parse(body);
+
+    // result[index].Director = Director;
+    // result[index].Actors = Actors;
+    // result[index].Production = Production;
+    result[index].Director = 'Director';
+    result[index].Actors = 'Actors';
+    result[index].Production = 'Production';
   }
   return result;
 };

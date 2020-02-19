@@ -13,6 +13,7 @@ import { Loading } from "../inc/Loading";
 import { getMovies } from "../../actions/libraryAction";
 import { REMOVE_ALERT } from "../../actions/actionTypes";
 import { t } from '../../i18n';
+import Axios from "axios";
 
 const useStyles = makeStyles({
   moviesContainer: {
@@ -152,6 +153,8 @@ export default function Library() {
   const { library } = useSelector(state => state);
   const { loading, page, sort, rating, genre, hasMore, movies } = library;
 
+  let source = Axios.CancelToken.source();
+
   const loadMovies = () => {
     if (!loading) {
       dispatch(getMovies(page, sort, genre, rating));
@@ -177,6 +180,8 @@ export default function Library() {
       dispatch({
         type: REMOVE_ALERT
       });
+      source.cancel();
+      console.log("cancel")
     };
   }, []);
 
