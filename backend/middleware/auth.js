@@ -6,8 +6,12 @@ module.exports = (req, res, next) => {
       return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
     // console.log(">>>> passport.authenticate('jwt', ...)");
 
-    req.user = user;
-    req.id = user._id;
+    const authUser = { ...user._doc };
+    delete authUser.password;
+
+    req.user = authUser;
+    req.id = authUser._id;
+
     next();
   })(req, res, next);
 };
