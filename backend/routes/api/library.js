@@ -17,6 +17,11 @@ const {
   deleteSubtitles
 } = require("../../utils/LibraryFunctions");
 
+const YTS_BASE_URL = config.get('ytsApiBaseUrl');
+const POP_BASE_URL = config.get('popApiBaseUrl');
+const IMDB_API = config.get('imdbApi');
+const RAPID_API_KEY = config.get("rapidApiKey");
+
 // @route   Get api/library/movies/page/:pid
 // @desc    Get list of movies
 // @access  Private
@@ -76,18 +81,17 @@ router.get(
     if (!errors.isEmpty())
       return res.status(400).json({ msg: "Keyword id is required" });
     const keyword = req.params.keyword;
-    const rapidApiKey = config.get("rapidApiKey");
     let torrentFail = false;
     let movies = [];
 
     try {
       const options = {
         method: "GET",
-        url: "https://movie-database-imdb-alternative.p.rapidapi.com/",
+        url: IMDB_API,
         qs: { page: "1", r: "json", s: keyword },
         headers: {
           "x-rapidapi-host": "movie-database-imdb-alternative.p.rapidapi.com",
-          "x-rapidapi-key": rapidApiKey
+          "x-rapidapi-key": RAPID_API_KEY
         }
       };
       let body = await rp(options);
@@ -98,7 +102,7 @@ router.get(
 
       for (let index = 0; index < body.Search.length; index++) {
         const ytsResult = await cloudscraper.get(
-          `https://yts.lt/api/v2/list_movies.json?query_term=${body.Search[index].imdbID}`
+          `${YTS_BASE_URL}?query_term=${body.Search[index].imdbID}`
         );
 
         const parsedMoviesYts = JSON.parse(ytsResult);
@@ -115,7 +119,7 @@ router.get(
       movies = _.orderBy(movies, ["title"], ["asc"]);
       for (let index = 0; index < body.Search.length; index++) {
         const popResult = await rp.get(
-          `https://tv-v2.api-fetch.website/movie/${body.Search[index].imdbID}`
+          `${POP_BASE_URL}/movie/${body.Search[index].imdbID}`
         );
 
         if (!popResult) continue;
@@ -165,7 +169,7 @@ router.get(
 
       // get movie from popcorn api
       const popResult = await rp.get(
-        `https://tv-v2.api-fetch.website/movie/${imdb_code}`
+        `${POP_BASE_URL}/movie/${imdb_code}`
       );
 
       const parsedMoviesPop = [];
@@ -207,7 +211,7 @@ router.get("/movies/genre/:genre", async (req, res) => {
   try {
     // get movies from popcorn api
     let popResult = await rp.get(
-      `https://tv-v2.api-fetch.website/movies/1?sort=trending&order=-1&genre=${genre}`
+      `${POP_BASE_URL}/movies/1?sort=trending&order=-1&genre=${genre}`
     );
     if (popResult.length === 0)
       return res.status(404).json({ msg: "Not valid genre" });

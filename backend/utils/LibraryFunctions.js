@@ -5,6 +5,10 @@ const config = require("config");
 const yifysubtitles = require("yifysubtitles");
 const fs = require("fs");
 
+const YTS_BASE_URL = config.get('ytsApiBaseUrl');
+const POP_BASE_URL = config.get('popApiBaseUrl');
+const IMDB_API = config.get('imdbApi');
+
 // take torrent hash as a parameter, return magnet link
 const getHashFromMagnet = magnet => {
   //"magnet:?xt=urn:btih:C0E9F0CE8A9123ACED7358B1AC3A853A10B9EB13&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337"
@@ -175,7 +179,7 @@ const getMovieMoreInfo = async result => {
   for (let index = 0; index < result.length; index++) {
     const options = {
       method: "GET",
-      url: "https://movie-database-imdb-alternative.p.rapidapi.com/",
+      url: IMDB_API,
       qs: { i: result[index].imdb_code, r: "json" },
       headers: {
         "x-rapidapi-host": "movie-database-imdb-alternative.p.rapidapi.com",
@@ -206,7 +210,7 @@ const getMovies = async (
           ? "&genre=sci-fi"
           : `&genre=${filterGenre}`;
 
-    const url = `https://yts.lt/api/v2/list_movies.json?page=${pid}&sort_by=${sort_by}&minimum_rating=${filterRatingMin}${genre}`;
+    const url = `${YTS_BASE_URL}?page=${pid}&sort_by=${sort_by}&minimum_rating=${filterRatingMin}${genre}`;
     const result = await cloudscraper.get(url);
     const parsedResult = JSON.parse(result);
     return parsedResult.data.movies
@@ -215,7 +219,7 @@ const getMovies = async (
   } else if (api === "pop") {
     const genre = filterGenre === "All" ? "" : `&genre=${filterGenre}`;
 
-    const url = `https://tv-v2.api-fetch.website/movies/${pid}?sort=${sort_by}&order=-1${genre}`;
+    const url = `${POP_BASE_URL}/movies/${pid}?sort=${sort_by}&order=-1${genre}`;
     let result = await rp.get(url);
     result = result ? formatPopResponse(JSON.parse(result)) : false;
     if (result) {
