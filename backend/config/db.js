@@ -16,5 +16,18 @@ const connectDb = async () => {
     // Exit process with failure
     process.exit(1);
   }
+
+  // tmp
+  // const mongoose = require("mongoose");
+  // mongoose
+  //   .connect(process.env.MONGO_URI, {
+  //     useCreateIndex: true,
+  //     useNewUrlParser: true,
+  //     useUnifiedTopology: true
+  //   })
+  //   .then(() => {
+  //     console.log("MongoDb Connected...");
+  //   })
+  //   .catch(err => console.error("Error connecting to MongoDB: ", err.message));
 };
 module.exports = connectDb;

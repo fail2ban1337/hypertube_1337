@@ -8,6 +8,7 @@ import Login from "./Components/user/login";
 import Forget from "./Components/user/Forget";
 import Register from "./Components/user/register";
 import Reset from "./Components/user/Reset";
+import Verify from "./Components/user/Verify";
 import Streaming from "./Components/streaming/streaming";
 import Library from "./Components/pages/Library";
 import NavBar from "./Components/inc/NavBar";
@@ -16,7 +17,7 @@ import { Profile } from "./Components/profile/Profile";
 import { EditProfile } from "./Components/editProfile/EditProfile";
 // Redux
 import { Provider } from "react-redux";
-import { t, setLocale,getLocale } from "../src/i18n";
+import { t, setLocale, getLocale } from "../src/i18n";
 import store from "./store";
 import i18n from "i18n-js";
 
@@ -31,8 +32,8 @@ function App() {
   const [Lang, setLang] = useState({
     langage: {
       type: localStorage.getItem("LANGUAGE")
-      ? localStorage.getItem("LANGUAGE") 
-      : "fr"
+        ? localStorage.getItem("LANGUAGE")
+        : "fr"
     }
   });
 
@@ -45,7 +46,7 @@ function App() {
       }
     });
   };
-  
+
   const toggleLanguage = async () => {
     let newLangType = Lang.langage.type === "en" ? "fr" : "en";
     await setLocale(Lang.langage.type);
@@ -55,8 +56,11 @@ function App() {
       }
     });
   };
-  console.log("ss",localStorage.getItem('sss'))
-  let deflang = localStorage.getItem('LANGUAGE') ? localStorage.getItem('LANGUAGE') : getLocale(i18n.locale)
+  console.log("ss", localStorage.getItem("sss"));
+  let deflang = localStorage.getItem("LANGUAGE")
+    ? localStorage.getItem("LANGUAGE")
+    : getLocale(i18n.locale);
+
   const muiTheme = createMuiTheme(theme, deflang);
 
   return (
@@ -78,6 +82,7 @@ function App() {
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/forgetpassword" component={Forget} />
                 <Route exact path="/reset_password/:token" component={Reset} />
+                <Route exact path="/verify_email/:token" component={Verify} />
                 <Route exact path="/profile" component={Profile} />
                 <Route exact path="/editprofile" component={EditProfile} />
                 <Route exact path="/library" component={Library} />

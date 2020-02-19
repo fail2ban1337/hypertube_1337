@@ -39,7 +39,7 @@ const Styles = {
     marginLeft: 6
   }
 };
-class Forget extends Component {
+class Verify extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -52,8 +52,9 @@ class Forget extends Component {
     if (this.state.email && this.state.email.length > 0) {
       // send request
       axios
-        .post(`${API_URL}/api/guest/user/send_reset_password`, {
-          email: this.state.email
+        .post(`${API_URL}/api/guest/verify_email`, {
+          email: this.state.email,
+          email_token: this.state.email_token
         })
         .then(response => {
           handleSuccess(response.data.message).then(() => {
@@ -74,13 +75,21 @@ class Forget extends Component {
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
+
+  async componentDidMount() {
+    // console.log("dddd",this.props.match.params.token)
+    this.setState({
+      email_token: this.props.match.params.token
+    });
+  }
+
   render() {
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div style={Styles.paper}>
           <Typography component="h1" variant="h5">
-            Forget Password
+            Confirm Account
           </Typography>
           <form style={Styles.form} onSubmit={e => this.onSubmit(e)}>
             <TextField
@@ -111,4 +120,4 @@ class Forget extends Component {
     );
   }
 }
-export default Forget;
+export default Verify;
