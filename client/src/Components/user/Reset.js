@@ -11,8 +11,13 @@ import {
 import Swal from "sweetalert2";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import axios from 'axios';
-const API_URL = "http://localhost:3000/api";
+import axios from "axios";
+
+import handleError from "../../utils/ErrorHandler";
+import handleSuccess from "../../utils/SuccessHandler";
+
+const API_URL = "http://localhost:5000";
+
 const Styles = {
   paper: {
     marginTop: 100,
@@ -36,30 +41,74 @@ const Styles = {
   textField: {
     marginLeft: 6
   }
-}
+};
 class Reset extends Component {
   constructor() {
     super();
     this.state = {
-      email:'',
+      email: "",
       password: "",
       password2: "",
       showPassword: false,
       email_token: undefined
     };
   }
-  async componentDidMount(){
+  async componentDidMount() {
     // console.log("dddd",this.props.match.params.token)
     this.setState({
-      email:localStorage.getItem('email'),
-      email_token:this.props.match.params.token
-    })
+      email_token: this.props.match.params.token
+    });
   }
-  onSubmit = async (e) => {
+  onSubmit = async e => {
     e.preventDefault();
+    if (this.state.password && this.state.password.trim().length > 0) {
+      if (this.state.password !== this.state.password2) {
+        handleError({
+          response: {
+            data: {
+              errors: [{ msg: "password_mismatch" }]
+            }
+          }
+        });
+        return;
+      }
+    } else {
+      handleError({
+        response: {
+          data: {
+            errors: [{ msg: "put_valid_password" }]
+          }
+        }
+      });
+      return;
+    }
+
+    // Submit reset password
+    await axios
+      .post(`${API_URL}/api/guest/user/email_reset_password`, {
+        email: this.state.email,
+        email_token: this.state.email_token,
+        newPwd: this.state.password,
+        confirmNewPwd: this.state.password2
+      })
+      .then(response => {
+        handleSuccess(response.data.message).then(() => {
+          this.props.history.push(`/login`);
+        });
+      })
+      .catch(err => {
+        handleError(err);
+      });
   };
-  passwordChange = e =>{this.setState({[e.target.name]: e.target.value})}
-  ClickshowPassword = () =>{this.setState({showPassword: !this.state.showPassword})}
+  onEmailChange = e => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+  passwordChange = e => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+  ClickshowPassword = () => {
+    this.setState({ showPassword: !this.state.showPassword });
+  };
   render() {
     return (
       <Container component="main" maxWidth="xs">
@@ -68,7 +117,23 @@ class Reset extends Component {
             Reset Password
           </Typography>
           <form style={Styles.form} onSubmit={e => this.onSubmit(e)}>
-            <Grid container spacing={2}>
+            <Grid container spacing={3}>
+              {/* email */}
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Adresse"
+                  name="email"
+                  autoComplete="email"
+                  defaultValue={this.state.email}
+                  onChange={e => this.onEmailChange(e)}
+                />
+              </Grid>
+              {/* password */}
               <Grid item xs={12} sm={12}>
                 <TextField
                   id="password"
@@ -86,13 +151,18 @@ class Reset extends Component {
                           aria-label="Toggle password visibility"
                           onClick={this.ClickshowPassword}
                         >
-                          {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
+                          {this.state.showPassword ? (
+                            <Visibility />
+                          ) : (
+                            <VisibilityOff />
+                          )}
                         </IconButton>
                       </InputAdornment>
                     )
                   }}
                 />
               </Grid>
+              {/* Confirm Password */}
               <Grid item xs={12} sm={12}>
                 <TextField
                   id="password2"
@@ -110,7 +180,11 @@ class Reset extends Component {
                           aria-label="Toggle password visibility"
                           onClick={this.ClickshowPassword}
                         >
-                          {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
+                          {this.state.showPassword ? (
+                            <Visibility />
+                          ) : (
+                            <VisibilityOff />
+                          )}
                         </IconButton>
                       </InputAdornment>
                     )
@@ -124,7 +198,11 @@ class Reset extends Component {
               variant="contained"
               color="secondary"
               style={Styles.submit}
-              disabled={!this.state.password || !this.state.password2}
+              disabled={
+                !this.state.password ||
+                !this.state.password2 ||
+                !this.state.email
+              }
             >
               Submit
             </Button>

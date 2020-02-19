@@ -28,6 +28,7 @@ import Moment from "moment";
 import { t } from '../../i18n';
 
 
+import Moment from "moment";
 import {
   movieInfo,
   otherMovies,
@@ -38,6 +39,7 @@ import {
 } from "../../actions/streamingAction";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Img from "react-image";
+import { t } from "../../i18n";
 
 const userLogged = [
   {
@@ -247,9 +249,10 @@ function MovieInfo({ movieInfo }) {
                     variant="caption"
                     style={{ fontFamily: "Helvetica Neue" }}
                   >
-                    <big style={{ color: blue[500] }}>Description</big> :{" "}
-
-                    {movieInfo.summary}
+                    <big style={{ color: blue[500] }}>
+                      {t("streaming.description")}
+                    </big>{" "}
+                    : {movieInfo.summary}
                   </Typography>
                 </Grid>
                 <Grid
@@ -260,31 +263,43 @@ function MovieInfo({ movieInfo }) {
                 >
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>Actors:</big>{" "}
-                      {movieInfo.Actors}
+                      <big style={{ color: blue[500] }}>
+                        {t("streaming.actor")}
+                      </big>{" "}
+                      : {movieInfo.Actors}
+
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>{t("streaming.duration")}</big> :{" "}
-                      {movieInfo.runtime} min
+                      <big style={{ color: blue[500] }}>
+                        {t("streaming.duration")}
+                      </big>{" "}
+                      : {movieInfo.runtime} min
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>{t("streaming.director")}</big> :{" "}
-                      {movieInfo.Director}
+                      <big style={{ color: blue[500] }}>
+                        {t("streaming.director")}
+                      </big>{" "}
+                      : {movieInfo.Director}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>{t("streaming.quality")}</big> :{" "}
-                      {movieInfo.torrents[0].quality}
+                      <big style={{ color: blue[500] }}>
+                        {t("streaming.quality")}
+                      </big>{" "}
+                      : {movieInfo.torrents[0].quality}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>{t("streaming.genres")}</big> :{" "}
+                      <big style={{ color: blue[500] }}>
+                        {t("streaming.genres")}
+                      </big>{" "}
+                      :{" "}
                       {movieInfo.genres.map(item => {
                         return item + " ";
                       })}
@@ -292,20 +307,26 @@ function MovieInfo({ movieInfo }) {
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>{t("streaming.production")}</big> :{" "}
-                      {movieInfo.Production}
+                      <big style={{ color: blue[500] }}>
+                        {t("streaming.production")}
+                      </big>{" "}
+                      : {movieInfo.Production}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>{t("streaming.language")}</big> :{" "}
-                      {movieInfo.language}
+                      <big style={{ color: blue[500] }}>
+                        {t("streaming.language")}
+                      </big>{" "}
+                      : {movieInfo.language}
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
                     <Typography variant="caption">
-                      <big style={{ color: blue[500] }}>{t("streaming.release")}</big> :{" "}
-                      {movieInfo.year}
+                      <big style={{ color: blue[500] }}>
+                        {t("streaming.release")}
+                      </big>{" "}
+                      : {movieInfo.year}
                     </Typography>
                   </Grid>
                 </Grid>
