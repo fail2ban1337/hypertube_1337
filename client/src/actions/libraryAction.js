@@ -13,11 +13,13 @@ export const getMovies = (
   sort_by = "year",
   filterGenre = "All",
   filterRatingMin = 0
-) => async disptach => {
+) => async dispatch => {
   try {
-    disptach(unsetAlert());
-    disptach(setHasMore(true));
-    disptach(setLoading());
+    dispatch(unsetAlert());
+    dispatch(setHasMore(true));
+    dispatch(setLoading());
+
+    const source = axios.CancelToken.source();
 
     const result = await axios.get("/api/library/movies/page/", {
       params: {
@@ -25,45 +27,57 @@ export const getMovies = (
         sort_by,
         filterGenre,
         filterRatingMin
-      }
+      },
+      cancelToken: source.token,
     });
-    if (result.data.length < 15) disptach(setHasMore(false));
-    disptach({
+    if (result.data.length < 15) dispatch(setHasMore(false));
+    dispatch({
       type: SET_MOVIES,
       payload: result.data
     });
   } catch (error) {
-    const msg = error.response.data.msg;
-    disptach({
+    dispatch({
       type: SET_HASMORE,
       payload: false
     });
-    disptach(setAlert(msg, "error"));
+    if (!axios.isCancel(error)) {
+      const msg = error.response.data.msg;
+      dispatch(setAlert(msg, "error"));
+    }
   }
 };
 
-export const getMovieByKeyword = keyword => async disptach => {
+export const getMovieByKeyword = keyword => async dispatch => {
   try {
-    disptach({
+    dispatch({
       type: UNSET_MOVIES
     });
-    disptach(unsetAlert());
-    disptach(setHasMore(true));
-    disptach(setLoading());
+    dispatch(unsetAlert());
+    dispatch(setHasMore(true));
+    dispatch(setLoading());
 
     const result = await axios.get(`/api/library/movies/keyword/${keyword}`);
-    if (result.data.length < 15) disptach(setHasMore(false));
-    disptach({
+    if (result.data.length < 15) dispatch(setHasMore(false));
+    dispatch({
       type: SET_MOVIES,
       payload: result.data
     });
   } catch (error) {
     const msg = error.response.data.msg;
-    disptach({
+    dispatch({
       type: SET_HASMORE,
       payload: false
     });
-    disptach(setAlert(msg, "error"));
+    dispatch(setAlert(msg, "error"));
+  }
+};
+
+export const setWatchedMovie = movie => async dispatch => {
+  try {
+    await axios.post("/api/users/watched", movie);
+  } catch (error) {
+    const msg = error.response.data.msg;
+    dispatch(setAlert(msg, "error"));
   }
 };
 

@@ -1,62 +1,53 @@
 const router = require("express").Router();
 const { check, validationResult } = require("express-validator");
-const cloudscraper = require("cloudscraper");
 const config = require("config");
-const rp = require("request-promise");
 const _ = require("lodash");
-const watchedMovies = require("../../models/WatchedMovies");
 
+const watchedMovies = require("../../models/WatchedMovies");
+const auth = require('../../middleware/auth');
 const middleware = require("../../middleware/midlleware");
 const {
   retMax,
   getMovieMoreInfo,
-  getMovies,
-  formatYtsResponse,
-  formatPopResponse,
+  getYtsMovies,
+  getPopMovies,
+  setWatched,
   getSubtitles,
   deleteSubtitles
 } = require("../../utils/LibraryFunctions");
+
+const YTS_BASE_URL = config.get('ytsApiBaseUrl');
+const POP_BASE_URL = config.get('popApiBaseUrl');
 
 // @route   Get api/library/movies/page/:pid
 // @desc    Get list of movies
 // @access  Private
 // return imdb_code, title, year, runtime, rating, genres, summary, language, large_cover_image, torrents
-router.get("/movies/page/", [middleware.moviesByPage()], async (req, res) => {
+router.get(
+  "/movies/page/", 
+  [
+    auth, 
+    middleware.moviesByPage()
+  ], async (req, res) => {
+
   //Check if page id is exists and valid number
   const errors = validationResult(req);
   if (!errors.isEmpty())
     return res.status(400).json({ msg: "Parameter Error" });
 
+  const { id } = req;
   try {
-    // get watched movies
-    // const id = req.id;
-    // const watched = await watchedMovies.find({ id });
-    // const merged = _.map(movies, function(obj) {
-    //   return _.assign(
-    //     obj,
-    //     _.find(watched, {
-    //       imdb_code: obj.imdb_code
-    //     })
-    //   );
-    // });
-    // get movies from yts api
-    //let ytsResult = await getMovies(req.query, "yts");
-    //ytsResult = await getMovieMoreInfo(ytsResult);
-
-    // if movies not returned due to page number not exist in API
-    //if (!ytsResult) return res.status(404).json({ msg: "Result not found" });
-
     // get movies from popcorn api
-    let popResult = await getMovies(req.query, "pop");
-    if (!popResult || _.isEmpty(popResult)) res.status(404).json({ msg: "Result not found" });
-    return res.json(popResult);
-    //if (!popResult || _.isEmpty(popResult)) return res.json(ytsResult);
+    let popResult = await getPopMovies(req.query);
+    if (!popResult || _.isEmpty(popResult)) 
+      return res.status(404).json({ msg: "Result not found" });
+    
+    // get watched movies
+    const watched = await watchedMovies.find({ user: id });
+    // set watched movies
+    popResult = setWatched(watched, popResult);
 
-    // Merge the two arrays, Delete duplicate movies by imdb code, order by
-    // const result = _.concat(ytsResult, popResult);
-    // let filtred = _.uniqBy(result, "imdb_code");
-    // filtred = _.orderBy(filtred, req.query.sort_by, ["desc"]);
-    // return res.json(filtred);
+    return res.json(popResult);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ msg: "Server error" });
@@ -66,74 +57,43 @@ router.get("/movies/page/", [middleware.moviesByPage()], async (req, res) => {
 // @route   Get api/library/movies/keyword/:keyword
 // @desc    Search for a movie by keyword
 // @access  Private
-// return imdb_code, title, year, runtime, rating, genres, summary, language, large_cover_image, torrents
 router.get(
   "/movies/keyword/:keyword",
-  [check("keyword", "Keyword id is required").isString()],
+  [
+    auth, 
+    check("keyword", "Keyword id is required").isString()
+  ],
   async (req, res) => {
+
     // Check if page id is exists and valid number
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({ msg: "Keyword id is required" });
+
     const keyword = req.params.keyword;
-    const rapidApiKey = config.get("rapidApiKey");
-    let torrentFail = false;
-    let movies = [];
-
+    const { id } = req;
     try {
-      const options = {
-        method: "GET",
-        url: "https://movie-database-imdb-alternative.p.rapidapi.com/",
-        qs: { page: "1", r: "json", s: keyword },
-        headers: {
-          "x-rapidapi-host": "movie-database-imdb-alternative.p.rapidapi.com",
-          "x-rapidapi-key": rapidApiKey
-        }
-      };
-      let body = await rp(options);
-      body = JSON.parse(body);
-      body.Search = _.uniqBy(body.Search, "imdbID");
-      if (body.Response !== "True")
-        return res.status(404).json({ msg: "Result not found" });
+      // get watched movies
+      const watched = await watchedMovies.find({ user: id });
 
-      for (let index = 0; index < body.Search.length; index++) {
-        const ytsResult = await cloudscraper.get(
-          `https://yts.lt/api/v2/list_movies.json?query_term=${body.Search[index].imdbID}`
-        );
+      // Search PopCorn API
+      let url = `${POP_BASE_URL}/movies/1?sort=title&order=1&keywords=${keyword}`;
+      let result = await getPopMovies(false, url);
 
-        const parsedMoviesYts = JSON.parse(ytsResult);
-        // if movies not returned due to page number not exist in API
-        if (!parsedMoviesYts.data.movies) {
-          torrentFail = true;
-          break;
-        }
-
-        const ytsData = formatYtsResponse(parsedMoviesYts.data.movies);
-        movies = _.concat(ytsData, movies);
-        //movies = await getMovieMoreInfo(movies);
+      if (result.length > 0) {
+        result = setWatched(watched, result);
+        return res.json(result.slice(0, 10));
       }
-      movies = _.orderBy(movies, ["title"], ["asc"]);
-      for (let index = 0; index < body.Search.length; index++) {
-        const popResult = await rp.get(
-          `https://tv-v2.api-fetch.website/movie/${body.Search[index].imdbID}`
-        );
 
-        if (!popResult) continue;
-        const parsedMoviesPop = [];
-        parsedMoviesPop.push(JSON.parse(popResult));
-        // if movies not returned due to page number not exist in API
-        if (_.isEmpty(parsedMoviesPop) && torrentFail)
-          return res.status(404).json({ msg: "Torrent not found" });
-        else if (_.isEmpty(parsedMoviesPop) && !torrentFail)
-          return res.json(movies);
+      // Search YTS API
+      url = `${YTS_BASE_URL}?query_term=${keyword}&sort_by=title`;
+      result = await getYtsMovies(false, url);
 
-        const popData = formatPopResponse(parsedMoviesPop);
-        movies = _.concat(popData, movies);
+      if (result.length > 0) {
+        result = setWatched(watched, result);
+        return res.json(result.slice(0, 10))
       }
-      movies = _.orderBy(movies, ["title"], ["asc"]);
-      // return unique movies by seeds number
-      movies = _.uniqWith(movies, retMax);
-      return res.json(movies);
+      return res.status(404).json({ msg: "Result not found" });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: "Server error" });
@@ -144,52 +104,45 @@ router.get(
 // @route   Get api/library/movies/imdb_code/:imdb_code
 // @desc    Search for a movie by imdb_code
 // @access  Private
-// return imdb_code, title, year, runtime, rating, genres, summary, language, large_cover_image, torrents
 router.get(
   "/movies/imdb_code/:imdb_code",
-  check("imdb_code", "ID is required").exists(),
+  [
+    auth,
+    check("imdb_code", "ID is required").exists()
+  ],
   async (req, res) => {
+
     // Check if page id is exists and valid number
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({ msg: "ID is required" });
+
     const imdb_code = req.params.imdb_code;
     try {
       // get movie from yts api
-      // const ytsResult = await cloudscraper.get(
-      //   `https://yts.lt/api/v2/list_movies.json?query_term=${imdb_code}`
-      // );
-
-      // const parsedMoviesYts = JSON.parse(ytsResult);
-      // const ytsData = formatYtsResponse(parsedMoviesYts.data.movies);
+      let url = `${YTS_BASE_URL}?query_term=${imdb_code}`;
+      const params = false;
+      const ytsResult = await getYtsMovies(params, url);
 
       // get movie from popcorn api
-      const popResult = await rp.get(
-        `https://tv-v2.api-fetch.website/movie/${imdb_code}`
-      );
+      url = `${POP_BASE_URL}/movie/${imdb_code}`;
+      const setAsArray = true;
+      const popResult = await getPopMovies(params, url, setAsArray);
 
-      const parsedMoviesPop = [];
-      if (popResult) parsedMoviesPop.push(JSON.parse(popResult));
-
-      // format response
-      const popData = formatPopResponse(parsedMoviesPop);
-
-      const result = await getMovieMoreInfo(popData);
+      // merge, sort the two results
+      let result = [...popResult, ...ytsResult];
+      if (ytsResult.length > 0 && popResult.length > 0)
+        result = _.uniqWith(popResult, retMax);
+      
+      // more info (Directore, Actors..)
+      result = await getMovieMoreInfo(result);
       if (!result || result.length === 0)
         return res.status(404).json({ msg: "Movie not found" });
+
       // Get subtitles
       result[0]["subtitle"] = await getSubtitles(imdb_code);
       return res.json(result);
 
-      // let result = [...popData, ...ytsData];
-      // if (ytsData.length > 0 && popData.length > 0)
-      //   result = _.uniqWith(popData, retMax);
-      // result = await getMovieMoreInfo(result);
-      // if (!result || result.length === 0)
-      //   return res.status(404).json({ msg: "Movie not found" });
-      // // Get subtitles
-      // result[0]["subtitle"] = await getSubtitles(imdb_code);
-      // return res.json(result);
     } catch (error) {
       console.log(error);
       deleteSubtitles(imdb_code);
@@ -201,17 +154,20 @@ router.get(
 // @route   Get api/library/movies/genre/:genre
 // @desc    Search for a movie by imdb_code
 // @access  Private
-// return imdb_code, title, year, runtime, rating, genres, summary, language, large_cover_image, torrents
-router.get("/movies/genre/:genre", async (req, res) => {
+router.get(
+  "/movies/genre/:genre", 
+  auth, 
+  async (req, res) => {
+    
   const genre = req.params.genre;
   try {
     // get movies from popcorn api
-    let popResult = await rp.get(
-      `https://tv-v2.api-fetch.website/movies/1?sort=trending&order=-1&genre=${genre}`
-    );
-    if (popResult.length === 0)
+    const url = `${POP_BASE_URL}/movies/1?sort=trending&order=-1&genre=${genre}`;
+    let popResult = await getPopMovies(false, url);
+
+    if (popResult && popResult.length === 0)
       return res.status(404).json({ msg: "Not valid genre" });
-    popResult = popResult ? formatPopResponse(JSON.parse(popResult)) : false;
+
     return res.json(popResult);
   } catch (error) {
     console.log(error);

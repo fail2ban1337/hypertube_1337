@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-
+import { t } from '../../i18n';
 import { SET_FILTERS, SET_SORT } from "../../actions/actionTypes";
 
 const useStyles = makeStyles(theme => ({
@@ -94,7 +94,7 @@ export default function Controllers() {
                   display: "block"
                 }}
               >
-                Sort
+               {t("controller.sort")}
               </span>
             </Grid>
 
@@ -114,21 +114,21 @@ export default function Controllers() {
                   <FormControlLabel
                     value="title"
                     control={<Radio style={{ color: "#2196f3" }} />}
-                    label="Title"
+                    label={t("controller.title")}
                   />
                 </Grid>
                 <Grid xs={12} md={4} container item justify={"center"}>
                   <FormControlLabel
                     value="rating"
                     control={<Radio style={{ color: "#2196f3" }} />}
-                    label="Rating"
+                    label={t("controller.rating")}
                   />
                 </Grid>
                 <Grid xs={12} md={4} container item justify={"center"}>
                   <FormControlLabel
                     value="year"
                     control={<Radio style={{ color: "#2196f3" }} />}
-                    label="Year"
+                    label={t("controller.year")}
                   />
                 </Grid>
               </Grid>
@@ -148,7 +148,7 @@ export default function Controllers() {
                   display: "block"
                 }}
               >
-                Filter
+                {t("controller.filter")}
               </span>
             </Grid>
             <Grid
@@ -168,7 +168,7 @@ export default function Controllers() {
                     display: "block"
                   }}
                 >
-                  Rating
+                  {t("controller.rating")}
                 </span>
                 <Slider
                   style={{ color: "#2196f3" }}
@@ -194,7 +194,7 @@ export default function Controllers() {
                       display: "block"
                     }}
                   >
-                    Genre
+                    {t("controller.genre")}
                   </span>
                 </Grid>
                 <Grid xs={12} container item justify={"center"}>
@@ -206,18 +206,18 @@ export default function Controllers() {
                       value={genre}
                       onChange={handleChangeGenre}
                     >
-                      <MenuItem value={"Action"}>Action</MenuItem>
-                      <MenuItem value={"Adventure"}>Adventure</MenuItem>
-                      <MenuItem value={"Comedy"}>Comedy</MenuItem>
-                      <MenuItem value={"Drama"}>Drama</MenuItem>
-                      <MenuItem value={"Fantasy"}>Fantasy</MenuItem>
-                      <MenuItem value={"Historical"}>Historical</MenuItem>
-                      <MenuItem value={"Romance"}>Romance</MenuItem>
+                      <MenuItem value={"Action"}>{t("controller.genrelist.action")}</MenuItem>
+                      <MenuItem value={"Adventure"}>{t("controller.genrelist.adventure")}</MenuItem>
+                      <MenuItem value={"Comedy"}>{t("controller.genrelist.comedy")}</MenuItem>
+                      <MenuItem value={"Drama"}>{t("controller.genrelist.drama")}</MenuItem>
+                      <MenuItem value={"Fantasy"}>{t("controller.genrelist.fantasy")}</MenuItem>
+                      <MenuItem value={"Historical"}>{t("controller.genrelist.historical")}</MenuItem>
+                      <MenuItem value={"Romance"}>{t("controller.genrelist.romance")}</MenuItem>
                       <MenuItem value={"Science fiction"}>
-                        Science fiction
+                      {t("controller.genrelist.science_fiction")}
                       </MenuItem>
-                      <MenuItem value={"Western"}>Western</MenuItem>
-                      <MenuItem value={"All"}>All</MenuItem>
+                      <MenuItem value={"Western"}>{t("controller.genrelist.western")}</MenuItem>
+                      <MenuItem value={"All"}>{t("controller.genrelist.all")}</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -229,7 +229,7 @@ export default function Controllers() {
                   style={{ backgroundColor: "#2196f3", color: "white" }}
                   onClick={submitFilter}
                 >
-                  Filter
+                  {t("controller.filter")}
                 </Button>
               </Grid>
             </Grid>

@@ -2,5 +2,8 @@
   "mongoURI": "mongodb+srv://abelomar:abelomar@devconnector-getbi.mongodb.net/test?retryWrites=true&w=majority",
   "jwtSecret": "b33866999cb65e32e40a026ffe4b21d4658cfce629a8987cf8e7eb6d1259ac071155b116e31f27e530cb65d00b20fb8ec483104cc45e479005d028f1057a5de3",
   "rapidApiKey": "d711f40390msh574e342547e129ap1d4c6ajsnb930ad3ee946",
-  "profileImages": "../client/public/img/profiles/"
+  "profileImages": "../client/public/img/profiles/",
+  "ytsApiBaseUrl": "https://yts.mx/api/v2/list_movies.json",
+  "popApiBaseUrl": "https://tv-v2.api-fetch.website/",
+  "imdbApi": "http://www.omdbapi.com/?apikey=57d02729"
 }

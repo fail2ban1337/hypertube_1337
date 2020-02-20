@@ -4,10 +4,8 @@ const userModel = require("../../models/User");
 const watchedMovies = require("../../models/WatchedMovies");
 const bcrypt = require("bcryptjs");
 var crypto = require("crypto");
-const middleware = require("../../middleware/midlleware");
 const config = require("config");
 const { check, validationResult } = require("express-validator");
-const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const { promisify } = require("util");
 const unlinkAsync = promisify(fs.unlink);
@@ -19,6 +17,7 @@ const passport = require("passport");
 const utils = require("../../utils");
 
 const { forwardAuthenticated } = require("../../Auth/auth");
+const auth = require('../../middleware/auth');
 
 // router.post('/login', forwardAuthenticated, (req, res) => res.render('login'));
 // router.get("/register", forwardAuthenticated, (req, res) =>
@@ -63,7 +62,7 @@ const upload = multer({
 
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
-  console.log(username, password);
+
   userModel.findOne({ username: username }, function(err, user) {
     if (err) {
       return res.status(500).send("Server error");
@@ -205,8 +204,9 @@ router.post("/login", (req, res, next) => {
 // @route   GET api/users/me
 // @desc    Test route
 // @access  Private
-router.get("/me", [middleware.auth], async (req, res) => {
+router.get("/me", [auth], async (req, res) => {
   try {
+
   } catch (error) {
     res.status(500).send("Server Error");
   }
@@ -218,6 +218,7 @@ router.get("/me", [middleware.auth], async (req, res) => {
 router.post(
   "/update",
   [
+    auth,
     check("first_name", "Invalid First Name").isAlpha(),
     check("last_name", "Invalid Last Name").isAlpha(),
     check("username", "Invalid Username").isAlphanumeric(),
@@ -247,7 +248,7 @@ router.post(
       });
     }
 
-    const id = req.id;
+    const { id } = req;
     const {
       first_name,
       last_name,
@@ -257,18 +258,17 @@ router.post(
       newPassword
     } = req.body;
     try {
-      // const user = userModel.find({ id });
-      // const matched = await bcrypt.compare(oldPassword, user.password);
-      // if (matched) {
-      //   user.first_name = first_name;
-      //   user.last_name = last_name;
-      //   user.username = username;
-      //   user.email = email;
-      //   user.password = newPassword;
-      //   return res.json({ msg: "Updated Successfuly" });
-      // }
-      // return res.status(400).json({ msg: "Invalid Old Password" });
-      return res.json({ msg: "passed validation" });
+      const user = userModel.find({ user: id });
+      const matched = await bcrypt.compare(oldPassword, user.password);
+      if (matched) {
+        user.first_name = first_name;
+        user.last_name = last_name;
+        user.username = username;
+        user.email = email;
+        user.password = newPassword;
+        return res.json({ msg: "Updated Successfuly" });
+      }
+      return res.status(400).json({ msg: "Invalid Old Password" });
     } catch (error) {
       res.status(500).send("Server Error");
     }
@@ -289,7 +289,7 @@ router.post("/image", async (req, res) => {
         if (!err) {
           // Everything went fine.
           const user = await userModel.findOneAndUpdate(
-            { id: req.id },
+            { _id: req.id },
             { profileImage: req.file.filename }
           );
           if (user) return res.json(req.file.filename);
@@ -307,19 +307,23 @@ router.post("/image", async (req, res) => {
 // @route   Post api/users/watched
 // @desc    Record watched movie
 // @access  Private
-router.post("/watched", async (req, res) => {
+router.post("/watched", auth, async (req, res) => {
   try {
-    const { imdb_code, title, year, rating, poster, id } = req.body;
+    const { imdb_code, title, year, rating, poster } = req.body;
+    const { id } = req;
+
     const watched = new watchedMovies({
       user: id,
       imdb_code,
       title,
       year,
       rating,
-      poster
+      poster 
     });
+
     await watched.save();
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ msg: "Server error" });
   }
 });
@@ -327,9 +331,10 @@ router.post("/watched", async (req, res) => {
 // @route   Get api/users/watched
 // @desc    Get user watched movies
 // @access  Private
-router.get("/watched", async (req, res) => {
+router.get("/watched", auth, async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id } = req;
+  
     const watched = await watchedMovies
       .find({ user: id })
       .sort({ date: -1 })
