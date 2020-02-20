@@ -21,6 +21,13 @@ import { t, setLocale, getLocale } from "../src/i18n";
 import store from "./store";
 import i18n from "i18n-js";
 
+import setTokenToAxiosHeader from './utils/setTokenToAxiosHeader';
+
+// Set axios headers
+if (localStorage.token) {
+  setTokenToAxiosHeader(localStorage.token);
+}
+
 function App() {
   const [theme, setTheme] = useState({
     palette: {

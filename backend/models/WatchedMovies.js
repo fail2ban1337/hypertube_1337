@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const WatchedMoviesSchema = new mongoose.Schema({
   user: {
-    type: Number,
+    type: String,
     required: true
   },
   imdb_code: {
@@ -30,6 +30,8 @@ const WatchedMoviesSchema = new mongoose.Schema({
     default: Date.now
   }
 });
+
+WatchedMoviesSchema.index({ user: 1 });
 
 module.exports = WatchedMovies = mongoose.model(
   "WatchedMovies",
