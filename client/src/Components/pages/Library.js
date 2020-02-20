@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import Controllers from "../inc/Controllers";
 import AlertComponents from "../inc/AlertComponents";
 import { Loading } from "../inc/Loading";
-import { getMovies } from "../../actions/libraryAction";
+import { getMovies, setWatchedMovie } from "../../actions/libraryAction";
 import { REMOVE_ALERT } from "../../actions/actionTypes";
 import { t } from '../../i18n';
 import Axios from "axios";
@@ -98,6 +98,7 @@ const useStyles = makeStyles({
 
 export const Thumb = ({ movies }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   return (
     <div className={classes.moviesContainer}>
@@ -120,6 +121,7 @@ export const Thumb = ({ movies }) => {
               <img
                 src="/img/btn-overlay-blue.png"
                 alt="play"
+                onClick={() => dispatch(setWatchedMovie(movie))}
                 style={{
                   position: "relative",
                   top: "50%",
@@ -137,9 +139,9 @@ export const Thumb = ({ movies }) => {
             <span className={classes.imdbtext}>{movie.rating.toFixed(1)}</span>
           </span>
           <span className={classes.watched}>
-            {/* {
+            {
               movie.watched && <VisibilityIcon />
-            } */}
+            }
           </span>
         </Box>
       ))}
@@ -169,7 +171,6 @@ export default function Library() {
   }, [initialized, loadMovies]);
 
   useEffect(() => {
-    console.log("load");
     if (initialized) {
       loadMovies();
     }
@@ -181,7 +182,6 @@ export default function Library() {
         type: REMOVE_ALERT
       });
       source.cancel();
-      console.log("cancel")
     };
   }, []);
 

@@ -9,12 +9,16 @@ const YTS_BASE_URL = config.get('ytsApiBaseUrl');
 const POP_BASE_URL = config.get('popApiBaseUrl');
 const IMDB_API = config.get('imdbApi');
 
-// take torrent hash as a parameter, return magnet link
+/*
+ * Take torrent hash, return magnet link
+ */
 const getHashFromMagnet = magnet => {
-  //"magnet:?xt=urn:btih:C0E9F0CE8A9123ACED7358B1AC3A853A10B9EB13&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337"
   return magnet.split(":")[3].split("&")[0];
 };
 
+/*
+ * Check PopCorn movie helper function
+ */
 const isValidPopMovie = (item) => {
   return (
     item.imdb_id &&
@@ -28,8 +32,6 @@ const isValidPopMovie = (item) => {
     item.synopsis &&
     !_.isEmpty(item.synopsis) &&
     !_.isEmpty(Object.keys(item.torrents)[0]) &&
-    item.images.poster &&
-    !_.isEmpty(item.images.poster) &&
     item.torrents.en["1080p"] &&
     item.torrents.en["1080p"].url &&
     !_.isEmpty(item.torrents.en["1080p"].url) &&
@@ -42,7 +44,9 @@ const isValidPopMovie = (item) => {
   );
 }
 
-// filter response if it has a empty element
+/*
+ * Check if PopCorn movie have all important properties
+ */
 const filterPopResponse = response => {
   const filtredResponse = _.filter(response, item => {
     return (isValidPopMovie(item));
@@ -50,11 +54,13 @@ const filterPopResponse = response => {
   return filtredResponse;
 };
 
-// Format PopCorn API response
+/*
+ * Format PopCorn API response, change properties names
+ */
 const formatPopResponse = response => {
+  const result = [];
   if (!response || response.length === 0) return result;
 
-  const result = [];
   response = filterPopResponse(response);
   response.map(item => {
     let obj = {};
@@ -104,6 +110,9 @@ const formatPopResponse = response => {
   return result;
 };
 
+/*
+ * Check Yts movie helper function
+ */
 const isValidYtsMovie = (item) => {
   return (
     item.imdb_code &&
@@ -118,8 +127,6 @@ const isValidYtsMovie = (item) => {
     !_.isEmpty(item.summary) &&
     item.language &&
     !_.isEmpty(item.language) &&
-    item.large_cover_image &&
-    !_.isEmpty(item.large_cover_image) &&
     item.torrents.length &&
     item.torrents[0].hash &&
     !_.isEmpty(item.torrents[0].hash) &&
@@ -136,7 +143,9 @@ const isValidYtsMovie = (item) => {
   )
 }
 
-// filter response if it has a empty element
+/*
+ * Check if Yts movie have all important properties
+ */
 const filterYtsResponse = response => {
   const filtredResponse = _.filter(response, item => {
     return (isValidYtsMovie(item));
@@ -144,11 +153,13 @@ const filterYtsResponse = response => {
   return filtredResponse;
 };
 
-// Format YTS API response
+/*
+ * Format Yts API response, change properties names
+ */
 const formatYtsResponse = response => {
+  const result = [];
   if (!response || response.length === 0) return result;
 
-  const result = [];
   response = filterYtsResponse(response);
   response.map(item => {
     let obj = {};
@@ -177,13 +188,17 @@ const formatYtsResponse = response => {
   return result;
 };
 
-// Compare by seeds number
-const retMax = (a, b) => {
-  if (a.imdb_code !== b.imdb_code) return null;
-  return a.torrents[0].seeds > b.torrents[0].seeds ? a : b;
+/*
+ * Return movies with max seeds number
+ */
+const retMax = (movies, comparedMovie) => {
+  if (movies.imdb_code !== comparedMovie.imdb_code) return null;
+  return movies.torrents[0].seeds > comparedMovie.torrents[0].seeds ? a : b;
 };
 
-// Get cover image for each movie using IMDb API
+/*
+ * Get Director, Actors, Production from OMDB API
+ */
 const getMovieMoreInfo = async result => {
   for (let index = 0; index < result.length; index++) {
     // const url = `${IMDB_API}&i=${result[index].imdb_code}&plot=full`;
@@ -202,51 +217,118 @@ const getMovieMoreInfo = async result => {
   return result;
 };
 
-// Get Movies from YTS and POPCorn APIs
-const getMovies = async (
-  { pid, sort_by, filterGenre, filterRatingMin },
-  api
-) => {
-  if (api === "yts") {
-    const genre =
-      filterGenre === "All"
-        ? ""
-        : filterGenre === "Science fiction"
-          ? "&genre=sci-fi"
-          : `&genre=${filterGenre}`;
+/*
+ * Take Yts API url or parameters of url
+ * Send request to API url
+ * Return Movies formated
+ */
+const getYtsMovies = async (params, apiUrl=false) => {
+  const { pid, sort_by, filterGenre, filterRatingMin } = params;
+  let genre;
 
-    const url = `${YTS_BASE_URL}?page=${pid}&sort_by=${sort_by}&minimum_rating=${filterRatingMin}${genre}`;
-    const result = await cloudscraper.get(url);
-    const parsedResult = JSON.parse(result);
-    return parsedResult.data.movies
-      ? formatYtsResponse(parsedResult.data.movies)
-      : false;
-  } else if (api === "pop") {
-    const genre = filterGenre === "All" ? "" : `&genre=${filterGenre}`;
+  // Set searched genre
+  switch (filterGenre) {
+    case "All":
+      genre = "";
+      break;
 
-    const url = `${POP_BASE_URL}/movies/${pid}?sort=${sort_by}&order=-1${genre}`;
-    let result = await rp.get(url);
-    result = result ? formatPopResponse(JSON.parse(result)) : false;
-    if (result) {
-      result = _.filter(result, rs => rs.rating > filterRatingMin);
-    }
-    return result;
+    case "Science fiction":
+      genre = "sci-fi";
+      break;
+  
+    default:
+      genre = filterGenre;
+      break;
   }
-  return false;
+
+  // prepare request url
+  const url = apiUrl ? 
+    apiUrl :
+    `${YTS_BASE_URL}?page=${pid}&sort_by=${sort_by}&minimum_rating=${filterRatingMin}&genre=${genre}`;
+  
+  const result = await cloudscraper.get(url);
+  const parsedResult = JSON.parse(result);
+
+  // format result before return
+  return parsedResult.data.movies
+    ? formatYtsResponse(parsedResult.data.movies)
+    : false;
 };
 
-// Get movie available subtitles
+/*
+ * Take PopCorn API url or parameters of url
+ * Send request to API url
+ * Return Movies formated
+ */
+const getPopMovies = async (
+  params, apiUrl = false, setAsArray = false
+) => {
+  const { pid, sort_by, filterGenre, filterRatingMin } = params;
+  let genre;
+
+  // set searched genre
+  switch (filterGenre) {
+    case "All":
+      genre = "";
+      break;
+  
+    default:
+      genre = filterGenre;
+      break;
+  }
+
+  // prepare requested url
+  const url = apiUrl ? 
+    apiUrl : 
+    `${POP_BASE_URL}/movies/${pid}?sort=${sort_by}&order=-1&genre=${genre}`;
+  let result = await rp.get(url);
+
+  result = JSON.parse(result);
+  // to result to array of object
+  if (setAsArray)
+    result = [result];
+  result = result ? formatPopResponse(result) : false;
+
+  // delete movies with rating less then minimum set
+  if (result && filterRatingMin) {
+    result = _.filter(result, rs => rs.rating > filterRatingMin);
+  }
+  return result;
+};
+
+/*
+ * Loop through array of movies, set watched (watched = true || false)
+ */
+const setWatched = (watched, result) => {
+  for (let i = 0; i < result.length; i++) {
+    for (let j = 0; j < watched.length; j++) {
+      if (result[i].imdb_code === watched[j].imdb_code) {
+        // user already watched this movie
+        result[i].watched = true;
+        break ;
+      }
+      result[i].watched = false ;
+    }
+  }
+
+  return result;
+}
+
+/*
+ * Get movie available subtitles (En && Fr)
+ */
 const getSubtitles = async imdb_code => {
+  // set subtitle path
   const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
   if (!fs.existsSync(subtitlePath)) {
     fs.mkdirSync(subtitlePath);
   }
   try {
+    // get subtitles from yifi
     const subtitles = await yifysubtitles(imdb_code, {
       path: subtitlePath,
       langs: ["en", "fr"]
     });
-    // Rename subtitles to avoid spaces
 
     return subtitles;
   } catch (error) {
@@ -254,7 +336,9 @@ const getSubtitles = async imdb_code => {
   }
 };
 
-// delete subtitles
+/*
+ * Delete subtitles
+ */
 const deleteSubtitles = imdb_code => {
   const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
   if (fs.existsSync(subtitlePath)) {
@@ -265,7 +349,9 @@ const deleteSubtitles = imdb_code => {
 module.exports = {
   retMax,
   getMovieMoreInfo,
-  getMovies,
+  getYtsMovies,
+  getPopMovies,
+  setWatched,
   formatPopResponse,
   formatYtsResponse,
   getSubtitles,
