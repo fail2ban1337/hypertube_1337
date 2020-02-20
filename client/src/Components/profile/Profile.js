@@ -1,8 +1,10 @@
 import React from "react";
 import { Grid } from "@material-ui/core";
+import Container from "@material-ui/core/Container";
 
 import { ProfileHeader } from "./ProfileHeader";
 import { ProfileListWatches } from "./ProfileListWatches";
+import Divider from "@material-ui/core/Divider";
 
 export const Profile = () => {
   /*
@@ -11,14 +13,11 @@ export const Profile = () => {
    */
   return (
     <div>
-      <Grid container>
-        <Grid item xs={12}>
-          <ProfileHeader />
-        </Grid>
-        <Grid item xs={12}>
-          <ProfileListWatches />
-        </Grid>
-      </Grid>
+      <Container maxWidth="lg">
+        <ProfileHeader />
+        <Divider />
+        <ProfileListWatches />
+      </Container>
     </div>
   );
 };
