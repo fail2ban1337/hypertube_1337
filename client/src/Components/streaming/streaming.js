@@ -395,7 +395,7 @@ function OtherMovie({ genre }) {
             <Img
               className={classes.movies}
               src={[movie.poster, "/img/notfound.png"]}
-              alt="Smiley face"
+              alt="movie poster"
               style={{ height: "280px", width: "100%" }}
             />
             <div className={classes.details}>
