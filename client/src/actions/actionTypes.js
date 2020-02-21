@@ -15,3 +15,6 @@ export const LOAD_USER = "LOAD_USER";
 export const LOAD_FAIL = "LOAD_FAIL";
 export const LOADING_USER = "LOADING_USER";
 export const DESTROY_USER = "DESTROY_USER";
+export const LOAD_PROFILE = "LOAD_PROFILE";
+export const PROFILE_FAIL = "PROFILE_FAIL";
+export const LOADING_PROFILE = "LOADING_PROFILE";
