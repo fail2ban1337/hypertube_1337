@@ -3,6 +3,7 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
+import Axios from 'axios';
 
 import Login from "./Components/user/login";
 import Forget from "./Components/user/Forget";
@@ -24,6 +25,8 @@ import i18n from "i18n-js";
 
 import setTokenToAxiosHeader from './utils/setTokenToAxiosHeader';
 import { loadUser } from "./actions/userAction";
+import PrivateRoute from "./Components/inc/PrivateRoutes";
+import GuestRoute from "./Components/inc/GuestRoute";
 
 // Set axios headers
 if (localStorage.token) {
@@ -33,6 +36,8 @@ if (localStorage.token) {
 function App() {
   const dispatch = useDispatch();
   const { user } = useSelector(state => state);
+
+  let source = Axios.CancelToken.source();
 
   const [theme, setTheme] = useState({
     palette: {
@@ -78,7 +83,11 @@ function App() {
   const muiTheme = createMuiTheme(theme, deflang);
 
   useEffect(() => {
+    console.log("load")
     dispatch(loadUser());
+    return () => {
+      source.cancel();
+    }
   }, [])
 
   useEffect(() => {
@@ -99,15 +108,15 @@ function App() {
           <NavBar setDarkMode={toggleDarkTheme} Langage={toggleLanguage} />
           <div style={{ flex: 1 }}>
             <Switch>
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/register" component={Register} />
-              <Route exact path="/forgetpassword" component={Forget} />
-              <Route exact path="/reset_password/:token" component={Reset} />
-              <Route exact path="/verify_email/:token" component={Verify} />
-              <Route exact path="/profile" component={Profile} />
-              <Route exact path="/editprofile" component={EditProfile} />
-              <Route exact path="/library" component={Library} />
-              <Route exact path="/streaming/:imdb" component={Streaming} />
+              <GuestRoute exact path="/login" component={Login} />
+              <GuestRoute exact path="/register" component={Register} />
+              <GuestRoute exact path="/forgetpassword" component={Forget} />
+              <GuestRoute exact path="/reset_password/:token" component={Reset} />
+              <GuestRoute exact path="/verify_email/:token" component={Verify} />
+              <PrivateRoute exact path="/profile" component={Profile} />
+              <PrivateRoute exact path="/editprofile" component={EditProfile} />
+              <PrivateRoute exact path="/" component={Library} />
+              <PrivateRoute exact path="/streaming/:imdb" component={Streaming} />
             </Switch>
           </div>
           <Footer style={{ flex: 1 }} />
