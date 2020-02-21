@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Container,
   CssBaseline,
@@ -11,12 +11,17 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
+// Redux
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { message } from "antd";
 
 import AlertComponents from "../inc/AlertComponents";
 import useForm from "./useForm";
 import validateEditProfile from "./validateForm";
+import { Loading } from "../inc/Loading";
+import { loadUser } from "../../actions/userAction";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -33,9 +38,12 @@ const useStyles = makeStyles(theme => ({
 
 export const EditProfile = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { user } = useSelector(state => state);
   const { formData, setformData, handleChange, handleSubmit } = useForm(
     validateEditProfile,
-    submit
+    submit,
+    user.info.strategy
   );
 
   const {
@@ -49,6 +57,17 @@ export const EditProfile = () => {
     errors
   } = formData;
 
+  useEffect(() => {
+    if (!user.loading) {
+      setformData({ ...formData, 
+        first_name: user.info.first_name,
+        last_name: user.info.last_name,
+        username: user.info.username,
+        email: user.info.email,
+      })
+    }
+  }, [user])
+
   async function submit() {
     //Send data
     const config = {
@@ -58,15 +77,19 @@ export const EditProfile = () => {
     };
     try {
       const result = await axios.post("/api/users/update", formData, config);
-      if (result) message.success(result.data.msg);
+      if (result) {
+        dispatch(loadUser());
+        message.success(result.data.msg);
+      }
     } catch (error) {
-      const msg = error.response.data.msg;
+      const { msg, errors: backendErrors } = error.response.data;
       if (error.response.data.errors)
-        setformData({ ...formData, errors: error.response.data.errors });
+        setformData({ ...formData, errors: backendErrors });
       message.error(msg);
     }
   }
 
+  if (user.loading) return <Loading text="Loading user info" />
   return (
     <div>
       <Container component="main" maxWidth="sm">
@@ -130,57 +153,64 @@ export const EditProfile = () => {
                 </FormHelperText>
               )}
             </Grid>
-            <Grid item md={4} sm={12}>
-              <InputLabel htmlFor="standard-adornment-old-password">
-                Old Password
-              </InputLabel>
-              <Input
-                id="standard-adornment-old-password"
-                type="password"
-                error={errors.oldPassword ? true : false}
-                value={oldPassword}
-                onChange={handleChange("oldPassword")}
-              />
-              {errors.oldPassword && (
-                <FormHelperText className={classes.helperText}>
-                  <sup>*</sup> {errors.oldPassword}
-                </FormHelperText>
-              )}
-            </Grid>
-            <Grid item md={4} sm={12}>
-              <InputLabel htmlFor="standard-adornment-new-password">
-                New Password
-              </InputLabel>
-              <Input
-                id="standard-adornment-new-password"
-                type="password"
-                error={errors.newPassword ? true : false}
-                value={newPassword}
-                onChange={handleChange("newPassword")}
-              />
-              {errors.newPassword && (
-                <FormHelperText className={classes.helperText}>
-                  <sup>*</sup> {errors.newPassword}
-                </FormHelperText>
-              )}
-            </Grid>
-            <Grid item md={4} sm={12}>
-              <InputLabel htmlFor="standard-adornment-confirm-password">
-                Confirm Password
-              </InputLabel>
-              <Input
-                id="standard-adornment-confirm-password"
-                type="password"
-                error={errors.confirmPassword ? true : false}
-                value={confirmPassword}
-                onChange={handleChange("confirmPassword")}
-              />
-              {errors.confirmPassword && (
-                <FormHelperText className={classes.helperText}>
-                  <sup>*</sup> {errors.confirmPassword}
-                </FormHelperText>
-              )}
-            </Grid>
+            {
+              (user.info.strategy !== 'omniauth') && (
+                <>
+                  <Grid item md={4} sm={12}>
+                    <InputLabel htmlFor="standard-adornment-old-password">
+                      Old Password
+                    </InputLabel>
+                    <Input
+                      id="standard-adornment-old-password"
+                      type="password"
+                      error={errors.oldPassword ? true : false}
+                      value={oldPassword}
+                      onChange={handleChange("oldPassword")}
+                    />
+                    {errors.oldPassword && (
+                      <FormHelperText className={classes.helperText}>
+                        <sup>*</sup> {errors.oldPassword}
+                      </FormHelperText>
+                    )}
+                  </Grid>
+                  <Grid item md={4} sm={12}>
+                    <InputLabel htmlFor="standard-adornment-new-password">
+                      New Password
+                    </InputLabel>
+                    <Input
+                      id="standard-adornment-new-password"
+                      type="password"
+                      error={errors.newPassword ? true : false}
+                      value={newPassword}
+                      onChange={handleChange("newPassword")}
+                    />
+                    {errors.newPassword && (
+                      <FormHelperText className={classes.helperText}>
+                        <sup>*</sup> {errors.newPassword}
+                      </FormHelperText>
+                    )}
+                  </Grid>
+                  <Grid item md={4} sm={12}>
+                    <InputLabel htmlFor="standard-adornment-confirm-password">
+                      Confirm Password
+                    </InputLabel>
+                    <Input
+                      id="standard-adornment-confirm-password"
+                      type="password"
+                      error={errors.confirmPassword ? true : false}
+                      value={confirmPassword}
+                      onChange={handleChange("confirmPassword")}
+                    />
+                    {errors.confirmPassword && (
+                      <FormHelperText className={classes.helperText}>
+                        <sup>*</sup> {errors.confirmPassword}
+                      </FormHelperText>
+                    )}
+                  </Grid>
+                </>
+              )
+            }
+            
             <Grid item xs={12}>
               <Button
                 variant="contained"

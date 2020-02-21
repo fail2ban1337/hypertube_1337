@@ -10,18 +10,19 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import MailIcon from "@material-ui/icons/Mail";
 import Brightness2Icon from "@material-ui/icons/Brightness2";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import HdIcon from "@material-ui/icons/Hd";
 import blue from "@material-ui/core/colors/blue";
 import Grid from "@material-ui/core/Grid";
-import { Container } from "@material-ui/core";
+import { Container, Button } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import { getMovieByKeyword } from "../../actions/libraryAction";
 import { FlagIcon } from "react-flag-kit";
 import { setLocale } from "../../i18n";
 import i18n from "i18n-js";
+import { logout } from "../../actions/userAction";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -90,7 +91,7 @@ function NavBar({ setDarkMode, Langage }) {
   const [keyword, setKeyword] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-  const { library } = useSelector(state => state);
+  const { library, user } = useSelector(state => state);
   const dispatch = useDispatch();
 
   const isMenuOpen = Boolean(anchorEl);
@@ -108,6 +109,11 @@ function NavBar({ setDarkMode, Langage }) {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
+
+  const handleLogout = () => {
+    handleMenuClose();
+    dispatch(logout());
+  }
 
   const handleMobileMenuOpen = event => {
     setMobileMoreAnchorEl(event.currentTarget);
@@ -139,6 +145,9 @@ function NavBar({ setDarkMode, Langage }) {
       <MenuItem onClick={handleMenuClose} style={{ color: blue[500] }}>
         My account
       </MenuItem>
+      <MenuItem onClick={handleLogout} style={{ color: blue[500] }}>
+        Logout
+      </MenuItem>
     </Menu>
   );
 
@@ -154,14 +163,6 @@ function NavBar({ setDarkMode, Langage }) {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton aria-label="show 4 new mails" style={{ color: blue[500] }}>
-          <Badge badgeContent={4} color="secondary">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
         <IconButton
           aria-label="show 11 new notifications"
           style={{ color: blue[500] }}
@@ -173,17 +174,27 @@ function NavBar({ setDarkMode, Langage }) {
         </IconButton>
         <p>Dark Mode</p>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          style={{ color: blue[500] }}
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
+      {
+        user.isAuthenticated ? (
+          <MenuItem onClick={handleProfileMenuOpen}>
+            <IconButton
+              aria-label="account of current user"
+              aria-controls="primary-search-account-menu"
+              aria-haspopup="true"
+              style={{ color: blue[500] }}
+            >
+              <AccountCircle />
+            </IconButton>
+            <p>Profile</p>
+          </MenuItem>
+        ) : (
+          <Link to="/login">
+            <MenuItem onClick={handleProfileMenuOpen}>
+              <p style={{ verticalAlign: "middle", textAlign: 'center' }} >Login</p>
+            </MenuItem>
+          </Link>
+        )
+      }
     </Menu>
   );
 
@@ -217,11 +228,6 @@ function NavBar({ setDarkMode, Langage }) {
             </Grid>
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-              <IconButton aria-label="show 4 new mails" color="inherit">
-                <Badge badgeContent={4} color="secondary">
-                  <MailIcon />
-                </Badge>
-              </IconButton>
               <IconButton
                 aria-label="show 17 new notifications"
                 color="inherit"
@@ -231,17 +237,6 @@ function NavBar({ setDarkMode, Langage }) {
                   <Brightness2Icon />
                 </Badge>
               </IconButton>
-              <IconButton
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-
               <IconButton aria-label="show 4 new mails" onClick={Langage}>
                 {localStorage.getItem("LANGUAGE") === "en" ? (
                   <FlagIcon code="FR" size={25} />
@@ -249,6 +244,31 @@ function NavBar({ setDarkMode, Langage }) {
                   <FlagIcon code="US" size={25} />
                 )}
               </IconButton>
+              {
+                user.isAuthenticated ? (
+                  <IconButton
+                    edge="end"
+                    aria-label="account of current user"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={handleProfileMenuOpen}
+                    color="inherit"
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                ) : (
+                  <Link to="/login">
+                    <IconButton
+                      edge="end"
+                      aria-label="Login"
+                      color="inherit"
+                      style={{ fontSize: "18px" }}
+                    >
+                      Login
+                    </IconButton>
+                  </Link>
+                )
+              }
             </div>
             <div className={classes.sectionMobile}>
               <IconButton
