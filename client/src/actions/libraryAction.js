@@ -28,7 +28,7 @@ export const getMovies = (
         filterGenre,
         filterRatingMin
       },
-      cancelToken: source.token,
+      cancelToken: source.token
     });
     if (result.data.length < 15) dispatch(setHasMore(false));
     dispatch({
