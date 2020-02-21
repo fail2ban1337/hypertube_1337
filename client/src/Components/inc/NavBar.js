@@ -143,13 +143,13 @@ function NavBar({ setDarkMode, Langage }) {
       {user.isAuthenticated ? (
         <MenuList>
           <MenuItem
-            onTouchTap={() => handleMenuClose()}
+            onClick={() => handleMenuClose()}
             style={{ color: blue[500] }}
           >
             <NavLink to="/profile">Profile</NavLink>
           </MenuItem>
           <MenuItem
-            onTouchTap={() => handleMenuClose()}
+            onClick={() => handleMenuClose()}
             style={{ color: blue[500] }}
           >
             <NavLink to="/editprofile">Edit profile</NavLink>
@@ -161,13 +161,13 @@ function NavBar({ setDarkMode, Langage }) {
       ) : (
         <MenuList>
           <MenuItem
-            onTouchTap={() => handleMenuClose()}
+            onClick={() => handleMenuClose()}
             style={{ color: blue[500] }}
           >
             <NavLink to="/login">Login</NavLink>
           </MenuItem>
           <MenuItem
-            onTouchTap={() => handleMenuClose()}
+            onClick={() => handleMenuClose()}
             style={{ color: blue[500] }}
           >
             <NavLink to="/register">Register</NavLink>
