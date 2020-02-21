@@ -10,7 +10,7 @@ import axios from "axios";
 
 import handleError from "../../utils/ErrorHandler";
 import handleSuccess from "../../utils/SuccessHandler";
-
+import { t } from "../../i18n";
 const API_URL = "http://localhost:5000";
 
 const Styles = {
@@ -80,7 +80,7 @@ class Forget extends Component {
         <CssBaseline />
         <div style={Styles.paper}>
           <Typography component="h1" variant="h5">
-            Forget Password
+          {t("forgetpassword.forgetpassword")}
           </Typography>
           <form style={Styles.form} onSubmit={e => this.onSubmit(e)}>
             <TextField
@@ -89,7 +89,7 @@ class Forget extends Component {
               required
               fullWidth
               id="email"
-              label="Email Adresse"
+              label={t("forgetpassword.email_address")}
               name="email"
               autoComplete="email"
               value={this.state.email}
@@ -103,7 +103,7 @@ class Forget extends Component {
               style={Styles.submit}
               disabled={!this.state.email}
             >
-              Send
+              {t("forgetpassword.send")}
             </Button>
           </form>
         </div>
