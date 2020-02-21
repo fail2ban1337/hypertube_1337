@@ -11,3 +11,7 @@ export const SET_HASMORE = "SET_HASMORE";
 export const ADD_NEW_COMMENT = "ADD_NEW_COMMENT";
 export const GET_COMMENTS = "GET_COMMENTS";
 export const LIKE_COMMENT = "LIKE_COMMENT";
+export const LOAD_USER = "LOAD_USER";
+export const LOAD_FAIL = "LOAD_FAIL";
+export const LOADING_USER = "LOADING_USER";
+export const DESTROY_USER = "DESTROY_USER";

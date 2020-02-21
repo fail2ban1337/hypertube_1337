@@ -18,6 +18,7 @@ const utils = require("../../utils");
 
 const { forwardAuthenticated } = require("../../Auth/auth");
 const auth = require('../../middleware/auth');
+const validatorController = require("../../controllers/validator.controller");
 
 // router.post('/login', forwardAuthenticated, (req, res) => res.render('login'));
 // router.get("/register", forwardAuthenticated, (req, res) =>
@@ -206,7 +207,8 @@ router.post("/login", (req, res, next) => {
 // @access  Private
 router.get("/me", [auth], async (req, res) => {
   try {
-
+    const { user } = req;
+    return res.json({ user });
   } catch (error) {
     res.status(500).send("Server Error");
   }
@@ -219,24 +221,12 @@ router.post(
   "/update",
   [
     auth,
-    check("first_name", "Invalid First Name").isAlpha(),
-    check("last_name", "Invalid Last Name").isAlpha(),
-    check("username", "Invalid Username").isAlphanumeric(),
-    check("email", "Invalid Email").isEmail(),
-    check("oldPassword", "Enter Old password")
-      .not()
-      .isEmpty(),
-    check("newPassword", "Enter valid password").custom(value => {
-      const regex = /(?=.*[a-zA-Z])(?=.*[0-9]).{8,30}/i;
-      return regex.test(value);
-    }),
-    check("confirmPassword", "Password not match").custom(
-      (value, { req }) => value === req.body.newPassword
-    )
+    validatorController.validateUpdateUser
   ],
   async (req, res) => {
     //Check errors
-    const validationErrors = validationResult(req);
+    let validationErrors = validationResult(req);
+
     if (!validationErrors.isEmpty()) {
       const errors = _(validationErrors.array())
         .groupBy("param")
@@ -249,6 +239,7 @@ router.post(
     }
 
     const { id } = req;
+    const { strategy } = req.user;
     const {
       first_name,
       last_name,
@@ -257,20 +248,38 @@ router.post(
       oldPassword,
       newPassword
     } = req.body;
+
     try {
-      const user = userModel.find({ user: id });
-      const matched = await bcrypt.compare(oldPassword, user.password);
-      if (matched) {
-        user.first_name = first_name;
-        user.last_name = last_name;
-        user.username = username;
-        user.email = email;
-        user.password = newPassword;
-        return res.json({ msg: "Updated Successfuly" });
-      }
-      return res.status(400).json({ msg: "Invalid Old Password" });
+      const user = await userModel.findOne({ _id: id });
+      if (!user)
+        return res.status(404).json({ msg: "Invalid User" });
+
+      // if user connected using oauth, don't compare password
+      const matched = strategy !== 'omniauth' ?
+        await bcrypt.compare(oldPassword, user.password) :
+        true;
+      if (!matched) 
+        return res.status(400).json({ msg: "Invalid Old Password" });
+
+      // check username if unique
+      const usernameExists = await userModel.findOne({ username, _id : { $ne: id } });
+      if (usernameExists)
+        return res.status(400).json({ 
+          msg: 'Choose another username', 
+          errors: { username: 'Already exists' } 
+        });
+      
+      user.first_name = first_name;
+      user.last_name = last_name;
+      user.username = username;
+      user.email = email;
+      user.password = newPassword;
+
+      await user.save();
+      return res.json({ msg: "Updated Successfuly" });
     } catch (error) {
-      res.status(500).send("Server Error");
+      console.log(error)
+      res.status(500).json({ msg: 'Server error' });
     }
   }
 );
