@@ -244,10 +244,11 @@ router.post("/AddComment", [auth], async (req, res) => {
 
     const result = await CommentsModel.find({ _id: comment._id }).populate(
       "userInfo",
-      "username"
+      "username profileImage"
     );
     return res.send(result);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Error on Adding New Comment" });
   }
 });
@@ -284,7 +285,7 @@ router.post("/likeComment", [auth], async (req, res) => {
     }
     const resultFinall = await CommentsModel.find({ _id: comment_id })
       .lean()
-      .populate("userInfo", "username");
+      .populate("userInfo", "username profileImage");
     resultFinall.map(element => {
       element.liked = false;
       for (let value of element.likes) {
@@ -309,7 +310,7 @@ router.get("/getComments/:imdb_code", [auth], async (req, res) => {
     const { imdb_code } = req.params;
     let result = await CommentsModel.find({ imdbCode: imdb_code })
       .lean()
-      .populate("userInfo", "username");
+      .populate("userInfo", "username profileImage");
     result.map(element => {
       element.liked = false;
       for (let value of element.likes) {

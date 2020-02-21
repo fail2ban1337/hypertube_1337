@@ -264,7 +264,6 @@ function MovieInfo({ movieInfo }) {
                         {t("streaming.actor")}
                       </big>{" "}
                       : {movieInfo.Actors}
-
                     </Typography>
                   </Grid>
                   <Grid sm={6} xs={12} container item>
@@ -455,6 +454,7 @@ function Comments({ movieInfo }) {
   const [Comment_text, setCommentText] = useState("");
   const dispatch = useDispatch();
   const { commentsData, alert } = useSelector(state => state);
+  const { user } = useSelector(state => state);
 
   const handleSubmit = form => {
     form.preventDefault();
@@ -506,6 +506,7 @@ function Comments({ movieInfo }) {
           </Grid>
           <div style={{ display: displayState }}>
             {commentsData.allComments.map(value => {
+              console.log(value);
               return (
                 <Card
                   key={value._id}
@@ -521,7 +522,7 @@ function Comments({ movieInfo }) {
                     >
                       <Grid item xs={1} className={classes.image}>
                         <Avatar
-                          src="https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
+                          src={`/img/profiles/${value.userInfo.profileImage}`}
                           alt="left"
                           style={{ width: "60px", height: "60px" }}
                         />
@@ -546,7 +547,9 @@ function Comments({ movieInfo }) {
                             </Grid>
                             <Grid item xs={5} className={classes.dataAndName}>
                               <Typography>
-                                {Moment(value.time).format("DD MMM YYYY hh:mm")}
+                                {Moment(value.time).format("DD MMM YYYY")}
+                                {" at "}
+                                {Moment(value.time).format("hh:mm")}
                               </Typography>
                             </Grid>
                             <Grid item xs={2}>
@@ -590,7 +593,7 @@ function Comments({ movieInfo }) {
                 alignItems="center"
               >
                 <Grid item>
-                  <Avatar src={userLogged[0].img} />
+                  <Avatar src={`/img/profiles/${user.info.profileImage}`} />
                 </Grid>
                 <Grid item xs={10}>
                   <TextField
