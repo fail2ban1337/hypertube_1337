@@ -38,13 +38,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Img from "react-image";
 import { t } from "../../i18n";
 
-const userLogged = [
-  {
-    userName: "abelomar",
-    img:
-      "https://images.unsplash.com/photo-1464863979621-258859e62245?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
-  }
-];
 const useStyles = makeStyles(theme => ({
   StreamTrace: {
     paddingBottom: "20px",
