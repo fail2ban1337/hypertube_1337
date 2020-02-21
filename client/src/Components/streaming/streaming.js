@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Link from "@material-ui/core/Link";
+import { default as MatLink } from "@material-ui/core/Link";
 import ReactPlayer from "react-player";
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
@@ -25,7 +25,7 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Button from "@material-ui/core/Button";
 import { useSelector, useDispatch } from "react-redux";
 import Moment from "moment";
-
+import { Link } from "react-router-dom";
 import {
   movieInfo,
   otherMovies,
@@ -135,14 +135,14 @@ function StreamTrace({ title }) {
   const classes = useStyles();
   return (
     <Breadcrumbs aria-label="breadcrumb" className={classes.StreamTrace}>
-      <Link color="inherit" href="/" className={classes.link}>
+      <MatLink color="inherit" href="/" className={classes.link}>
         <HomeIcon className={classes.icon} />
         {t("streaming.home")}
-      </Link>
-      <Link color="inherit" href="/" className={classes.link}>
+      </MatLink>
+      <MatLink color="inherit" href="/" className={classes.link}>
         <WhatshotIcon className={classes.icon} />
         {t("streaming.library")}
-      </Link>
+      </MatLink>
       <Typography color="textPrimary" className={classes.link}>
         <GrainIcon className={classes.icon} />
         {title}
@@ -412,7 +412,7 @@ function OtherMovie({ genre }) {
               style={{ height: "280px", width: "100%" }}
             />
             <div className={classes.details}>
-              <Link href={`/streaming/${movie.imdb_code}`}>
+              <Link to={`/streaming/${movie.imdb_code}`}>
                 <img
                   src="/img/btn-overlay-blue.png"
                   alt="play"
@@ -499,7 +499,7 @@ function Comments({ movieInfo }) {
           </Grid>
           <div style={{ display: displayState }}>
             {commentsData.allComments.map(value => {
-              console.log(value);
+              console.log("value", value);
               return (
                 <Card
                   key={value._id}
@@ -534,9 +534,14 @@ function Comments({ movieInfo }) {
                             alignItems="flex-start"
                           >
                             <Grid item xs={5}>
-                              <Typography className={classes.dataAndName}>
-                                {value.userInfo.username}
-                              </Typography>
+                              <Link
+                                to={`/profile/${value.userInfo._id}`}
+                                style={{ textDecoration: "none" }}
+                              >
+                                <Typography className={classes.dataAndName}>
+                                  {value.userInfo.username}
+                                </Typography>
+                              </Link>
                             </Grid>
                             <Grid item xs={5} className={classes.dataAndName}>
                               <Typography>
