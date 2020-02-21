@@ -113,7 +113,7 @@ function App() {
               <GuestRoute exact path="/forgetpassword" component={Forget} />
               <GuestRoute exact path="/reset_password/:token" component={Reset} />
               <GuestRoute exact path="/verify_email/:token" component={Verify} />
-              <PrivateRoute exact path="/profile" component={Profile} />
+              <PrivateRoute exact path="/profile/:id?" component={Profile} />
               <PrivateRoute exact path="/editprofile" component={EditProfile} />
               <PrivateRoute exact path="/" component={Library} />
               <PrivateRoute exact path="/streaming/:imdb" component={Streaming} />
