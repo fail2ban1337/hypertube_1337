@@ -40,15 +40,12 @@ export const loadUser = () => async dispatch => {
 export const getProfile = id => async dispatch => {
   try {
     // dispatch(setLoading(LOADING_PROFILE));
-
-    const profile = await axios.get(`/api/user/info/${id}`);
+    const profile = await axios.get(`/api/users/info/${id}`);
     const movies = await axios.get(`/api/users/watched/${id}`);
 
-    console.log("@@@@@@@@@@@@@@@@@", profile, movies);
-
     const payload = {
-      info: profile,
-      movies: movies
+      info: profile.data,
+      movies: movies.data
     };
 
     dispatch({

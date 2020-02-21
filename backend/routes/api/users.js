@@ -15,6 +15,7 @@ const Jimp = require("jimp");
 const _ = require("lodash");
 const passport = require("passport");
 const utils = require("../../utils");
+const mongoose = require("mongoose");
 
 const { forwardAuthenticated } = require("../../Auth/auth");
 const auth = require("../../middleware/auth");
@@ -76,10 +77,11 @@ router.get("/me", [auth], async (req, res) => {
 // @route   GET api/users/me
 // @desc    Get logged user info
 // @access  Private
-router.get("/info/:id", [auth], async (req, res) => {
-  const { id: userId } = req.params;
+router.get("/info/:id?", [auth], async (req, res) => {
+  let id = req.params.id;
+  if (id === "undefined") id = req.id;
   try {
-    const user = await userModel.findOne({ _id: userId });
+    const user = await userModel.findOne({ _id: mongoose.Types.ObjectId(id) });
     if (user) return res.json({ user });
     return res.status(400).json({ msg: "User not found" });
   } catch (error) {
@@ -198,21 +200,27 @@ router.post("/image", async (req, res) => {
 // @route   Post api/users/watched
 // @desc    Record watched movie
 // @access  Private
-router.post("/watched", auth, async (req, res) => {
+router.post("/watched", [auth], async (req, res) => {
   try {
     const { imdb_code, title, year, rating, poster } = req.body;
     const { id } = req;
 
-    const watched = new watchedMovies({
+    let result = await watchedMovies.findOne({
       user: id,
-      imdb_code,
-      title,
-      year,
-      rating,
-      poster
+      imdb_code: imdb_code
     });
-
-    await watched.save();
+    if (!result) {
+      const watched = new watchedMovies({
+        user: id,
+        imdb_code,
+        title,
+        year,
+        rating,
+        poster
+      });
+      await watched.save();
+    }
+    return res.send("Success");
   } catch (error) {
     console.log(error);
     return res.status(500).json({ msg: "Server error.." });
@@ -222,18 +230,17 @@ router.post("/watched", auth, async (req, res) => {
 // @route   Get api/users/watched
 // @desc    Get user watched movies
 // @access  Private
-router.get("/watched/:id?", auth, async (req, res) => {
+router.get("/watched/:id?", [auth], async (req, res) => {
   try {
-    const id = req.params.id || req.id;
-
+    id = req.params.id;
+    if (req.params.id === "undefined") id = req.id;
     const watched = await watchedMovies
-      .find({ user: id })
+      .find({ user: mongoose.Types.ObjectId(id) })
       .sort({ date: -1 })
       .limit(5);
 
     return res.json(watched);
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: "Server error!" });
   }
 });

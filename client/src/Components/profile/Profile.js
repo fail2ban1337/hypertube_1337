@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
 import Container from "@material-ui/core/Container";
 import Divider from "@material-ui/core/Divider";
 
@@ -7,10 +6,14 @@ import { ProfileHeader } from "./ProfileHeader";
 import { ProfileListWatches } from "./ProfileListWatches";
 import { Loading } from "../inc/Loading";
 import { getProfile } from "../../actions/userAction";
+import { useSelector, useDispatch } from "react-redux";
 
 export const Profile = ({ match }) => {
   const { profile } = useSelector(state => state);
   // profile id from link
+  const dispatch = useDispatch();
+
+  console.log("profile", profile);
   let id = match.params.id;
   /*
    * pass profile image to ProfileHeader Component
@@ -18,10 +21,11 @@ export const Profile = ({ match }) => {
    */
 
   useEffect(() => {
-    getProfile(id);
-  }, [])
+    dispatch(getProfile(id));
+  }, [id]);
 
-  if (profile.loading) return <Loading text="Loading profile" />
+  if (profile.loading) return <Loading text="Loading profile" />;
+  if (!profile.profile) return <Loading text="profile not valide" />;
   return (
     <div>
       <Container maxWidth="lg">
