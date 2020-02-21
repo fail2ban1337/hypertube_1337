@@ -118,7 +118,7 @@ const getTorrentFile = hash =>
 // @route   Get api/streaming/video/:hash
 // @desc    streaming the chossen movie
 // @access  Private
-router.get("/video/:hash", [auth], async (req, res) => {
+router.get("/video/:hash", async (req, res) => {
   getTorrentFile(req.params.hash)
     .then(function(file) {
       const converte = needToConvert(file.ext);
