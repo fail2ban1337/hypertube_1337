@@ -201,25 +201,52 @@ function NavBar({ setDarkMode, Langage }) {
         <p>Dark Mode</p>
       </MenuItem>
       {user.isAuthenticated ? (
-        <MenuItem onClick={handleProfileMenuOpen}>
-          <IconButton
-            aria-label="account of current user"
-            aria-controls="primary-search-account-menu"
-            aria-haspopup="true"
+        <MenuList>
+          <MenuItem
+            onClick={() => handleMenuClose()}
             style={{ color: blue[500] }}
           >
-            <AccountCircle />
-          </IconButton>
-          <p>Profile</p>
-        </MenuItem>
-      ) : (
-        <Link to="/login">
-          <MenuItem onClick={handleProfileMenuOpen}>
-            <p style={{ verticalAlign: "middle", textAlign: "center" }}>
-              Login
-            </p>
+            <NavLink to="/profile">Profile</NavLink>
           </MenuItem>
-        </Link>
+          <MenuItem
+            onClick={() => handleMenuClose()}
+            style={{ color: blue[500] }}
+          >
+            <NavLink to="/editprofile">Edit profile</NavLink>
+          </MenuItem>
+          <IconButton aria-label="show 4 new mails" onClick={Langage}>
+            {localStorage.getItem("LANGUAGE") === "en" ? (
+              <FlagIcon code="FR" size={25} />
+            ) : (
+              <FlagIcon code="US" size={25} />
+            )}
+          </IconButton>
+          <MenuItem onClick={handleLogout} style={{ color: blue[500] }}>
+            Logout
+          </MenuItem>
+        </MenuList>
+      ) : (
+        <MenuList>
+          <MenuItem
+            onClick={() => handleMenuClose()}
+            style={{ color: blue[500] }}
+          >
+            <NavLink to="/login">Login</NavLink>
+          </MenuItem>
+          <MenuItem
+            onClick={() => handleMenuClose()}
+            style={{ color: blue[500] }}
+          >
+            <NavLink to="/register">Register</NavLink>
+          </MenuItem>
+          <IconButton aria-label="show 4 new mails" onClick={Langage}>
+            {localStorage.getItem("LANGUAGE") === "en" ? (
+              <FlagIcon code="FR" size={25} />
+            ) : (
+              <FlagIcon code="US" size={25} />
+            )}
+          </IconButton>
+        </MenuList>
       )}
     </Menu>
   );
@@ -229,9 +256,11 @@ function NavBar({ setDarkMode, Langage }) {
       <AppBar position="static" style={{ background: "transparent" }}>
         <Container maxWidth="xl">
           <Toolbar>
-            <Typography className={classes.title} variant="h6" noWrap>
-              HyperTube <HdIcon />
-            </Typography>
+            <Link to={`/`} style={{ textDecoration: "none" }}>
+              <Typography className={classes.title} variant="h6" noWrap>
+                HyperTube <HdIcon />
+              </Typography>
+            </Link>
             <Grid container justify={"center"}>
               {["/"].includes(window.location.pathname) && (
                 <div className={classes.search}>
