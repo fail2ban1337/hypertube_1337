@@ -20,9 +20,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { getMovieByKeyword } from "../../actions/libraryAction";
 import { FlagIcon } from "react-flag-kit";
 import { setLocale } from "../../i18n";
+import MenuList from "@material-ui/core/MenuList";
 import i18n from "i18n-js";
 import { logout } from "../../actions/userAction";
-import { Link } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -113,7 +114,7 @@ function NavBar({ setDarkMode, Langage }) {
   const handleLogout = () => {
     handleMenuClose();
     dispatch(logout());
-  }
+  };
 
   const handleMobileMenuOpen = event => {
     setMobileMoreAnchorEl(event.currentTarget);
@@ -139,15 +140,40 @@ function NavBar({ setDarkMode, Langage }) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose} style={{ color: blue[500] }}>
-        Profile
-      </MenuItem>
-      <MenuItem onClick={handleMenuClose} style={{ color: blue[500] }}>
-        My account
-      </MenuItem>
-      <MenuItem onClick={handleLogout} style={{ color: blue[500] }}>
-        Logout
-      </MenuItem>
+      {user.isAuthenticated ? (
+        <MenuList>
+          <MenuItem
+            onTouchTap={() => handleMenuClose()}
+            style={{ color: blue[500] }}
+          >
+            <NavLink to="/profile">Profile</NavLink>
+          </MenuItem>
+          <MenuItem
+            onTouchTap={() => handleMenuClose()}
+            style={{ color: blue[500] }}
+          >
+            <NavLink to="/editprofile">Edit profile</NavLink>
+          </MenuItem>
+          <MenuItem onClick={handleLogout} style={{ color: blue[500] }}>
+            Logout
+          </MenuItem>
+        </MenuList>
+      ) : (
+        <MenuList>
+          <MenuItem
+            onTouchTap={() => handleMenuClose()}
+            style={{ color: blue[500] }}
+          >
+            <NavLink to="/login">Login</NavLink>
+          </MenuItem>
+          <MenuItem
+            onTouchTap={() => handleMenuClose()}
+            style={{ color: blue[500] }}
+          >
+            <NavLink to="/register">Register</NavLink>
+          </MenuItem>
+        </MenuList>
+      )}
     </Menu>
   );
 
@@ -174,27 +200,27 @@ function NavBar({ setDarkMode, Langage }) {
         </IconButton>
         <p>Dark Mode</p>
       </MenuItem>
-      {
-        user.isAuthenticated ? (
+      {user.isAuthenticated ? (
+        <MenuItem onClick={handleProfileMenuOpen}>
+          <IconButton
+            aria-label="account of current user"
+            aria-controls="primary-search-account-menu"
+            aria-haspopup="true"
+            style={{ color: blue[500] }}
+          >
+            <AccountCircle />
+          </IconButton>
+          <p>Profile</p>
+        </MenuItem>
+      ) : (
+        <Link to="/login">
           <MenuItem onClick={handleProfileMenuOpen}>
-            <IconButton
-              aria-label="account of current user"
-              aria-controls="primary-search-account-menu"
-              aria-haspopup="true"
-              style={{ color: blue[500] }}
-            >
-              <AccountCircle />
-            </IconButton>
-            <p>Profile</p>
+            <p style={{ verticalAlign: "middle", textAlign: "center" }}>
+              Login
+            </p>
           </MenuItem>
-        ) : (
-          <Link to="/login">
-            <MenuItem onClick={handleProfileMenuOpen}>
-              <p style={{ verticalAlign: "middle", textAlign: 'center' }} >Login</p>
-            </MenuItem>
-          </Link>
-        )
-      }
+        </Link>
+      )}
     </Menu>
   );
 
@@ -244,31 +270,29 @@ function NavBar({ setDarkMode, Langage }) {
                   <FlagIcon code="US" size={25} />
                 )}
               </IconButton>
-              {
-                user.isAuthenticated ? (
-                  <IconButton
-                    edge="end"
-                    aria-label="account of current user"
-                    aria-controls={menuId}
-                    aria-haspopup="true"
-                    onClick={handleProfileMenuOpen}
-                    color="inherit"
-                  >
-                    <AccountCircle />
-                  </IconButton>
-                ) : (
-                  <Link to="/login">
-                    <IconButton
-                      edge="end"
-                      aria-label="Login"
-                      color="inherit"
-                      style={{ fontSize: "18px" }}
-                    >
-                      Login
-                    </IconButton>
-                  </Link>
-                )
-              }
+              {user.isAuthenticated ? (
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+              ) : (
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+              )}
             </div>
             <div className={classes.sectionMobile}>
               <IconButton
