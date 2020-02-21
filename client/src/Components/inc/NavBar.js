@@ -207,7 +207,7 @@ function NavBar({ setDarkMode, Langage }) {
               HyperTube <HdIcon />
             </Typography>
             <Grid container justify={"center"}>
-              {["/library", "/library/"].includes(window.location.pathname) && (
+              {["/"].includes(window.location.pathname) && (
                 <div className={classes.search}>
                   <div className={classes.searchIcon}>
                     <SearchIcon />
