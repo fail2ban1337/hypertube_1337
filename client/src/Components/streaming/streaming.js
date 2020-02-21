@@ -139,7 +139,7 @@ function StreamTrace({ title }) {
         <HomeIcon className={classes.icon} />
         {t("streaming.home")}
       </Link>
-      <Link color="inherit" href="/library" className={classes.link}>
+      <Link color="inherit" href="/" className={classes.link}>
         <WhatshotIcon className={classes.icon} />
         {t("streaming.library")}
       </Link>

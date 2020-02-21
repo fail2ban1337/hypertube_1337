@@ -17,7 +17,7 @@ const passport = require("passport");
 const utils = require("../../utils");
 
 const { forwardAuthenticated } = require("../../Auth/auth");
-const auth = require('../../middleware/auth');
+const auth = require("../../middleware/auth");
 const validatorController = require("../../controllers/validator.controller");
 
 // router.post('/login', forwardAuthenticated, (req, res) => res.render('login'));
@@ -80,8 +80,7 @@ router.get("/info/:id", [auth], async (req, res) => {
   const { id: userId } = req.params;
   try {
     const user = await userModel.findOne({ _id: userId });
-    if (user)
-      return res.json({ user });
+    if (user) return res.json({ user });
     return res.status(400).json({ msg: "User not found" });
   } catch (error) {
     return res.status(500).json({ msg: "Server Error" });
@@ -93,10 +92,7 @@ router.get("/info/:id", [auth], async (req, res) => {
 // @access  Private
 router.post(
   "/update",
-  [
-    auth,
-    validatorController.validateUpdateUser
-  ],
+  [auth, validatorController.validateUpdateUser],
   async (req, res) => {
     //Check errors
     let validationErrors = validationResult(req);
@@ -125,45 +121,47 @@ router.post(
 
     try {
       const user = await userModel.findOne({ _id: id });
-      if (!user)
-        return res.status(404).json({ msg: "Invalid User" });
+      if (!user) return res.status(404).json({ msg: "Invalid User" });
 
       // if user connected using oauth, don't compare password
-      const matched = strategy !== 'omniauth' ?
-        await bcrypt.compare(oldPassword, user.password) :
-        true;
-      if (!matched) 
+      const matched =
+        strategy !== "omniauth"
+          ? await bcrypt.compare(oldPassword, user.password)
+          : true;
+      if (!matched)
         return res.status(400).json({ msg: "Invalid Old Password" });
 
       // check username if unique
-      const usernameExists = await userModel.findOne({ username, _id : { $ne: id } });
+      const usernameExists = await userModel.findOne({
+        username,
+        _id: { $ne: id }
+      });
       if (usernameExists)
-        return res.status(400).json({ 
-          msg: 'Choose another username', 
-          errors: { username: 'Already exists' } 
+        return res.status(400).json({
+          msg: "Choose another username",
+          errors: { username: "Already exists" }
         });
 
       // check username if unique
-      const emailExists = await userModel.findOne({ email, _id : { $ne: id } });
+      const emailExists = await userModel.findOne({ email, _id: { $ne: id } });
       if (emailExists)
-        return res.status(400).json({ 
-          msg: 'Choose another email', 
-          errors: { email: 'Already exists' } 
+        return res.status(400).json({
+          msg: "Choose another email",
+          errors: { email: "Already exists" }
         });
-      
+
       user.first_name = first_name;
       user.last_name = last_name;
       user.username = username;
       user.email = email;
       // if user set new password
-      if (newPassword !== "")
-        user.password = newPassword;
+      if (newPassword !== "") user.password = newPassword;
 
       await user.save();
       return res.json({ msg: "Updated Successfuly" });
     } catch (error) {
-      console.log(error)
-      res.status(500).json({ msg: 'Server error' });
+      console.log(error);
+      res.status(500).json({ msg: "Server error" });
     }
   }
 );
@@ -211,12 +209,12 @@ router.post("/watched", auth, async (req, res) => {
       title,
       year,
       rating,
-      poster 
+      poster
     });
 
     await watched.save();
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({ msg: "Server error.." });
   }
 });
@@ -227,7 +225,7 @@ router.post("/watched", auth, async (req, res) => {
 router.get("/watched/:id?", auth, async (req, res) => {
   try {
     const id = req.params.id || req.id;
-  
+
     const watched = await watchedMovies
       .find({ user: id })
       .sort({ date: -1 })
