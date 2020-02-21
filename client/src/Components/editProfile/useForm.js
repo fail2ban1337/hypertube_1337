@@ -1,7 +1,10 @@
 import { useState } from "react";
 import _ from "lodash";
+// Redux
+import { useSelector } from "react-redux";
 
-export default function useForm(validate, submit) {
+export default function useForm(validate, submit, strategy) {
+  const { user } = useSelector(state => state);
   const [formData, setformData] = useState({
     first_name: "",
     last_name: "",
@@ -20,7 +23,7 @@ export default function useForm(validate, submit) {
   const handleSubmit = async event => {
     event.preventDefault();
     // Validate Form
-    const errorsForm = validate(formData);
+    const errorsForm = validate(formData, strategy);
     setformData({ ...formData, errors: errorsForm });
     // Send data
     if (_.isEmpty(errorsForm)) submit();
