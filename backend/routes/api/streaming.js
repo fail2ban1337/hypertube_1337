@@ -11,6 +11,7 @@ const streamModel = require("../../models/Streming");
 const CommentsModel = require("../../models/Comments");
 const fs = require("fs");
 const mongoose = require("mongoose");
+const auth = require("../../middleware/auth");
 
 FFmpeg.setFfmpegPath(ffmpegInstaller.path);
 let engines = [];
@@ -183,7 +184,7 @@ router.get("/video/:hash", async (req, res) => {
 // @route   Get api/streaming/watchedUpdate
 // @desc    add or update movie last watch time
 // @access  Private
-router.post("/watchedUpdate/", async (req, res) => {
+router.post("/watchedUpdate/", [auth], async (req, res) => {
   try {
     let { hash_code, imdb_code } = req.body;
     // first we gonna check our database if there already
@@ -231,22 +232,23 @@ router.post("/watchedUpdate/", async (req, res) => {
 // @route   Get api/streaming/AddComment
 // @desc    add new comments from the chossen movie
 // @access  Private
-router.post("/AddComment", async (req, res) => {
+router.post("/AddComment", [auth], async (req, res) => {
   try {
     const { imdb_code, comment_text } = req.body;
     let comment = new CommentsModel({
       imdbCode: imdb_code,
       commentText: comment_text.trim(),
-      userInfo: mongoose.Types.ObjectId("5e45bbcd85cfbd0ce6d55a51")
+      userInfo: mongoose.Types.ObjectId(req.id)
     });
     await comment.save();
 
     const result = await CommentsModel.find({ _id: comment._id }).populate(
       "userInfo",
-      "username"
+      "username profileImage"
     );
     return res.send(result);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Error on Adding New Comment" });
   }
 });
@@ -254,14 +256,14 @@ router.post("/AddComment", async (req, res) => {
 // @route   Get api/streaming/likeComment
 // @desc    add like or remove it for the chossen comments
 // @access  Private
-router.post("/likeComment", async (req, res) => {
+router.post("/likeComment", [auth], async (req, res) => {
   try {
     const { imdb_code, comment_id } = req.body;
     let result = await CommentsModel.find({
       _id: comment_id,
       imdbCode: imdb_code,
       likes: {
-        $elemMatch: { $eq: mongoose.Types.ObjectId("5e45bbcd85cfbd0ce6d55a51") }
+        $elemMatch: { $eq: mongoose.Types.ObjectId(req.id) }
       }
     });
     if (result.length === 0) {
@@ -269,7 +271,7 @@ router.post("/likeComment", async (req, res) => {
         { imdbCode: imdb_code, _id: comment_id },
         {
           $inc: { likeCount: 1 },
-          $push: { likes: mongoose.Types.ObjectId("5e45bbcd85cfbd0ce6d55a51") }
+          $push: { likes: mongoose.Types.ObjectId(req.id) }
         }
       );
     } else {
@@ -277,17 +279,17 @@ router.post("/likeComment", async (req, res) => {
         { imdbCode: imdb_code, _id: comment_id },
         {
           $inc: { likeCount: -1 },
-          $pull: { likes: mongoose.Types.ObjectId("5e45bbcd85cfbd0ce6d55a51") }
+          $pull: { likes: mongoose.Types.ObjectId(req.id) }
         }
       );
     }
     const resultFinall = await CommentsModel.find({ _id: comment_id })
       .lean()
-      .populate("userInfo", "username");
+      .populate("userInfo", "username profileImage");
     resultFinall.map(element => {
       element.liked = false;
       for (let value of element.likes) {
-        if (value == "5e45bbcd85cfbd0ce6d55a51") {
+        if (value.toString() === req.id.toString()) {
           element.liked = true;
         } else {
           element.liked = false;
@@ -303,16 +305,16 @@ router.post("/likeComment", async (req, res) => {
 // @route   Get api/streaming/getComments
 // @desc    get all the comments for the chossen movie
 // @access  Private
-router.get("/getComments/:imdb_code", async (req, res) => {
+router.get("/getComments/:imdb_code", [auth], async (req, res) => {
   try {
     const { imdb_code } = req.params;
     let result = await CommentsModel.find({ imdbCode: imdb_code })
       .lean()
-      .populate("userInfo", "username");
+      .populate("userInfo", "username profileImage");
     result.map(element => {
       element.liked = false;
       for (let value of element.likes) {
-        if (value == "5e45bbcd85cfbd0ce6d55a51") {
+        if (value.toString() === req.id.toString()) {
           element.liked = true;
         } else {
           element.liked = false;

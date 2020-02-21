@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { Grid } from "@material-ui/core";
 import { useSelector } from "react-redux";
+import Container from "@material-ui/core/Container";
+import Divider from "@material-ui/core/Divider";
 
 import { ProfileHeader } from "./ProfileHeader";
 import { ProfileListWatches } from "./ProfileListWatches";
@@ -23,14 +24,11 @@ export const Profile = ({ match }) => {
   if (profile.loading) return <Loading text="Loading profile" />
   return (
     <div>
-      <Grid container>
-        <Grid item xs={12}>
-          <ProfileHeader />
-        </Grid>
-        <Grid item xs={12}>
-          <ProfileListWatches />
-        </Grid>
-      </Grid>
+      <Container maxWidth="lg">
+        <ProfileHeader />
+        <Divider />
+        <ProfileListWatches />
+      </Container>
     </div>
   );
 };
