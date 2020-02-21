@@ -61,149 +61,8 @@ const upload = multer({
   }
 }).single("profileImage");
 
-router.post("/login", (req, res) => {
-  const { username, password } = req.body;
-
-  userModel.findOne({ username: username }, function(err, user) {
-    if (err) {
-      return res.status(500).send("Server error");
-    }
-    if (!user) {
-      return res.status(400).json({
-        erros: [
-          {
-            msg: "User Not Exise"
-          }
-        ]
-      });
-    }
-    if (!userModel.verifyPassword(password)) {
-      return res.status(400).json({
-        erros: [
-          {
-            msg: "Passowrd Error"
-          }
-        ]
-      });
-    }
-    passport.authenticate("local", {
-      successRedirect: "/",
-      failureRedirect: "/login",
-      failureFlash: true
-    }),
-      (req, res) => {
-        console.log("logged in", req.user);
-        var userInfo = {
-          username: req.user.username
-        };
-        res.send(userInfo);
-      };
-  });
-});
-
-// @route   Post api/users
-// @desc    Register user
-// @access  Public
-router.post(
-  "/register",
-  [
-    check("profileImage", "profileImage is requird").isEmpty(),
-    check("username", "Name is requird")
-      .not()
-      .isEmpty(),
-    check("first_name", "Please entre a valide a valide first-name").isLength({
-      min: 3,
-      max: 10
-    }),
-    check("last_name", "Please entre a valide last_name").isLength({
-      min: 3,
-      max: 10
-    }),
-    check("email", "Please include a valide Email").isEmail(),
-    check(
-      "password",
-      "Please entre a password with 6 or more characters"
-    ).isLength({
-      min: 6
-    }),
-    check("confirmPassword", "Passwords do not match").custom(
-      (value, { req }) => value === req.body.password
-    )
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        errors: errors.array()
-      });
-    }
-    const {
-      profileImage,
-      username,
-      firstName,
-      lastName,
-      email,
-      password,
-      confirmPassword,
-      verificationKey
-    } = req.body;
-    try {
-      let user = await userModel.findOne({
-        email
-      });
-      if (user) {
-        return res.status(400).json({
-          erros: [
-            {
-              msg: "User already Exists"
-            }
-          ]
-        });
-      }
-      user = new userModel({
-        profileImage,
-        username,
-        firstName,
-        lastName,
-        email,
-        password,
-        verificationKey
-      });
-      // Encrypte password
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(password, salt);
-      user.verificationKey = await crypto.randomBytes(16).toString("hex");
-      await user
-        .save()
-        .then(user => {
-          utils.sendConfirmationEmail(
-            email,
-            user.userName,
-            user.verificationKey
-          );
-          res.status(200).json({
-            message: "user inserted successfully, verification email is sent"
-          });
-        })
-        .catch(err => res.status(500).json({ message: ">>>" + err.message }));
-    } catch (err) {
-      console.log(err);
-      res.status(500).send("Server error");
-    }
-  }
-);
-
-//login Handle
-router.post("/login", (req, res, next) => {
-  passport.authenticate("local", {
-    successRedirect: "",
-    failureRedirect: "/login",
-    failureFlash: true
-  })(req, res, next);
-});
-
 // @route   GET api/users/me
-// @desc    Test route
+// @desc    Get logged user info
 // @access  Private
 router.get("/me", [auth], async (req, res) => {
   try {
@@ -211,6 +70,20 @@ router.get("/me", [auth], async (req, res) => {
     return res.json({ user });
   } catch (error) {
     res.status(500).send("Server Error");
+  }
+});
+
+// @route   GET api/users/me
+// @desc    Get logged user info
+// @access  Private
+router.get("/info/:id", [auth], async (req, res) => {
+  const { id: userId } = req.params;
+  try {
+    const user = await userModel.findOne({ _id: userId });
+    if (user) return res.json({ user });
+    return res.status(400).json({ msg: "User not found" });
+  } catch (error) {
+    return res.status(500).json({ msg: "Server Error" });
   }
 });
 
@@ -342,24 +215,26 @@ router.post("/watched", auth, async (req, res) => {
     await watched.save();
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ msg: "Server error" });
+    return res.status(500).json({ msg: "Server error.." });
   }
 });
 
 // @route   Get api/users/watched
 // @desc    Get user watched movies
 // @access  Private
-router.get("/watched", auth, async (req, res) => {
+router.get("/watched/:id?", auth, async (req, res) => {
   try {
-    const { id } = req;
+    const id = req.params.id || req.id;
 
     const watched = await watchedMovies
       .find({ user: id })
       .sort({ date: -1 })
-      .limit(8);
+      .limit(5);
+
     return res.json(watched);
   } catch (error) {
-    return res.status(500).json({ msg: "Server error" });
+    console.log(error);
+    return res.status(500).json({ msg: "Server error!" });
   }
 });
 
