@@ -168,3 +168,51 @@ exports.validateEmailResetPassword = [
       }
     })
 ];
+
+exports.validateUpdateUser = [
+  // username
+  validateUsername("username"),
+  // password
+  check("newPassord")
+    .if((value, { req }) => 
+      (req.user.strategy !== 'omniauth' && req.body.newPassword !== "")
+    )
+    .exists()
+    .withMessage(`Password is required`)
+    .isString()
+    .withMessage(`Password must be String`)
+    .isLength({ min: 8 })
+    .withMessage(`Password length must be at least 8 characters`)
+    .isLength({ max: 100 })
+    .withMessage("Password length can be maximum 100 chars")
+    .matches("(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}")
+    .withMessage(
+      "Password must contain uppercase letters and lowercase letters and numbers"
+    ),
+  // confirm password
+  check("confirmPassword", "Password not match")
+    .if((value, { req }) => req.user.strategy !== 'omniauth')
+    .custom(
+      (value, { req }) => value === req.body.newPassword
+    ),
+  // email
+  validateEmail("email"),
+  // first_name
+  check("first_name")
+    .exists()
+    .withMessage("first name is required")
+    .isString()
+    .withMessage("first name must be String")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("first name must be at least 1 character"),
+  // last_name
+  check("last_name")
+    .exists()
+    .withMessage("last name is required")
+    .isString()
+    .withMessage("last name must be String")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("last name must be at least 1 character")
+];

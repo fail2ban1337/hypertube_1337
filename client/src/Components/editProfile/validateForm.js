@@ -1,4 +1,4 @@
-export default function validateEditProfile(formData) {
+export default function validateEditProfile(formData, strategy) {
   const {
     first_name,
     last_name,
@@ -15,10 +15,15 @@ export default function validateEditProfile(formData) {
   if (username === "") errors.username = "Enter Valid Username";
   if (email === "" || !/\S+@\S+\.\S+/.test(email))
     errors.email = "Enter Valid Email";
-  if (oldPassword === "") errors.oldPassword = "Enter Old Password";
-  if (!/(?=.*[a-zA-Z])(?=.*[0-9]).{8,30}/i.test(newPassword))
-    errors.newPassword = "Enter Valid New Password";
-  if (confirmPassword !== newPassword)
-    errors.confirmPassword = "Password do not match";
+  if (strategy !== 'omniauth') {
+    if (oldPassword === "") 
+      errors.oldPassword = "Enter Old Password";
+    let regex = /(?=.*[a-zA-Z])(?=.*[0-9]).{8,30}/i;
+    if (newPassword !== "" && !regex.test(newPassword))
+      errors.newPassword = "Enter Valid New Password";
+    if (confirmPassword !== newPassword)
+      errors.confirmPassword = "Password do not match";
+  }
+  
   return errors;
 }
