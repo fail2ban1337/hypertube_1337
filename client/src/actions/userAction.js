@@ -1,6 +1,6 @@
 import axios from 'axios';
 import setTokenToAxiosHeader from '../utils/setTokenToAxiosHeader';
-import { LOAD_USER, LOAD_FAIL, DESTROY_USER } from './actionTypes';
+import { LOAD_USER, LOAD_FAIL, DESTROY_USER, LOADING_USER } from './actionTypes';
 
 export const loadUser = () => async dispatch => {
   if (localStorage.token) {
@@ -8,7 +8,11 @@ export const loadUser = () => async dispatch => {
   }
 
   try {
-    const response = await axios.get("/api/users/me");
+    dispatch(setLoading());
+    
+    const source = axios.CancelToken.source();
+
+    const response = await axios.get("/api/users/me", { cancelToken: source.token });
     const { user } = response.data;
 
     dispatch({
@@ -23,14 +27,15 @@ export const loadUser = () => async dispatch => {
 };
 
 export const logout = () => async dispatch => {
-  try {
-
     dispatch({
       type: DESTROY_USER,
     });
-    dispatch(loadUser());
-    window.location = '/login';
-  } catch (error) {
-    dispatch(loadUser());
-  }
+
+    setTokenToAxiosHeader(false);
 };
+
+const setLoading = () => async dispatch => {
+  dispatch({
+    type: LOADING_USER
+  });
+}; 

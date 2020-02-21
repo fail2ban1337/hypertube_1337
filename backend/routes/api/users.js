@@ -268,12 +268,22 @@ router.post(
           msg: 'Choose another username', 
           errors: { username: 'Already exists' } 
         });
+
+      // check username if unique
+      const emailExists = await userModel.findOne({ email, _id : { $ne: id } });
+      if (emailExists)
+        return res.status(400).json({ 
+          msg: 'Choose another email', 
+          errors: { email: 'Already exists' } 
+        });
       
       user.first_name = first_name;
       user.last_name = last_name;
       user.username = username;
       user.email = email;
-      user.password = newPassword;
+      // if user set new password
+      if (newPassword !== "")
+        user.password = newPassword;
 
       await user.save();
       return res.json({ msg: "Updated Successfuly" });

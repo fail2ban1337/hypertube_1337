@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -114,7 +114,7 @@ class Login extends Component {
           // set jwt into local storage
           this.setJwt(response.data.jwt);
           // redirect user to profile page
-          window.location = "/profile";
+          //window.location = "/profile";
         })
         .catch(err => {
           handleError(err);
@@ -149,7 +149,7 @@ class Login extends Component {
         // action to set jwt in local storage
         this.setJwt(search.key);
         // redirect user to profile page
-        window.location = "/profile";
+        // window.location = "/profile";
       }
     }
   }
