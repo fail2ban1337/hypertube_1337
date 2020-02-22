@@ -10,6 +10,7 @@ import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { useSelector, useDispatch } from "react-redux";
 import { Loading } from "../inc/Loading";
+import { t } from "../../i18n";
 
 const useStyles = makeStyles(theme => ({
   movies: {
@@ -54,13 +55,13 @@ export const ProfileListWatches = props => {
           gutterBottom
           style={{ borderRadius: "40px" }}
         >
-          RECENTLY WATCHED
+          {t("profile.recenty_watched")}
         </Typography>
       </Grid>
       <Grid xs={6} item>
         <Carousel animation="fade">
           {profile.movies.length == 0 ? (
-            <Loading text="List Of Watched Movies Empty" />
+            <Loading text={t("profile.list_watched_empty")} />
           ) : (
             profile.movies.map(item => {
               return <MyItem key={item._id} item={item} />;
@@ -126,7 +127,7 @@ function MyItem({ item }) {
         </Grid>
       </Grid>
       <Grid xs={12} container item justify={"center"}>
-        <Button style={{ color: blue[500] }}>Watch It Now!</Button>
+        <Button style={{ color: blue[500] }}>{t("profile.watch_new")}</Button>
       </Grid>
     </Paper>
   );
