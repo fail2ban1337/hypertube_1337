@@ -36,18 +36,14 @@ const validateUsername = fieldName =>
   check(fieldName)
     .exists()
     .withMessage(`username is required`)
-    .isString()
-    .withMessage(`username must not contain spaces`)
+    .matches(/^[\w-_]+$/)
+    .withMessage(`username must contain alphanumeric and hyphen and underscore characters`)
     .isLength({
       min: 6
     })
     .withMessage(`username length must be at least 6 characters`)
     .isLength({ max: 50 })
-    .withMessage("username length can be maximum 50 chars")
-    .isAlphanumeric()
-    .withMessage(
-      "Username must contain only Alphabetic and Numeric characters"
-    );
+    .withMessage("username length can be maximum 50 chars");
 
 const validatePassword = fieldName =>
   check(fieldName)
@@ -177,7 +173,7 @@ exports.validateUpdateUser = [
   // username
   validateUsername("username"),
   // password
-  check("newPassord")
+  check("newPassword")
     .if(
       (value, { req }) =>
         req.user.strategy !== "omniauth" && req.body.newPassword !== ""
@@ -223,3 +219,4 @@ exports.validateUpdateUser = [
     .isLength({ min: 1 })
     .withMessage("last name must be at least 1 character")
 ];
+

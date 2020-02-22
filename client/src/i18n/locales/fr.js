@@ -125,7 +125,8 @@ const fr = {
       "Ce compte n'a pas de mot de passe, vous pouvez vous connecter en utilisant Google ou un compte Intranet 42",
     Password_updated_successfully: "Mot de passe mis à jour avec succès",
     first_name_must_be_only_alphabetical_chars: "le prénom ne doit être que des caractères alphabétiques",
-    last_name_must_be_only_alphabetical_chars: "le nom de famille ne doit être que des caractères alphabétiques"
+    last_name_must_be_only_alphabetical_chars: "le nom de famille ne doit être que des caractères alphabétiques",
+    username_must_contain_alphanumeric_and_hyphen_and_underscore_characters: "le nom d'utilisateur doit contenir des caractères alphanumériques et des tirets et des traits de soulignement"
   }
 };
 export default fr;
