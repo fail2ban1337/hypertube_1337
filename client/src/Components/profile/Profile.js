@@ -13,7 +13,6 @@ export const Profile = ({ match }) => {
   // profile id from link
   const dispatch = useDispatch();
 
-  console.log("profile", profile);
   let id = match.params.id;
   /*
    * pass profile image to ProfileHeader Component

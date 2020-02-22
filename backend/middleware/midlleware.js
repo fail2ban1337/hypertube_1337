@@ -30,9 +30,9 @@ module.exports = middleware = {
         .optional({ checkFalsy: true })
         .isInt({ min: 1, max: 727 }),
       check("sort_by", "Sort by Name parameter not valid").isIn([
-        "year",
+        "trending",
         "rating",
-        "title"
+        "year"
       ]),
       check("filterGenre", "Filter by Genre parameter not valid").isIn([
         "Action",

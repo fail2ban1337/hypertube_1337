@@ -63,7 +63,7 @@ export const ProfileListWatches = props => {
             <Loading text="List Of Watched Movies Empty" />
           ) : (
             profile.movies.map(item => {
-              return <MyItem item={item} />;
+              return <MyItem key={item._id} item={item} />;
             })
           )}
         </Carousel>

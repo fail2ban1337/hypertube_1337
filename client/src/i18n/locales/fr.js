@@ -17,14 +17,14 @@ const fr = {
     confirm_password: "Confirmez le mot de passe",
     have_an_account: "Vous avez déjà un compte? se connecter"
   },
-  forgetpassword:{
-    forgetpassword:'Mot de passe oublié',
-    email_address:'adresse email',
-    send:'ENVOYER'
+  forgetpassword: {
+    forgetpassword: "Mot de passe oublié",
+    email_address: "adresse email",
+    send: "ENVOYER"
   },
   controller: {
     sort: "Trier",
-    title: "Titre",
+    trending: "Tendance",
     rating: "Avis",
     year: "Année",
     filter: "Filtre",

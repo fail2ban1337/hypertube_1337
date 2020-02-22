@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { t } from '../../i18n';
+import { t } from "../../i18n";
 import { SET_FILTERS, SET_SORT } from "../../actions/actionTypes";
 
 const useStyles = makeStyles(theme => ({
@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Controllers() {
   const classes = useStyles();
-  const [sort, setSort] = useState("year");
+  const [sort, setSort] = useState("trending");
   const [rating, setRating] = useState(0);
   const [genre, setGenre] = useState("All");
   const { library } = useSelector(state => state);
@@ -94,7 +94,7 @@ export default function Controllers() {
                   display: "block"
                 }}
               >
-               {t("controller.sort")}
+                {t("controller.sort")}
               </span>
             </Grid>
 
@@ -112,9 +112,9 @@ export default function Controllers() {
               >
                 <Grid xs={12} md={4} container item justify={"center"}>
                   <FormControlLabel
-                    value="title"
+                    value="trending"
                     control={<Radio style={{ color: "#2196f3" }} />}
-                    label={t("controller.title")}
+                    label={t("controller.trending")}
                   />
                 </Grid>
                 <Grid xs={12} md={4} container item justify={"center"}>
@@ -206,18 +206,36 @@ export default function Controllers() {
                       value={genre}
                       onChange={handleChangeGenre}
                     >
-                      <MenuItem value={"Action"}>{t("controller.genrelist.action")}</MenuItem>
-                      <MenuItem value={"Adventure"}>{t("controller.genrelist.adventure")}</MenuItem>
-                      <MenuItem value={"Comedy"}>{t("controller.genrelist.comedy")}</MenuItem>
-                      <MenuItem value={"Drama"}>{t("controller.genrelist.drama")}</MenuItem>
-                      <MenuItem value={"Fantasy"}>{t("controller.genrelist.fantasy")}</MenuItem>
-                      <MenuItem value={"Historical"}>{t("controller.genrelist.historical")}</MenuItem>
-                      <MenuItem value={"Romance"}>{t("controller.genrelist.romance")}</MenuItem>
-                      <MenuItem value={"Science fiction"}>
-                      {t("controller.genrelist.science_fiction")}
+                      <MenuItem value={"Action"}>
+                        {t("controller.genrelist.action")}
                       </MenuItem>
-                      <MenuItem value={"Western"}>{t("controller.genrelist.western")}</MenuItem>
-                      <MenuItem value={"All"}>{t("controller.genrelist.all")}</MenuItem>
+                      <MenuItem value={"Adventure"}>
+                        {t("controller.genrelist.adventure")}
+                      </MenuItem>
+                      <MenuItem value={"Comedy"}>
+                        {t("controller.genrelist.comedy")}
+                      </MenuItem>
+                      <MenuItem value={"Drama"}>
+                        {t("controller.genrelist.drama")}
+                      </MenuItem>
+                      <MenuItem value={"Fantasy"}>
+                        {t("controller.genrelist.fantasy")}
+                      </MenuItem>
+                      <MenuItem value={"Historical"}>
+                        {t("controller.genrelist.historical")}
+                      </MenuItem>
+                      <MenuItem value={"Romance"}>
+                        {t("controller.genrelist.romance")}
+                      </MenuItem>
+                      <MenuItem value={"Science fiction"}>
+                        {t("controller.genrelist.science_fiction")}
+                      </MenuItem>
+                      <MenuItem value={"Western"}>
+                        {t("controller.genrelist.western")}
+                      </MenuItem>
+                      <MenuItem value={"All"}>
+                        {t("controller.genrelist.all")}
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>

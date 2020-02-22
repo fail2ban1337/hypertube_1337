@@ -10,7 +10,7 @@ import { setAlert, unsetAlert } from "./alert";
 
 export const getMovies = (
   pid = 1,
-  sort_by = "year",
+  sort_by = "trending",
   filterGenre = "All",
   filterRatingMin = 0
 ) => async dispatch => {
