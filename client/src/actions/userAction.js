@@ -6,7 +6,6 @@ import {
   DESTROY_USER,
   LOADING_USER,
   LOAD_PROFILE,
-  LOADING_PROFILE,
   PROFILE_FAIL
 } from "./actionTypes";
 import { setAlert } from "./alert";

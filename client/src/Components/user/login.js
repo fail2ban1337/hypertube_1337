@@ -149,7 +149,7 @@ class Login extends Component {
         // action to set jwt in local storage
         this.setJwt(search.key);
         // redirect user to profile page
-        window.location = "/profile";
+        // window.location = "/profile";
       }
     }
   }

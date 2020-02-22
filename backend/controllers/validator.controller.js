@@ -174,8 +174,9 @@ exports.validateUpdateUser = [
   validateUsername("username"),
   // password
   check("newPassord")
-    .if((value, { req }) => 
-      (req.user.strategy !== 'omniauth' && req.body.newPassword !== "")
+    .if(
+      (value, { req }) =>
+        req.user.strategy !== "omniauth" && req.body.newPassword !== ""
     )
     .exists()
     .withMessage(`Password is required`)
@@ -191,10 +192,8 @@ exports.validateUpdateUser = [
     ),
   // confirm password
   check("confirmPassword", "Password not match")
-    .if((value, { req }) => req.user.strategy !== 'omniauth')
-    .custom(
-      (value, { req }) => value === req.body.newPassword
-    ),
+    .if((value, { req }) => req.user.strategy !== "omniauth")
+    .custom((value, { req }) => value === req.body.newPassword),
   // email
   validateEmail("email"),
   // first_name
