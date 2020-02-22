@@ -37,7 +37,9 @@ const validateUsername = fieldName =>
     .exists()
     .withMessage(`username is required`)
     .matches(/^[\w-_]+$/)
-    .withMessage(`username must contain alphanumeric and hyphen and underscore characters`)
+    .withMessage(
+      `username must contain alphanumeric and hyphen and underscore characters`
+    )
     .isLength({
       min: 6
     })
@@ -219,4 +221,3 @@ exports.validateUpdateUser = [
     .isLength({ min: 1 })
     .withMessage("last name must be at least 1 character")
 ];
-
