@@ -188,20 +188,16 @@ function NavBar({ setDarkMode, Langage }) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton
-          aria-label="show 11 new notifications"
-          style={{ color: blue[500] }}
-          onClick={setDarkMode}
-        >
-          <Badge color="secondary">
-            <Brightness2Icon />
-          </Badge>
-        </IconButton>
-        <p>Dark Mode</p>
-      </MenuItem>
       {user.isAuthenticated ? (
         <MenuList>
+          <MenuItem
+            onClick={() => handleMenuClose()}
+            style={{ color: blue[500] }}
+          >
+            <NavLink to="/" style={{ color: "#000" }}>
+              Library
+            </NavLink>
+          </MenuItem>
           <MenuItem
             onClick={() => handleMenuClose()}
             style={{ color: blue[500] }}
@@ -221,6 +217,17 @@ function NavBar({ setDarkMode, Langage }) {
               <FlagIcon code="US" size={25} />
             )}
           </IconButton>
+          <MenuItem>
+            <IconButton
+              aria-label="show 11 new notifications"
+              style={{ color: blue[500],padding:0 }}
+              onClick={setDarkMode}
+            >
+              <Badge color="secondary">
+                <Brightness2Icon />
+              </Badge>
+            </IconButton>
+          </MenuItem>
           <MenuItem onClick={handleLogout} style={{ color: blue[500] }}>
             Logout
           </MenuItem>
@@ -246,6 +253,17 @@ function NavBar({ setDarkMode, Langage }) {
               <FlagIcon code="US" size={25} />
             )}
           </IconButton>
+          <MenuItem>
+            <IconButton
+              aria-label="show 11 new notifications"
+              style={{ color: blue[500], padding: 0, margin: 0 }}
+              onClick={setDarkMode}
+            >
+              <Badge color="secondary">
+                <Brightness2Icon />
+              </Badge>
+            </IconButton>
+          </MenuItem>
         </MenuList>
       )}
     </Menu>
