@@ -280,7 +280,7 @@ function NavBar({ setDarkMode, Langage }) {
               </Typography>
             </Link>
             <Grid container justify={"center"}>
-              {["/"].includes(window.location.pathname) && (
+              {["/library"].includes(window.location.pathname) && (
                 <div className={classes.search}>
                   <div className={classes.searchIcon}>
                     <SearchIcon />

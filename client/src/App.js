@@ -6,6 +6,7 @@ import { CssBaseline } from "@material-ui/core";
 import Axios from "axios";
 
 import Login from "./Components/user/login";
+import Home from "./Components/pages/Home";
 import Forget from "./Components/user/Forget";
 import Register from "./Components/user/register";
 import Reset from "./Components/user/Reset";
@@ -108,6 +109,7 @@ function App() {
           <NavBar setDarkMode={toggleDarkTheme} Langage={toggleLanguage} />
           <div style={{ flex: 1 }}>
             <Switch>
+              <Route exact path="/" component={Home} />
               <GuestRoute exact path="/login" component={Login} />
               <GuestRoute exact path="/register" component={Register} />
               <GuestRoute exact path="/forgetpassword" component={Forget} />
@@ -123,7 +125,7 @@ function App() {
               />
               <PrivateRoute exact path="/profile/:id?" component={Profile} />
               <PrivateRoute exact path="/editprofile" component={EditProfile} />
-              <PrivateRoute exact path="/" component={Library} />
+              <PrivateRoute exact path="/library" component={Library} />
               <PrivateRoute
                 exact
                 path="/streaming/:imdb"
