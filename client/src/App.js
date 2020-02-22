@@ -84,6 +84,7 @@ function App() {
 
   useEffect(() => {
     dispatch(loadUser());
+    if (!localStorage.getItem("LANGUAGE")) setLocale("en");
     return () => {
       source.cancel();
     };

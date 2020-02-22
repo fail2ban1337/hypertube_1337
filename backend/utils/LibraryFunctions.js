@@ -319,7 +319,7 @@ const getSubtitles = async imdb_code => {
     // set subtitle path
     const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
     if (!fs.existsSync(subtitlePath)) {
-      fs.mkdirSync(subtitlePath);
+      fs.mkdirSync(subtitlePath, { recursive: true });
     }
     // get subtitles from yifi
     const subtitles = await yifysubtitles(imdb_code, {
@@ -328,7 +328,6 @@ const getSubtitles = async imdb_code => {
     });
 
     return subtitles;
-    // return [];
   } catch (error) {
     console.log(error);
     return [];
