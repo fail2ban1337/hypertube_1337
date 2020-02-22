@@ -7,6 +7,9 @@ import {
   UNSET_MOVIES
 } from "./actionTypes";
 import { setAlert, unsetAlert } from "./alert";
+const CancelToken = axios.CancelToken;
+
+const source = CancelToken.source();
 
 export const getMovies = (
   pid = 1,
@@ -36,10 +39,7 @@ export const getMovies = (
       payload: result.data
     });
   } catch (error) {
-    dispatch({
-      type: SET_HASMORE,
-      payload: false
-    });
+    dispatch(setHasMore(false));
     if (!axios.isCancel(error)) {
       const msg = error.response.data.msg;
       dispatch(setAlert(msg, "error"));
@@ -56,19 +56,23 @@ export const getMovieByKeyword = keyword => async dispatch => {
     dispatch(setHasMore(true));
     dispatch(setLoading());
 
-    const result = await axios.get(`/api/library/movies/keyword/${keyword}`);
+    const result = await axios.get(`/api/library/movies/keyword/${keyword}`, {
+      cancelToken: source.token
+    });
     if (result.data.length < 15) dispatch(setHasMore(false));
     dispatch({
       type: SET_MOVIES,
       payload: result.data
     });
   } catch (error) {
-    const msg = error.response.data.msg;
-    dispatch({
-      type: SET_HASMORE,
-      payload: false
-    });
-    dispatch(setAlert(msg, "error"));
+    if (!axios.isCancel(error)) {
+      const msg = error.response.data.msg;
+      dispatch({
+        type: SET_HASMORE,
+        payload: false
+      });
+      dispatch(setAlert(msg, "error"));
+    }
   }
 };
 

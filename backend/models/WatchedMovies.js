@@ -22,8 +22,7 @@ const WatchedMoviesSchema = new mongoose.Schema({
     required: true
   },
   poster: {
-    type: String,
-    required: true
+    type: String
   },
   date: {
     type: Date,

@@ -417,7 +417,7 @@ function OtherMovie({ genre }) {
               style={{ height: "280px", width: "100%" }}
             />
             <div className={classes.details}>
-              <Link to={`/streaming/${movie.imdb_code}`}>
+              <MatLink href={`/streaming/${movie.imdb_code}`}>
                 <img
                   src="/img/btn-overlay-blue.png"
                   alt="play"
@@ -428,7 +428,7 @@ function OtherMovie({ genre }) {
                     transform: "translateY(-50%)"
                   }}
                 />
-              </Link>
+              </MatLink>
             </div>
             <span className={classes.movieName}>
               <span className={classes.title}>{movie.title}</span>

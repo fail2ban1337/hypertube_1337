@@ -1,28 +1,38 @@
 import axios from "axios";
 import { ADD_NEW_COMMENT, GET_COMMENTS, LIKE_COMMENT } from "./actionTypes";
 import { setAlert } from "./alert";
+const CancelToken = axios.CancelToken;
+
+const source = CancelToken.source();
 
 var _ = require("lodash");
 
 // @desc get all the movie info
 export const movieInfo = async imdb_code => {
   try {
-    const res = await axios.get(`/api/library/movies/imdb_code/${imdb_code}`);
+    const res = await axios.get(`/api/library/movies/imdb_code/${imdb_code}`, {
+      cancelToken: source.token
+    });
     return res.data[0];
   } catch (err) {
-    const errors = err.response.data.msg;
-    return errors;
+    if (!axios.isCancel(err)) {
+      const errors = err.response.data.msg;
+      return errors;
+    }
   }
 };
 // @desc get other movies by genre
 export const otherMovies = async (genre = "horror") => {
   try {
-    const source = axios.CancelToken.source();
-    const res = await axios.get(`/api/library/movies/genre/${genre}`, source);
+    const res = await axios.get(`/api/library/movies/genre/${genre}`, {
+      cancelToken: source.token
+    });
     return _.sampleSize(res.data, 8);
   } catch (err) {
-    const errors = err.response.data.msg;
-    return errors;
+    if (!axios.isCancel(err)) {
+      const errors = err.response.data.msg;
+      return errors;
+    }
   }
 };
 
@@ -59,7 +69,10 @@ export const addComment = (imdb_code, comment_text) => async disptach => {
 // @desc get all comments on the chossen movie
 export const getComments = imdb_code => async disptach => {
   try {
-    const res = await axios.get(`/api/streaming/getComments/${imdb_code}`);
+    const res = await axios.get(`/api/streaming/getComments/${imdb_code}`, {
+      cancelToken: source.token
+    });
+
     disptach({
       type: GET_COMMENTS,
       payload: res.data
