@@ -174,8 +174,9 @@ exports.validateUpdateUser = [
   validateUsername("username"),
   // password
   check("newPassord")
-    .if((value, { req }) => 
-      (req.user.strategy !== 'omniauth' && req.body.newPassword !== "")
+    .if(
+      (value, { req }) =>
+        req.user.strategy !== "omniauth" && req.body.newPassword !== ""
     )
     .exists()
     .withMessage(`Password is required`)
@@ -191,18 +192,16 @@ exports.validateUpdateUser = [
     ),
   // confirm password
   check("confirmPassword", "Password not match")
-    .if((value, { req }) => req.user.strategy !== 'omniauth')
-    .custom(
-      (value, { req }) => value === req.body.newPassword
-    ),
+    .if((value, { req }) => req.user.strategy !== "omniauth")
+    .custom((value, { req }) => value === req.body.newPassword),
   // email
   validateEmail("email"),
   // first_name
   check("first_name")
     .exists()
     .withMessage("first name is required")
-    .isString()
-    .withMessage("first name must be String")
+    .isAlpha()
+    .withMessage("first name must be only alphabetical chars")
     .trim()
     .isLength({ min: 1 })
     .withMessage("first name must be at least 1 character"),
@@ -210,8 +209,8 @@ exports.validateUpdateUser = [
   check("last_name")
     .exists()
     .withMessage("last name is required")
-    .isString()
-    .withMessage("last name must be String")
+    .isAlpha()
+    .withMessage("last name must be only alphabetical chars")
     .trim()
     .isLength({ min: 1 })
     .withMessage("last name must be at least 1 character")
