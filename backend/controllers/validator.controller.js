@@ -81,6 +81,8 @@ exports.validateRegister = [
   // first_name
   check("first_name")
     .exists()
+    .isAlpha()
+    .withMessage("first name must be only alphabetical chars")
     .withMessage("first name is required")
     .isString()
     .withMessage("first name must be String")
@@ -90,6 +92,8 @@ exports.validateRegister = [
   // last_name
   check("last_name")
     .exists()
+    .isAlpha()
+    .withMessage("last name must be only alphabetical chars")
     .withMessage("last name is required")
     .isString()
     .withMessage("last name must be String")
