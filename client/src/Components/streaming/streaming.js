@@ -37,6 +37,7 @@ import {
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Img from "react-image";
 import { t } from "../../i18n";
+import Axios from "axios";
 
 const useStyles = makeStyles(theme => ({
   StreamTrace: {
@@ -346,6 +347,7 @@ const MovieContainer = ({ children }) => {
 
 function OtherMovie({ genre }) {
   const classes = useStyles();
+  let source = Axios.CancelToken.source();
   const [othersMovie, setOthersMovie] = useState({
     result: [],
     loading: true
@@ -359,6 +361,9 @@ function OtherMovie({ genre }) {
       });
     }
     getMovies();
+    return () => {
+      source.cancel();
+    };
   }, []);
   if (othersMovie.loading) return null;
   if (

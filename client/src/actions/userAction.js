@@ -20,9 +20,7 @@ export const loadUser = () => async dispatch => {
 
     const source = axios.CancelToken.source();
 
-    const response = await axios.get("/api/users/me", {
-      cancelToken: source.token
-    });
+    const response = await axios.get("/api/users/me", source);
     const { user } = response.data;
 
     dispatch({

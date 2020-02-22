@@ -17,7 +17,8 @@ export const movieInfo = async imdb_code => {
 // @desc get other movies by genre
 export const otherMovies = async (genre = "horror") => {
   try {
-    const res = await axios.get(`/api/library/movies/genre/${genre}`);
+    const source = axios.CancelToken.source();
+    const res = await axios.get(`/api/library/movies/genre/${genre}`, source);
     return _.sampleSize(res.data, 8);
   } catch (err) {
     const errors = err.response.data.msg;
