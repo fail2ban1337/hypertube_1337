@@ -109,7 +109,7 @@ function App() {
           <NavBar setDarkMode={toggleDarkTheme} Langage={toggleLanguage} />
           <div style={{ flex: 1 }}>
             <Switch>
-              <Route exact path="/home" component={Home} />
+              <Route exact path="/" component={Home} />
               <GuestRoute exact path="/login" component={Login} />
               <GuestRoute exact path="/register" component={Register} />
               <GuestRoute exact path="/forgetpassword" component={Forget} />

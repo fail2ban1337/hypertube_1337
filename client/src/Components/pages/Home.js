@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import { blue } from "@material-ui/core/colors";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles({
   paperContainer: {
@@ -27,6 +28,9 @@ const useStyles = makeStyles({
 });
 export default function Home() {
   const classes = useStyles();
+  const { user } = useSelector(state => state);
+  console.log("user", user);
+  if (user.loading) return null;
   return (
     <>
       <video autoPlay loop muted className={classes.paperContainer}>
@@ -63,7 +67,7 @@ export default function Home() {
                       marginTop: "20px"
                     }}
                   >
-                    Go to Library
+                    {user.isAuthenticated ? "Go to Library" : "Login"}
                   </Button>
                 </Link>
               </Grid>

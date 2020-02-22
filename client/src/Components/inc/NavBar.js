@@ -256,7 +256,7 @@ function NavBar({ setDarkMode, Langage }) {
       <AppBar position="static" style={{ background: "transparent" }}>
         <Container maxWidth="xl">
           <Toolbar>
-            <Link to={`/library`} style={{ textDecoration: "none" }}>
+            <Link to={`/`} style={{ textDecoration: "none" }}>
               <Typography className={classes.title} variant="h6" noWrap>
                 HyperTube <HdIcon />
               </Typography>
