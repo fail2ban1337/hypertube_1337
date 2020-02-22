@@ -392,7 +392,7 @@ function OtherMovie({ genre }) {
           bgcolor="primary.main"
           style={{ background: blue[500], color: "#fff" }}
         >
-          YOU MAY ALSO LIKE
+          {t("streaming.myalsolike")}
         </Box>
       </Grid>
       {othersMovie.result.map(movie => {
