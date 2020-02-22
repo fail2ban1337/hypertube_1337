@@ -165,7 +165,13 @@ function StrVedio({ torrentInfo }) {
     src: `/movies/subtitles/${torrentInfo.imdb_code}/${decodeURI(
       subtitle.fileName
     )}`,
-    srcLang: subtitle.lang
+    srcLang: subtitle.lang,
+    default:
+      localStorage.getItem("LANGUAGE") === "en" && subtitle.langShort === "en"
+        ? true
+        : localStorage.getItem("LANGUAGE") === "fr" &&
+          subtitle.langShort === "fr" &&
+          true
   }));
   return (
     <div className={classes.playerwrapper}>
