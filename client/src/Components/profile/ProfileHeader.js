@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, Typography, Avatar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 import UploadProfile from "../editProfile/UploadProfile";
@@ -13,13 +13,14 @@ const useStyles = makeStyles({
   }
 });
 
-export const ProfileHeader = ({
-  img = "https://writestylesonline.com/wp-content/uploads/2016/08/Follow-These-Steps-for-a-Flawless-Professional-Profile-Picture-1024x1024.jpg"
-}) => {
+export const ProfileHeader = () => {
   const classes = useStyles();
-  const { profile } = useSelector(state => state);
+  const { profile, user } = useSelector(state => state);
 
-  console.log(profile.info);
+  const isUserOwnProfile = user.info._id === profile.info.user._id;
+
+  const img = `/img/profiles/${profile.info.user.profileImage}`;
+
   return (
     <Grid
       container
@@ -28,7 +29,16 @@ export const ProfileHeader = ({
       style={{ padding: 20 }}
     >
       <Grid item xs={3} style={{ position: "relative" }}>
-        <UploadProfile img={img} />
+        {isUserOwnProfile ? (
+          <UploadProfile img={img} />
+        ) : (
+          <Avatar
+            src={img}
+            alt="avatar"
+            style={{ width: "150px", height: "150px" }}
+          />
+        )}
+
         {/* 
           if not user own profile
         <Avatar

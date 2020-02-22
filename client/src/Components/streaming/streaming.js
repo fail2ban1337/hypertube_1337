@@ -37,6 +37,7 @@ import {
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Img from "react-image";
 import { t } from "../../i18n";
+import Axios from "axios";
 
 const useStyles = makeStyles(theme => ({
   StreamTrace: {
@@ -164,7 +165,13 @@ function StrVedio({ torrentInfo }) {
     src: `/movies/subtitles/${torrentInfo.imdb_code}/${decodeURI(
       subtitle.fileName
     )}`,
-    srcLang: subtitle.lang
+    srcLang: subtitle.lang,
+    default:
+      localStorage.getItem("LANGUAGE") === "en" && subtitle.langShort === "en"
+        ? true
+        : localStorage.getItem("LANGUAGE") === "fr" &&
+          subtitle.langShort === "fr" &&
+          true
   }));
   return (
     <div className={classes.playerwrapper}>
@@ -346,6 +353,7 @@ const MovieContainer = ({ children }) => {
 
 function OtherMovie({ genre }) {
   const classes = useStyles();
+  let source = Axios.CancelToken.source();
   const [othersMovie, setOthersMovie] = useState({
     result: [],
     loading: true
@@ -359,6 +367,9 @@ function OtherMovie({ genre }) {
       });
     }
     getMovies();
+    return () => {
+      source.cancel();
+    };
   }, []);
   if (othersMovie.loading) return null;
   if (
@@ -412,7 +423,7 @@ function OtherMovie({ genre }) {
               style={{ height: "280px", width: "100%" }}
             />
             <div className={classes.details}>
-              <Link to={`/streaming/${movie.imdb_code}`}>
+              <MatLink href={`/streaming/${movie.imdb_code}`}>
                 <img
                   src="/img/btn-overlay-blue.png"
                   alt="play"
@@ -423,7 +434,7 @@ function OtherMovie({ genre }) {
                     transform: "translateY(-50%)"
                   }}
                 />
-              </Link>
+              </MatLink>
             </div>
             <span className={classes.movieName}>
               <span className={classes.title}>{movie.title}</span>
@@ -479,7 +490,7 @@ function Comments({ movieInfo }) {
     }
     getAllComments();
   }, []);
-  console.log(commentsData.allComments);
+
   const Comments = commentsData.allComments.length;
   return (
     <Grid item xs={12} style={{ paddingTop: "20px" }}>
@@ -499,7 +510,6 @@ function Comments({ movieInfo }) {
           </Grid>
           <div style={{ display: displayState }}>
             {commentsData.allComments.map(value => {
-              console.log("value", value);
               return (
                 <Card
                   key={value._id}
@@ -650,9 +660,8 @@ function Streming() {
     loading: true
   });
   let { imdb } = useParams();
-  console.log(movie);
+
   useEffect(() => {
-    console.log("test");
     async function getResult() {
       setMovie({
         ...movie,
@@ -685,7 +694,7 @@ function Streming() {
       </Card>
     );
   }
-  console.log(movie.result, movie.result);
+
   if (movie.result === "Server error" || movie.result === "Movie not found") {
     return (
       <Card style={{ backgroundColor: "transparent" }}>

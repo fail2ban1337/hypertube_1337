@@ -3,9 +3,8 @@ const router = express.Router();
 const userModel = require("../../models/User");
 const watchedMovies = require("../../models/WatchedMovies");
 const bcrypt = require("bcryptjs");
-var crypto = require("crypto");
 const config = require("config");
-const { check, validationResult } = require("express-validator");
+const { validationResult } = require("express-validator");
 const fs = require("fs");
 const { promisify } = require("util");
 const unlinkAsync = promisify(fs.unlink);
@@ -13,11 +12,8 @@ const path = require("path");
 const multer = require("multer");
 const Jimp = require("jimp");
 const _ = require("lodash");
-const passport = require("passport");
-const utils = require("../../utils");
 const mongoose = require("mongoose");
 
-const { forwardAuthenticated } = require("../../Auth/auth");
 const auth = require("../../middleware/auth");
 const validatorController = require("../../controllers/validator.controller");
 
@@ -81,16 +77,19 @@ router.get("/info/:id?", [auth], async (req, res) => {
   let id = req.params.id;
   if (id === "undefined") id = req.id;
   try {
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
+    if (!isValidObjectId)
+      return res.status(404).json({ msg: "User not found" });
     const user = await userModel.findOne({ _id: mongoose.Types.ObjectId(id) });
     if (user) return res.json({ user });
-    return res.status(400).json({ msg: "User not found" });
+    return res.status(404).json({ msg: "User not found" });
   } catch (error) {
     return res.status(500).json({ msg: "Server Error" });
   }
 });
 
 // @route   POST api/users/update
-// @desc    Upload profile image
+// @desc    Upload profile info
 // @access  Private
 router.post(
   "/update",
@@ -162,7 +161,6 @@ router.post(
       await user.save();
       return res.json({ msg: "Updated Successfuly" });
     } catch (error) {
-      console.log(error);
       res.status(500).json({ msg: "Server error" });
     }
   }
@@ -171,7 +169,7 @@ router.post(
 // @route   POST api/users/image
 // @desc    Upload profile image
 // @access  Private
-router.post("/image", async (req, res) => {
+router.post("/image", auth, async (req, res) => {
   try {
     upload(req, res, async function(err) {
       if (err) {
@@ -193,7 +191,7 @@ router.post("/image", async (req, res) => {
       });
     });
   } catch (error) {
-    res.status(500).send("Server Error");
+    res.status(500).json({ msg: "Server error" });
   }
 });
 
@@ -222,7 +220,6 @@ router.post("/watched", [auth], async (req, res) => {
     }
     return res.send("Success");
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: "Server error.." });
   }
 });
@@ -234,6 +231,9 @@ router.get("/watched/:id?", [auth], async (req, res) => {
   try {
     id = req.params.id;
     if (req.params.id === "undefined") id = req.id;
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
+    if (!isValidObjectId)
+      return res.status(404).json({ msg: "User not found" });
     const watched = await watchedMovies
       .find({ user: mongoose.Types.ObjectId(id) })
       .sort({ date: -1 })

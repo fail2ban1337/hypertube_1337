@@ -37,7 +37,9 @@ const validateUsername = fieldName =>
     .exists()
     .withMessage(`username is required`)
     .matches(/^[\w-_]+$/)
-    .withMessage(`username must contain alphanumeric and hyphen and underscore characters`)
+    .withMessage(
+      `username must contain alphanumeric and hyphen and underscore characters`
+    )
     .isLength({
       min: 6
     })
@@ -203,7 +205,7 @@ exports.validateUpdateUser = [
     .isAlpha()
     .withMessage("first name must be only alphabetical chars")
     .isString()
-    .withMessage("first name must be a string")
+    .withMessage("first name must be String")
     .trim()
     .isLength({ min: 1 })
     .withMessage("first name must be at least 1 character"),
@@ -214,9 +216,8 @@ exports.validateUpdateUser = [
     .isAlpha()
     .withMessage("last name must be only alphabetical chars")
     .isString()
-    .withMessage("last name must be a string")
+    .withMessage("last name must be String")
     .trim()
     .isLength({ min: 1 })
     .withMessage("last name must be at least 1 character")
 ];
-

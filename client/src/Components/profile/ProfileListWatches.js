@@ -11,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import { useSelector, useDispatch } from "react-redux";
 import { Loading } from "../inc/Loading";
 import { t } from "../../i18n";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   movies: {
@@ -64,7 +65,7 @@ export const ProfileListWatches = props => {
             <Loading text={t("profile.list_watched_empty")} />
           ) : (
             profile.movies.map(item => {
-              return <MyItem item={item} />;
+              return <MyItem key={item._id} item={item} />;
             })
           )}
         </Carousel>
@@ -127,7 +128,12 @@ function MyItem({ item }) {
         </Grid>
       </Grid>
       <Grid xs={12} container item justify={"center"}>
-        <Button style={{ color: blue[500] }}>{t("profile.watch_new")}</Button>
+        <Link
+          to={`/streaming/${item.imdb_code}`}
+          style={{ textDecoration: "none" }}
+        >
+          <Button style={{ color: blue[500] }}>{t("profile.watch_new")}</Button>
+        </Link>
       </Grid>
     </Paper>
   );

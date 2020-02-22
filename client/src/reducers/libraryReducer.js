@@ -12,7 +12,7 @@ import {
 const initialState = {
   loading: false,
   page: 1,
-  sort: "year",
+  sort: "trending",
   rating: 0,
   genre: "All",
   hasMore: true,

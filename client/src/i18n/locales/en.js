@@ -17,14 +17,14 @@ const en = {
     confirm_password: "Confirm Password",
     have_an_account: "Already have an account? Sign in"
   },
-  forgetpassword:{
-    forgetpassword:'Forget Password',
-    email_address:'Email Address',
-    send:'SEND'
+  forgetpassword: {
+    forgetpassword: "Forget Password",
+    email_address: "Email Address",
+    send: "SEND"
   },
   controller: {
     sort: "Sort",
-    title: "Title",
+    trending: "Trending",
     rating: "Rating",
     year: "Year",
     filter: "Filter",

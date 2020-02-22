@@ -5,9 +5,9 @@ const config = require("config");
 const yifysubtitles = require("yifysubtitles");
 const fs = require("fs");
 
-const YTS_BASE_URL = config.get('ytsApiBaseUrl');
-const POP_BASE_URL = config.get('popApiBaseUrl');
-const IMDB_API = config.get('imdbApi');
+const YTS_BASE_URL = config.get("ytsApiBaseUrl");
+const POP_BASE_URL = config.get("popApiBaseUrl");
+const IMDB_API = config.get("imdbApi");
 
 /*
  * Take torrent hash, return magnet link
@@ -19,7 +19,7 @@ const getHashFromMagnet = magnet => {
 /*
  * Check PopCorn movie helper function
  */
-const isValidPopMovie = (item) => {
+const isValidPopMovie = item => {
   return (
     item.imdb_id &&
     !_.isEmpty(item.imdb_id) &&
@@ -42,14 +42,14 @@ const isValidPopMovie = (item) => {
     item.torrents.en["1080p"].filesize &&
     !_.isEmpty(item.torrents.en["1080p"].filesize)
   );
-}
+};
 
 /*
  * Check if PopCorn movie have all important properties
  */
 const filterPopResponse = response => {
   const filtredResponse = _.filter(response, item => {
-    return (isValidPopMovie(item));
+    return isValidPopMovie(item);
   });
   return filtredResponse;
 };
@@ -113,7 +113,7 @@ const formatPopResponse = response => {
 /*
  * Check Yts movie helper function
  */
-const isValidYtsMovie = (item) => {
+const isValidYtsMovie = item => {
   return (
     item.imdb_code &&
     !_.isEmpty(item.imdb_code) &&
@@ -140,15 +140,15 @@ const isValidYtsMovie = (item) => {
     _.isNumber(item.torrents[0].peers) &&
     item.torrents[0].size &&
     !_.isEmpty(item.torrents[0].size)
-  )
-}
+  );
+};
 
 /*
  * Check if Yts movie have all important properties
  */
 const filterYtsResponse = response => {
   const filtredResponse = _.filter(response, item => {
-    return (isValidYtsMovie(item));
+    return isValidYtsMovie(item);
   });
   return filtredResponse;
 };
@@ -201,18 +201,15 @@ const retMax = (movies, comparedMovie) => {
  */
 const getMovieMoreInfo = async result => {
   for (let index = 0; index < result.length; index++) {
-    // const url = `${IMDB_API}&i=${result[index].imdb_code}&plot=full`;
+    const url = `${IMDB_API}&i=${result[index].imdb_code}&plot=full`;
 
-    // // Get more info from imdb api, append it to result
-    // const body = await rp.get(url);
-    // const { Director, Actors, Production } = JSON.parse(body);
+    // Get more info from imdb api, append it to result
+    const body = await rp.get(url);
+    const { Director, Actors, Production } = JSON.parse(body);
 
-    // result[index].Director = Director;
-    // result[index].Actors = Actors;
-    // result[index].Production = Production;
-    result[index].Director = 'Director';
-    result[index].Actors = 'Actors';
-    result[index].Production = 'Production';
+    result[index].Director = Director || "";
+    result[index].Actors = Actors || "";
+    result[index].Production = Production || "";
   }
   return result;
 };
@@ -222,7 +219,7 @@ const getMovieMoreInfo = async result => {
  * Send request to API url
  * Return Movies formated
  */
-const getYtsMovies = async (params, apiUrl=false) => {
+const getYtsMovies = async (params, apiUrl = false) => {
   const { pid, sort_by, filterGenre, filterRatingMin } = params;
   let genre;
 
@@ -235,17 +232,17 @@ const getYtsMovies = async (params, apiUrl=false) => {
     case "Science fiction":
       genre = "sci-fi";
       break;
-  
+
     default:
       genre = filterGenre;
       break;
   }
 
   // prepare request url
-  const url = apiUrl ? 
-    apiUrl :
-    `${YTS_BASE_URL}?page=${pid}&sort_by=${sort_by}&minimum_rating=${filterRatingMin}&genre=${genre}`;
-  
+  const url = apiUrl
+    ? apiUrl
+    : `${YTS_BASE_URL}?page=${pid}&sort_by=${sort_by}&minimum_rating=${filterRatingMin}&genre=${genre}`;
+
   const result = await cloudscraper.get(url);
   const parsedResult = JSON.parse(result);
 
@@ -260,9 +257,7 @@ const getYtsMovies = async (params, apiUrl=false) => {
  * Send request to API url
  * Return Movies formated
  */
-const getPopMovies = async (
-  params, apiUrl = false, setAsArray = false
-) => {
+const getPopMovies = async (params, apiUrl = false, setAsArray = false) => {
   const { pid, sort_by, filterGenre, filterRatingMin } = params;
   let genre;
 
@@ -271,22 +266,21 @@ const getPopMovies = async (
     case "All":
       genre = "";
       break;
-  
+
     default:
       genre = filterGenre;
       break;
   }
 
   // prepare requested url
-  const url = apiUrl ? 
-    apiUrl : 
-    `${POP_BASE_URL}/movies/${pid}?sort=${sort_by}&order=-1&genre=${genre}`;
+  const url = apiUrl
+    ? apiUrl
+    : `${POP_BASE_URL}/movies/${pid}?sort=${sort_by}&order=-1&genre=${genre}`;
   let result = await rp.get(url);
 
   result = JSON.parse(result);
   // to result to array of object
-  if (setAsArray)
-    result = [result];
+  if (setAsArray) result = [result];
   result = result ? formatPopResponse(result) : false;
 
   // delete movies with rating less then minimum set
@@ -305,25 +299,25 @@ const setWatched = (watched, result) => {
       if (result[i].imdb_code === watched[j].imdb_code) {
         // user already watched this movie
         result[i].watched = true;
-        break ;
+        break;
       }
-      result[i].watched = false ;
+      result[i].watched = false;
     }
   }
 
   return result;
-}
+};
 
 /*
  * Get movie available subtitles (En && Fr)
  */
 const getSubtitles = async imdb_code => {
-  // set subtitle path
-  const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
-  if (!fs.existsSync(subtitlePath)) {
-    fs.mkdirSync(subtitlePath);
-  }
   try {
+    // set subtitle path
+    const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
+    if (!fs.existsSync(subtitlePath)) {
+      fs.mkdirSync(subtitlePath, { recursive: true });
+    }
     // get subtitles from yifi
     const subtitles = await yifysubtitles(imdb_code, {
       path: subtitlePath,
@@ -332,6 +326,7 @@ const getSubtitles = async imdb_code => {
 
     return subtitles;
   } catch (error) {
+    console.log(error);
     return [];
   }
 };
@@ -341,8 +336,12 @@ const getSubtitles = async imdb_code => {
  */
 const deleteSubtitles = imdb_code => {
   const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
-  if (fs.existsSync(subtitlePath)) {
-    fs.rmdirSync(subtitlePath, { recursive: true });
+  try {
+    if (fs.existsSync(subtitlePath)) {
+      fs.rmdirSync(subtitlePath, { recursive: true });
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
