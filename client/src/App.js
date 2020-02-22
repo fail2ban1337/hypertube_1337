@@ -3,7 +3,7 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
-import Axios from 'axios';
+import Axios from "axios";
 
 import Login from "./Components/user/login";
 import Forget from "./Components/user/Forget";
@@ -23,7 +23,7 @@ import { useDispatch } from "react-redux";
 import { t, setLocale, getLocale } from "../src/i18n";
 import i18n from "i18n-js";
 
-import setTokenToAxiosHeader from './utils/setTokenToAxiosHeader';
+import setTokenToAxiosHeader from "./utils/setTokenToAxiosHeader";
 import { loadUser } from "./actions/userAction";
 import PrivateRoute from "./Components/inc/PrivateRoutes";
 import GuestRoute from "./Components/inc/GuestRoute";
@@ -83,16 +83,16 @@ function App() {
   const muiTheme = createMuiTheme(theme, deflang);
 
   useEffect(() => {
-    console.log("load")
+    console.log("load");
     dispatch(loadUser());
     return () => {
       source.cancel();
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
     console.log("loaduser", user);
-  }, [user])
+  }, [user]);
 
   return (
     <MuiThemeProvider theme={muiTheme}>
@@ -111,12 +111,24 @@ function App() {
               <GuestRoute exact path="/login" component={Login} />
               <GuestRoute exact path="/register" component={Register} />
               <GuestRoute exact path="/forgetpassword" component={Forget} />
-              <GuestRoute exact path="/reset_password/:token" component={Reset} />
-              <GuestRoute exact path="/verify_email/:token" component={Verify} />
+              <GuestRoute
+                exact
+                path="/reset_password/:token"
+                component={Reset}
+              />
+              <GuestRoute
+                exact
+                path="/verify_email/:token"
+                component={Verify}
+              />
               <PrivateRoute exact path="/profile/:id?" component={Profile} />
               <PrivateRoute exact path="/editprofile" component={EditProfile} />
               <PrivateRoute exact path="/" component={Library} />
-              <PrivateRoute exact path="/streaming/:imdb" component={Streaming} />
+              <PrivateRoute
+                exact
+                path="/streaming/:imdb"
+                component={Streaming}
+              />
             </Switch>
           </div>
           <Footer style={{ flex: 1 }} />

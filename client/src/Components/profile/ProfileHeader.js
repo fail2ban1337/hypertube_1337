@@ -3,6 +3,7 @@ import { Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 import UploadProfile from "../editProfile/UploadProfile";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles({
   title: {
@@ -16,7 +17,9 @@ export const ProfileHeader = ({
   img = "https://writestylesonline.com/wp-content/uploads/2016/08/Follow-These-Steps-for-a-Flawless-Professional-Profile-Picture-1024x1024.jpg"
 }) => {
   const classes = useStyles();
+  const { profile } = useSelector(state => state);
 
+  console.log(profile.info);
   return (
     <Grid
       container
@@ -36,7 +39,7 @@ export const ProfileHeader = ({
       </Grid>
       <Grid item xs={3}>
         <Typography variant="h5" className={classes.title}>
-          Jhon Doe
+          {profile.info.user.username}
         </Typography>
       </Grid>
     </Grid>

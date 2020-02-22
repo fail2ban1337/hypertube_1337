@@ -8,6 +8,8 @@ import Img from "react-image";
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
+import { useSelector, useDispatch } from "react-redux";
+import { Loading } from "../inc/Loading";
 
 const useStyles = makeStyles(theme => ({
   movies: {
@@ -36,40 +38,34 @@ const useStyles = makeStyles(theme => ({
     fontSize: "25px",
     margin: "20px 0 20px 0",
     padding: "0 20px 0 20px",
-    color: localStorage.getItem("darkMode") === "dark" ? "white" : "black",
     background: blue[500]
   }
 }));
 export const ProfileListWatches = props => {
+  const { profile } = useSelector(state => state);
   const classes = useStyles();
-  var items = [
-    {
-      id: 1,
-      poster:
-        "https://www.movieposters4u.com/images/b/BladeRunner2049Final.jpg",
-      name: "Movie Name 2",
-      description: "Probably the most random thing you have ever seen!"
-    },
-    {
-      id: 2,
-      poster:
-        "https://www.movieposters4u.com/images/b/BladeRunner2049Final.jpg",
-      name: "Movie name 2",
-      description: "Hello World!"
-    }
-  ];
+
   return (
     <Grid container direction="row" justify="center" alignItems="center">
       <Grid xs={12} container item justify={"center"}>
-        <Typography variant="h5" className={classes.recentTitle} gutterBottom>
+        <Typography
+          variant="h5"
+          className={classes.recentTitle}
+          gutterBottom
+          style={{ borderRadius: "40px" }}
+        >
           RECENTLY WATCHED
         </Typography>
       </Grid>
       <Grid xs={6} item>
         <Carousel animation="fade">
-          {items.map(item => {
-            return <MyItem item={item} />;
-          })}
+          {profile.movies.length == 0 ? (
+            <Loading text="List Of Watched Movies Empty" />
+          ) : (
+            profile.movies.map(item => {
+              return <MyItem item={item} />;
+            })
+          )}
         </Carousel>
       </Grid>
     </Grid>
@@ -78,11 +74,13 @@ export const ProfileListWatches = props => {
 
 function MyItem({ item }) {
   const classes = useStyles();
+  const { profile } = useSelector(state => state);
 
+  if (profile.movies.length == 0) return <Loading text="Empty" />;
   return (
     <Paper elevation={0}>
       <Grid xs={12} container item justify={"center"}>
-        <h2 className={classes.movieTitle}>{item.name}</h2>
+        <h2 className={classes.movieTitle}>{item.title}</h2>
       </Grid>
       <Grid
         container
@@ -92,7 +90,7 @@ function MyItem({ item }) {
       >
         <Grid xs={6} item className={classes.image}>
           <Box
-            key={item.id}
+            key={item._id}
             maxWidth={180}
             maxHeight={240}
             style={{ margin: "2% 4%" }}
@@ -114,7 +112,7 @@ function MyItem({ item }) {
               variant="h1"
               style={{ fontFamily: "Comic Sans MS, cursive, sans-serif" }}
             >
-              7.5
+              {item.rating}
             </Typography>
           </Grid>
           <Grid xs={12} container item justify={"center"}>
