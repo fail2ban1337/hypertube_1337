@@ -42,6 +42,18 @@ const fr = {
       all: "Tout"
     }
   },
+  profile:{
+    recenty_watched:'RÉCEMMENT REGARDÉ',
+    list_watched_empty:'Liste des films regardés vides',
+    watch_new:'Regardez-le maintenant!'
+  },
+  updateprofile:{
+    username: "Nom d'utilisateur",
+    first_name: "Prénom",
+    last_name: "nom de famille",
+    email_address: "adresse email",
+    update:'mettre à jour'
+  },
   streaming: {
     home: "Accueil",
     library: "Bibliothèque",
@@ -54,7 +66,8 @@ const fr = {
     genres: "genres",
     production: "Production",
     language: "Langue",
-    release: "Libération"
+    release: "Libération",
+    myalsolike:'TU POURRAIS AUSSI AIMER'
   },
   footer: {
     made_with: "Fabriqué avec",

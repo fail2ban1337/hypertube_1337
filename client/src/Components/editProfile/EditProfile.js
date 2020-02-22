@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
+import { t } from "../../i18n";
 // Redux
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -102,7 +103,7 @@ export const EditProfile = () => {
                 required
                 value={first_name}
                 onChange={handleChange("first_name")}
-                placeholder="First Name"
+                placeholder={t("updateprofile.first_name")}
                 error={errors.first_name ? true : false}
               />
               {errors.first_name && (
@@ -116,7 +117,7 @@ export const EditProfile = () => {
                 required
                 value={last_name}
                 onChange={handleChange("last_name")}
-                placeholder="Last Name"
+                placeholder={t("updateprofile.last_name")}
                 error={errors.last_name ? true : false}
               />
               {errors.last_name && (
@@ -130,7 +131,7 @@ export const EditProfile = () => {
                 required
                 value={username}
                 onChange={handleChange("username")}
-                placeholder="Username"
+                placeholder={t("updateprofile.username")}
                 error={errors.username ? true : false}
               />
               {errors.username && (
@@ -144,7 +145,7 @@ export const EditProfile = () => {
                 required
                 value={email}
                 onChange={handleChange("email")}
-                placeholder="Email"
+                placeholder={t("updateprofile.email_address")}
                 error={errors.email ? true : false}
               />
               {errors.email && (
@@ -219,7 +220,7 @@ export const EditProfile = () => {
                 style={{ width: "100%" }}
                 onClick={handleSubmit}
               >
-                Update
+                {t("updateprofile.update")}
               </Button>
             </Grid>
           </Grid>

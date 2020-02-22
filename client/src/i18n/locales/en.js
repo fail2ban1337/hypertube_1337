@@ -42,6 +42,18 @@ const en = {
       all: "All"
     }
   },
+  profile:{
+    recenty_watched:'RECENTLY WATCHED',
+    list_watched_empty:'List Of Watched Movies Empty',
+    watch_new:'Watch It Now!'
+  },
+  updateprofile:{
+    username: "Username",
+    first_name: "First Name",
+    last_name: "Last Name",
+    email_address: "Email Address",
+    update:'UPDATE'
+  },
   streaming: {
     home: "Home",
     library: "Library",
@@ -54,7 +66,8 @@ const en = {
     genres: "genres",
     production: "Production",
     language: "language",
-    release: "Release"
+    release: "Release",
+    myalsolike:'YOU MAY ALSO LIKE'
   },
   footer: {
     made_with: "Made with",
