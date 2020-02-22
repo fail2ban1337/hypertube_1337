@@ -81,6 +81,8 @@ exports.validateRegister = [
   // first_name
   check("first_name")
     .exists()
+    .isAlpha()
+    .withMessage("first name must be only alphabetical chars")
     .withMessage("first name is required")
     .isString()
     .withMessage("first name must be String")
@@ -90,6 +92,8 @@ exports.validateRegister = [
   // last_name
   check("last_name")
     .exists()
+    .isAlpha()
+    .withMessage("last name must be only alphabetical chars")
     .withMessage("last name is required")
     .isString()
     .withMessage("last name must be String")
@@ -174,8 +178,9 @@ exports.validateUpdateUser = [
   validateUsername("username"),
   // password
   check("newPassord")
-    .if((value, { req }) => 
-      (req.user.strategy !== 'omniauth' && req.body.newPassword !== "")
+    .if(
+      (value, { req }) =>
+        req.user.strategy !== "omniauth" && req.body.newPassword !== ""
     )
     .exists()
     .withMessage(`Password is required`)
@@ -191,18 +196,18 @@ exports.validateUpdateUser = [
     ),
   // confirm password
   check("confirmPassword", "Password not match")
-    .if((value, { req }) => req.user.strategy !== 'omniauth')
-    .custom(
-      (value, { req }) => value === req.body.newPassword
-    ),
+    .if((value, { req }) => req.user.strategy !== "omniauth")
+    .custom((value, { req }) => value === req.body.newPassword),
   // email
   validateEmail("email"),
   // first_name
   check("first_name")
     .exists()
     .withMessage("first name is required")
+    .isAlpha()
+    .withMessage("first name must be only alphabetical chars")
     .isString()
-    .withMessage("first name must be String")
+    .withMessage("first name must be a string")
     .trim()
     .isLength({ min: 1 })
     .withMessage("first name must be at least 1 character"),
@@ -210,8 +215,10 @@ exports.validateUpdateUser = [
   check("last_name")
     .exists()
     .withMessage("last name is required")
+    .isAlpha()
+    .withMessage("last name must be only alphabetical chars")
     .isString()
-    .withMessage("last name must be String")
+    .withMessage("last name must be a string")
     .trim()
     .isLength({ min: 1 })
     .withMessage("last name must be at least 1 character")
