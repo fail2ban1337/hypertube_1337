@@ -315,12 +315,12 @@ const setWatched = (watched, result) => {
  * Get movie available subtitles (En && Fr)
  */
 const getSubtitles = async imdb_code => {
-  // set subtitle path
-  const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
-  if (!fs.existsSync(subtitlePath)) {
-    fs.mkdirSync(subtitlePath);
-  }
   try {
+    // set subtitle path
+    const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
+    if (!fs.existsSync(subtitlePath)) {
+      fs.mkdirSync(subtitlePath);
+    }
     // get subtitles from yifi
     const subtitles = await yifysubtitles(imdb_code, {
       path: subtitlePath,
@@ -328,7 +328,9 @@ const getSubtitles = async imdb_code => {
     });
 
     return subtitles;
+    // return [];
   } catch (error) {
+    console.log(error);
     return [];
   }
 };
@@ -338,8 +340,12 @@ const getSubtitles = async imdb_code => {
  */
 const deleteSubtitles = imdb_code => {
   const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
-  if (fs.existsSync(subtitlePath)) {
-    fs.rmdirSync(subtitlePath, { recursive: true });
+  try {
+    if (fs.existsSync(subtitlePath)) {
+      fs.rmdirSync(subtitlePath, { recursive: true });
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 

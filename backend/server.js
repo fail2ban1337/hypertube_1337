@@ -35,3 +35,4 @@ app.use("/api/library", require("./routes/api/library"));
 app.use("/api/streaming", require("./routes/api/streaming"));
 
 app.listen(process.env.SERVER_PORT);
+console.log("dont forget uncomment omdb api, and author file");

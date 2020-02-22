@@ -42,7 +42,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "torrent-stream": "^1.2.0",
-    "yifysubtitles": "^2.1.3"
+    "yifysubtitles": "^2.1.5"
   },
   "devDependencies": {
     "concurrently": "5.0.2"
