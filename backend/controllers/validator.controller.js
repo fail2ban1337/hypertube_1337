@@ -202,6 +202,8 @@ exports.validateUpdateUser = [
     .withMessage("first name is required")
     .isAlpha()
     .withMessage("first name must be only alphabetical chars")
+    .isString()
+    .withMessage("first name must be a string")
     .trim()
     .isLength({ min: 1 })
     .withMessage("first name must be at least 1 character"),
@@ -211,6 +213,8 @@ exports.validateUpdateUser = [
     .withMessage("last name is required")
     .isAlpha()
     .withMessage("last name must be only alphabetical chars")
+    .isString()
+    .withMessage("last name must be a string")
     .trim()
     .isLength({ min: 1 })
     .withMessage("last name must be at least 1 character")
