@@ -123,7 +123,9 @@ const fr = {
       "L'email n'appartient à aucun utilisateur",
     This_account_does_not_have_a_password_you_can_connect_using_Google_or_42_Intranet_account:
       "Ce compte n'a pas de mot de passe, vous pouvez vous connecter en utilisant Google ou un compte Intranet 42",
-    Password_updated_successfully: "Mot de passe mis à jour avec succès"
+    Password_updated_successfully: "Mot de passe mis à jour avec succès",
+    first_name_must_be_only_alphabetical_chars: "le prénom ne doit être que des caractères alphabétiques",
+    last_name_must_be_only_alphabetical_chars: "le nom de famille ne doit être que des caractères alphabétiques"
   }
 };
 export default fr;
