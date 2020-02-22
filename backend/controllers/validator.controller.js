@@ -177,7 +177,7 @@ exports.validateUpdateUser = [
   // username
   validateUsername("username"),
   // password
-  check("newPassord")
+  check("newPassword")
     .if(
       (value, { req }) =>
         req.user.strategy !== "omniauth" && req.body.newPassword !== ""
@@ -207,7 +207,7 @@ exports.validateUpdateUser = [
     .isAlpha()
     .withMessage("first name must be only alphabetical chars")
     .isString()
-    .withMessage("first name must be a string")
+    .withMessage("first name must be String")
     .trim()
     .isLength({ min: 1 })
     .withMessage("first name must be at least 1 character"),
@@ -218,7 +218,7 @@ exports.validateUpdateUser = [
     .isAlpha()
     .withMessage("last name must be only alphabetical chars")
     .isString()
-    .withMessage("last name must be a string")
+    .withMessage("last name must be String")
     .trim()
     .isLength({ min: 1 })
     .withMessage("last name must be at least 1 character")
