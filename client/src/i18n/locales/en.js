@@ -133,7 +133,8 @@ const en = {
       "This account does not have a password you can connect using Google or 42 Intranet account",
     Password_updated_successfully: "Password updated successfully",
     first_name_must_be_only_alphabetical_chars: "first name must be only alphabetical chars",
-    last_name_must_be_only_alphabetical_chars: "last name must be only alphabetical chars"
+    last_name_must_be_only_alphabetical_chars: "last name must be only alphabetical chars",
+    username_must_contain_alphanumeric_and_hyphen_and_underscore_characters: "username must contain alphanumeric and hyphen and underscore characters"
   }
 };
 export default en;
