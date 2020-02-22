@@ -5,8 +5,6 @@ import { useSelector } from "react-redux";
 const GuestRoute = ({ component, ...rest }) => {
   const { user } = useSelector(state => state);
 
-  console.log("guest route", user);
-
   if (user.loading) return null;
   if (user.isAuthenticated) return <Redirect to="/" />;
   return <Route {...rest} component={component} />;

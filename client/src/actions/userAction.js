@@ -60,7 +60,6 @@ export const getProfile = id => async dispatch => {
     });
   } catch (error) {
     if (!axios.isCancel(error)) {
-      console.log(error);
       const { msg } = error.response.data;
 
       dispatch({

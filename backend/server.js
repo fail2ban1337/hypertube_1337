@@ -35,4 +35,3 @@ app.use("/api/library", require("./routes/api/library"));
 app.use("/api/streaming", require("./routes/api/streaming"));
 
 app.listen(process.env.SERVER_PORT);
-console.log(`Listening on port ${process.env.SERVER_PORT}`);

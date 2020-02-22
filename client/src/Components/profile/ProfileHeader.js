@@ -18,7 +18,6 @@ export const ProfileHeader = () => {
   const { profile, user } = useSelector(state => state);
 
   const isUserOwnProfile = user.info._id === profile.info.user._id;
-  console.log("profile", profile, user);
 
   const img = `/img/profiles/${profile.info.user.profileImage}`;
 

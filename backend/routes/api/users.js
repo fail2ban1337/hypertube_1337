@@ -84,7 +84,6 @@ router.get("/info/:id?", [auth], async (req, res) => {
     if (user) return res.json({ user });
     return res.status(404).json({ msg: "User not found" });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: "Server Error" });
   }
 });
@@ -162,7 +161,6 @@ router.post(
       await user.save();
       return res.json({ msg: "Updated Successfuly" });
     } catch (error) {
-      console.log(error);
       res.status(500).json({ msg: "Server error" });
     }
   }
@@ -222,7 +220,6 @@ router.post("/watched", [auth], async (req, res) => {
     }
     return res.send("Success");
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: "Server error.." });
   }
 });

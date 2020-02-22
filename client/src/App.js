@@ -76,7 +76,6 @@ function App() {
     });
   };
 
-  console.log("ss", localStorage.getItem("sss"));
   let deflang = localStorage.getItem("LANGUAGE")
     ? localStorage.getItem("LANGUAGE")
     : getLocale(i18n.locale);
@@ -84,16 +83,13 @@ function App() {
   const muiTheme = createMuiTheme(theme, deflang);
 
   useEffect(() => {
-    console.log("load");
     dispatch(loadUser());
     return () => {
       source.cancel();
     };
   }, []);
 
-  useEffect(() => {
-    console.log("loaduser", user);
-  }, [user]);
+  useEffect(() => {}, [user]);
 
   return (
     <MuiThemeProvider theme={muiTheme}>
