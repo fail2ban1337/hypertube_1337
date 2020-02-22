@@ -195,7 +195,7 @@ function NavBar({ setDarkMode, Langage }) {
             style={{ color: blue[500] }}
           >
             <NavLink to="/" style={{ color: "#000" }}>
-              HyperTube
+              Library
             </NavLink>
           </MenuItem>
           <MenuItem
