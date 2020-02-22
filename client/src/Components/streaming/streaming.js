@@ -159,12 +159,19 @@ function StrVedio({ torrentInfo }) {
     }
     updateW();
   }, []);
+  console.log(torrentInfo.subtitle);
   const tracks = torrentInfo.subtitle.map(subtitle => ({
     kind: "subtitles",
     src: `/movies/subtitles/${torrentInfo.imdb_code}/${decodeURI(
       subtitle.fileName
     )}`,
-    srcLang: subtitle.lang
+    srcLang: subtitle.lang,
+    default:
+      localStorage.getItem("LANGUAGE") === "en" && subtitle.langShort === "en"
+        ? true
+        : localStorage.getItem("LANGUAGE") === "fr" &&
+          subtitle.langShort === "fr" &&
+          true
   }));
   return (
     <div className={classes.playerwrapper}>
@@ -412,7 +419,7 @@ function OtherMovie({ genre }) {
               style={{ height: "280px", width: "100%" }}
             />
             <div className={classes.details}>
-              <Link to={`/streaming/${movie.imdb_code}`}>
+              <MatLink href={`/streaming/${movie.imdb_code}`}>
                 <img
                   src="/img/btn-overlay-blue.png"
                   alt="play"
@@ -423,7 +430,7 @@ function OtherMovie({ genre }) {
                     transform: "translateY(-50%)"
                   }}
                 />
-              </Link>
+              </MatLink>
             </div>
             <span className={classes.movieName}>
               <span className={classes.title}>{movie.title}</span>

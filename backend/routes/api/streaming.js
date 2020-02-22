@@ -122,7 +122,6 @@ router.get("/video/:hash", async (req, res) => {
   getTorrentFile(req.params.hash)
     .then(function(file) {
       const converte = needToConvert(file.ext);
-
       if (!converte) {
         res.header("Access-Control-Allow-Origin", "10.12.7.8");
         res.header(
