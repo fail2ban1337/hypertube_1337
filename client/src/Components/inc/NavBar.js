@@ -256,13 +256,13 @@ function NavBar({ setDarkMode, Langage }) {
       <AppBar position="static" style={{ background: "transparent" }}>
         <Container maxWidth="xl">
           <Toolbar>
-            <Link to={`/`} style={{ textDecoration: "none" }}>
+            <Link to={`/library`} style={{ textDecoration: "none" }}>
               <Typography className={classes.title} variant="h6" noWrap>
                 HyperTube <HdIcon />
               </Typography>
             </Link>
             <Grid container justify={"center"}>
-              {["/"].includes(window.location.pathname) && (
+              {["/library"].includes(window.location.pathname) && (
                 <div className={classes.search}>
                   <div className={classes.searchIcon}>
                     <SearchIcon />

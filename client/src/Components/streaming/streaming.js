@@ -135,11 +135,11 @@ function StreamTrace({ title }) {
   const classes = useStyles();
   return (
     <Breadcrumbs aria-label="breadcrumb" className={classes.StreamTrace}>
-      <MatLink color="inherit" href="/" className={classes.link}>
+      <MatLink color="inherit" href="/home" className={classes.link}>
         <HomeIcon className={classes.icon} />
         {t("streaming.home")}
       </MatLink>
-      <MatLink color="inherit" href="/" className={classes.link}>
+      <MatLink color="inherit" href="/library" className={classes.link}>
         <WhatshotIcon className={classes.icon} />
         {t("streaming.library")}
       </MatLink>
