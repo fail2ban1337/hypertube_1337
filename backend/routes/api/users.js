@@ -198,7 +198,17 @@ router.post("/image", auth, async (req, res) => {
 // @route   Post api/users/watched
 // @desc    Record watched movie
 // @access  Private
-router.post("/watched", [auth], async (req, res) => {
+router.post("/watched", 
+  [auth, validatorController.validateWatched], 
+  async (req, res) => {
+  //Check errors
+  let validationErrors = validationResult(req);
+  if (!validationErrors.isEmpty()) {
+    return res.status(400).json({
+      msg: "Unvalid movie data",
+    });
+  }
+
   try {
     const { imdb_code, title, year, rating, poster } = req.body;
     const { id } = req;

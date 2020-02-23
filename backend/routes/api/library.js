@@ -46,7 +46,7 @@ router.get(
 
       return res.json(popResult);
     } catch (error) {
-      return res.status(500).json({ msg: "Server error" });
+      return res.status(400).json({ msg: "Bad request" });
     }
   }
 );
@@ -88,7 +88,7 @@ router.get(
       }
       return res.status(404).json({ msg: "Result not found" });
     } catch (error) {
-      return res.status(500).json({ msg: "Server error" });
+      return res.status(400).json({ msg: "Bad request" });
     }
   }
 );
@@ -132,7 +132,7 @@ router.get(
       return res.json(result);
     } catch (error) {
       deleteSubtitles(imdb_code);
-      return res.status(500).json({ msg: "Server error" });
+      return res.status(400).json({ msg: "Bad request" });
     }
   }
 );
@@ -152,7 +152,7 @@ router.get("/movies/genre/:genre", auth, async (req, res) => {
 
     return res.json(popResult);
   } catch (error) {
-    return res.status(500).json({ msg: "Server error" });
+    return res.status(400).json({ msg: "Bad request" });
   }
 });
 

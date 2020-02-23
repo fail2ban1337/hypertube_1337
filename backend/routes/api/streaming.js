@@ -74,7 +74,7 @@ const getTorrentFile = hash =>
     } else {
       const engine = torrentStream(`magnet:?xt=urn:btih:${hash}`, {
         connections: 30,
-        tmp: "../client/public/movies",
+        tmp: "../client/build/movies",
         trackers: allTracker
       });
       engine.on("ready", function() {
@@ -209,9 +209,9 @@ router.post("/watchedUpdate/", [auth], async (req, res) => {
     const myData = await streamModel.find({ lastWatchedTime: { $lte: d } });
     myData.forEach(async function(arrayItem) {
       await streamModel.findOneAndDelete({ hashCode: arrayItem.hashCode });
-      let moviePath = `../client/public/movies/torrent-stream/${arrayItem.hashCode}`;
-      let subtitlePath = `../client/public/movies/subtitles/${arrayItem.imdbCode}`;
-      let torrentFilePath = `../client/public/movies/torrent-stream/${arrayItem.hashCode}.torrent`;
+      let moviePath = `../client/build/movies/torrent-stream/${arrayItem.hashCode}`;
+      let subtitlePath = `../client/build/movies/subtitles/${arrayItem.imdbCode}`;
+      let torrentFilePath = `../client/build/movies/torrent-stream/${arrayItem.hashCode}.torrent`;
       if (fs.existsSync(torrentFilePath)) {
         fs.unlinkSync(torrentFilePath);
       }

@@ -179,7 +179,7 @@ const formatYtsResponse = response => {
         "https://img.yts.lt/"
       ) || "";
     obj.cover =
-      item.background_image.replace("https://yts.lt/", "https://img.yts.lt/") ||
+      item.background_image.replace("https://yts.mx/", "https://img.yts.mx/") ||
       "";
     obj.torrents = item.torrents;
     // push object contain movie info to the response data
@@ -244,12 +244,13 @@ const getYtsMovies = async (params, apiUrl = false) => {
     : `${YTS_BASE_URL}?page=${pid}&sort_by=${sort_by}&minimum_rating=${filterRatingMin}&genre=${genre}`;
 
   const result = await cloudscraper.get(url);
+  if (!result) return [];
   const parsedResult = JSON.parse(result);
 
   // format result before return
   return parsedResult.data.movies
     ? formatYtsResponse(parsedResult.data.movies)
-    : false;
+    : [];
 };
 
 /*
@@ -277,11 +278,12 @@ const getPopMovies = async (params, apiUrl = false, setAsArray = false) => {
     ? apiUrl
     : `${POP_BASE_URL}/movies/${pid}?sort=${sort_by}&order=-1&genre=${genre}`;
   let result = await rp.get(url);
+  if (!result) return [];
 
   result = JSON.parse(result);
   // to result to array of object
   if (setAsArray) result = [result];
-  result = result ? formatPopResponse(result) : false;
+  result = result ? formatPopResponse(result) : [];
 
   // delete movies with rating less then minimum set
   if (result && filterRatingMin) {
@@ -314,7 +316,7 @@ const setWatched = (watched, result) => {
 const getSubtitles = async imdb_code => {
   try {
     // set subtitle path
-    const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
+    const subtitlePath = `../client/build/movies/subtitles/${imdb_code}`;
     if (!fs.existsSync(subtitlePath)) {
       fs.mkdirSync(subtitlePath, { recursive: true });
     }
@@ -334,7 +336,7 @@ const getSubtitles = async imdb_code => {
  * Delete subtitles
  */
 const deleteSubtitles = imdb_code => {
-  const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
+  const subtitlePath = `../client/build/movies/subtitles/${imdb_code}`;
   try {
     if (fs.existsSync(subtitlePath)) {
       fs.rmdirSync(subtitlePath, { recursive: true });
