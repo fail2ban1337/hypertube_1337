@@ -38,7 +38,7 @@ class UploadProfile extends React.Component {
         }
       };
       try {
-        const res = await axios.post("api/users/image", formData, config);
+        const res = await axios.post("/api/users/image", formData, config);
         this.setState({
           imageUrl: `/img/profiles/${res.data}`,
           loading: false

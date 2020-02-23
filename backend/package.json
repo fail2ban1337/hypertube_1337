@@ -5,7 +5,9 @@
   "scripts": {
     "client": "cd ../client && npm start --prefix",
     "server": "nodemon server",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "buildclient": "npm run build --prefix client",
+    "postbuild": "NPM_CONFIG_PRODUCTION=false && npm run build --prefix ../client && npm run server"
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.0.20",

@@ -17,14 +17,14 @@ const en = {
     confirm_password: "Confirm Password",
     have_an_account: "Already have an account? Sign in"
   },
-  forgetpassword:{
-    forgetpassword:'Forget Password',
-    email_address:'Email Address',
-    send:'SEND'
+  forgetpassword: {
+    forgetpassword: "Forget Password",
+    email_address: "Email Address",
+    send: "SEND"
   },
   controller: {
     sort: "Sort",
-    title: "Title",
+    trending: "Trending",
     rating: "Rating",
     year: "Year",
     filter: "Filter",
@@ -42,6 +42,18 @@ const en = {
       all: "All"
     }
   },
+  profile:{
+    recenty_watched:'RECENTLY WATCHED',
+    list_watched_empty:'List Of Watched Movies Empty',
+    watch_new:'Watch It Now!'
+  },
+  updateprofile:{
+    username: "Username",
+    first_name: "First Name",
+    last_name: "Last Name",
+    email_address: "Email Address",
+    update:'UPDATE'
+  },
   streaming: {
     home: "Home",
     library: "Library",
@@ -54,7 +66,8 @@ const en = {
     genres: "genres",
     production: "Production",
     language: "language",
-    release: "Release"
+    release: "Release",
+    myalsolike:'YOU MAY ALSO LIKE'
   },
   footer: {
     made_with: "Made with",
@@ -118,7 +131,10 @@ const en = {
     Email_does_not_belong_to_any_user: "Email does not belong to any user",
     This_account_does_not_have_a_password_you_can_connect_using_Google_or_42_Intranet_account:
       "This account does not have a password you can connect using Google or 42 Intranet account",
-    Password_updated_successfully: "Password updated successfully"
+    Password_updated_successfully: "Password updated successfully",
+    first_name_must_be_only_alphabetical_chars: "first name must be only alphabetical chars",
+    last_name_must_be_only_alphabetical_chars: "last name must be only alphabetical chars",
+    username_must_contain_alphanumeric_and_hyphen_and_underscore_characters: "username must contain alphanumeric and hyphen and underscore characters"
   }
 };
 export default en;

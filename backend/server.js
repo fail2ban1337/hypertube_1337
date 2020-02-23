@@ -1,4 +1,5 @@
 var dotenv = require("dotenv");
+const path = require("path");
 var dotenvExpand = require("dotenv-expand");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -34,5 +35,16 @@ app.use("/api/users", require("./routes/api/users"));
 app.use("/api/library", require("./routes/api/library"));
 app.use("/api/streaming", require("./routes/api/streaming"));
 
+//Build
+app.use(express.static("client/build"));
+app.get(/%/, (req, res) => {
+  res.redirect("/");
+});
+
+const root = require("path").join(__dirname, "../client", "build");
+app.use(express.static(root));
+app.get("*", (req, res) => {
+  res.sendFile("index.html", { root });
+});
+
 app.listen(process.env.SERVER_PORT);
-console.log(`Listening on port ${process.env.SERVER_PORT}`);

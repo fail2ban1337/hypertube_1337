@@ -17,14 +17,14 @@ const fr = {
     confirm_password: "Confirmez le mot de passe",
     have_an_account: "Vous avez déjà un compte? se connecter"
   },
-  forgetpassword:{
-    forgetpassword:'Mot de passe oublié',
-    email_address:'adresse email',
-    send:'ENVOYER'
+  forgetpassword: {
+    forgetpassword: "Mot de passe oublié",
+    email_address: "adresse email",
+    send: "ENVOYER"
   },
   controller: {
     sort: "Trier",
-    title: "Titre",
+    trending: "Tendance",
     rating: "Avis",
     year: "Année",
     filter: "Filtre",
@@ -42,6 +42,18 @@ const fr = {
       all: "Tout"
     }
   },
+  profile:{
+    recenty_watched:'RÉCEMMENT REGARDÉ',
+    list_watched_empty:'Liste des films regardés vides',
+    watch_new:'Regardez-le maintenant!'
+  },
+  updateprofile:{
+    username: "Nom d'utilisateur",
+    first_name: "Prénom",
+    last_name: "nom de famille",
+    email_address: "adresse email",
+    update:'mettre à jour'
+  },
   streaming: {
     home: "Accueil",
     library: "Bibliothèque",
@@ -54,7 +66,8 @@ const fr = {
     genres: "genres",
     production: "Production",
     language: "Langue",
-    release: "Libération"
+    release: "Libération",
+    myalsolike:'TU POURRAIS AUSSI AIMER'
   },
   footer: {
     made_with: "Fabriqué avec",
@@ -123,7 +136,10 @@ const fr = {
       "L'email n'appartient à aucun utilisateur",
     This_account_does_not_have_a_password_you_can_connect_using_Google_or_42_Intranet_account:
       "Ce compte n'a pas de mot de passe, vous pouvez vous connecter en utilisant Google ou un compte Intranet 42",
-    Password_updated_successfully: "Mot de passe mis à jour avec succès"
+    Password_updated_successfully: "Mot de passe mis à jour avec succès",
+    first_name_must_be_only_alphabetical_chars: "le prénom ne doit être que des caractères alphabétiques",
+    last_name_must_be_only_alphabetical_chars: "le nom de famille ne doit être que des caractères alphabétiques",
+    username_must_contain_alphanumeric_and_hyphen_and_underscore_characters: "le nom d'utilisateur doit contenir des caractères alphanumériques et des tirets et des traits de soulignement"
   }
 };
 export default fr;

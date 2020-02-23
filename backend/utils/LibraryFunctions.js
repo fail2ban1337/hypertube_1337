@@ -201,18 +201,15 @@ const retMax = (movies, comparedMovie) => {
  */
 const getMovieMoreInfo = async result => {
   for (let index = 0; index < result.length; index++) {
-    // const url = `${IMDB_API}&i=${result[index].imdb_code}&plot=full`;
+    const url = `${IMDB_API}&i=${result[index].imdb_code}&plot=full`;
 
-    // // Get more info from imdb api, append it to result
-    // const body = await rp.get(url);
-    // const { Director, Actors, Production } = JSON.parse(body);
+    // Get more info from imdb api, append it to result
+    const body = await rp.get(url);
+    const { Director, Actors, Production } = JSON.parse(body);
 
-    // result[index].Director = Director;
-    // result[index].Actors = Actors;
-    // result[index].Production = Production;
-    result[index].Director = "Director";
-    result[index].Actors = "Actors";
-    result[index].Production = "Production";
+    result[index].Director = Director || "";
+    result[index].Actors = Actors || "";
+    result[index].Production = Production || "";
   }
   return result;
 };
@@ -315,12 +312,12 @@ const setWatched = (watched, result) => {
  * Get movie available subtitles (En && Fr)
  */
 const getSubtitles = async imdb_code => {
-  // set subtitle path
-  const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
-  if (!fs.existsSync(subtitlePath)) {
-    fs.mkdirSync(subtitlePath, { recursive: true });
-  }
   try {
+    // set subtitle path
+    const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
+    if (!fs.existsSync(subtitlePath)) {
+      fs.mkdirSync(subtitlePath, { recursive: true });
+    }
     // get subtitles from yifi
     const subtitles = await yifysubtitles(imdb_code, {
       path: subtitlePath,
@@ -329,6 +326,7 @@ const getSubtitles = async imdb_code => {
 
     return subtitles;
   } catch (error) {
+    console.log(error);
     return [];
   }
 };
@@ -338,8 +336,12 @@ const getSubtitles = async imdb_code => {
  */
 const deleteSubtitles = imdb_code => {
   const subtitlePath = `../client/public/movies/subtitles/${imdb_code}`;
-  if (fs.existsSync(subtitlePath)) {
-    fs.rmdirSync(subtitlePath, { recursive: true });
+  try {
+    if (fs.existsSync(subtitlePath)) {
+      fs.rmdirSync(subtitlePath, { recursive: true });
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 

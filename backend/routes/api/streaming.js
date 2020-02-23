@@ -247,7 +247,6 @@ router.post("/AddComment", [auth], async (req, res) => {
     );
     return res.send(result);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "Error on Adding New Comment" });
   }
 });

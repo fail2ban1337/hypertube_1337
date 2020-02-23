@@ -36,18 +36,16 @@ const validateUsername = fieldName =>
   check(fieldName)
     .exists()
     .withMessage(`username is required`)
-    .isString()
-    .withMessage(`username must not contain spaces`)
+    .matches(/^[\w-_]+$/)
+    .withMessage(
+      `username must contain alphanumeric and hyphen and underscore characters`
+    )
     .isLength({
       min: 6
     })
     .withMessage(`username length must be at least 6 characters`)
     .isLength({ max: 50 })
-    .withMessage("username length can be maximum 50 chars")
-    .isAlphanumeric()
-    .withMessage(
-      "Username must contain only Alphabetic and Numeric characters"
-    );
+    .withMessage("username length can be maximum 50 chars");
 
 const validatePassword = fieldName =>
   check(fieldName)
@@ -81,9 +79,9 @@ exports.validateRegister = [
   // first_name
   check("first_name")
     .exists()
+    .withMessage("first name is required")
     .isAlpha()
     .withMessage("first name must be only alphabetical chars")
-    .withMessage("first name is required")
     .isString()
     .withMessage("first name must be String")
     .trim()
@@ -92,9 +90,9 @@ exports.validateRegister = [
   // last_name
   check("last_name")
     .exists()
+    .withMessage("last name is required")
     .isAlpha()
     .withMessage("last name must be only alphabetical chars")
-    .withMessage("last name is required")
     .isString()
     .withMessage("last name must be String")
     .trim()
@@ -177,7 +175,7 @@ exports.validateUpdateUser = [
   // username
   validateUsername("username"),
   // password
-  check("newPassord")
+  check("newPassword")
     .if(
       (value, { req }) =>
         req.user.strategy !== "omniauth" && req.body.newPassword !== ""
@@ -207,7 +205,7 @@ exports.validateUpdateUser = [
     .isAlpha()
     .withMessage("first name must be only alphabetical chars")
     .isString()
-    .withMessage("first name must be a string")
+    .withMessage("first name must be String")
     .trim()
     .isLength({ min: 1 })
     .withMessage("first name must be at least 1 character"),
@@ -218,7 +216,7 @@ exports.validateUpdateUser = [
     .isAlpha()
     .withMessage("last name must be only alphabetical chars")
     .isString()
-    .withMessage("last name must be a string")
+    .withMessage("last name must be String")
     .trim()
     .isLength({ min: 1 })
     .withMessage("last name must be at least 1 character")

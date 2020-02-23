@@ -6,10 +6,12 @@ import {
   DESTROY_USER,
   LOADING_USER,
   LOAD_PROFILE,
-  LOADING_PROFILE,
   PROFILE_FAIL
 } from "./actionTypes";
 import { setAlert } from "./alert";
+
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
 
 export const loadUser = () => async dispatch => {
   if (localStorage.token) {
@@ -18,8 +20,6 @@ export const loadUser = () => async dispatch => {
 
   try {
     dispatch(setLoading(LOADING_USER));
-
-    const source = axios.CancelToken.source();
 
     const response = await axios.get("/api/users/me", {
       cancelToken: source.token
@@ -31,17 +31,23 @@ export const loadUser = () => async dispatch => {
       payload: user
     });
   } catch (error) {
-    dispatch({
-      type: LOAD_FAIL
-    });
+    if (!axios.isCancel(error)) {
+      dispatch({
+        type: LOAD_FAIL
+      });
+    }
   }
 };
 
 export const getProfile = id => async dispatch => {
   try {
     // dispatch(setLoading(LOADING_PROFILE));
-    const profile = await axios.get(`/api/users/info/${id}`);
-    const movies = await axios.get(`/api/users/watched/${id}`);
+    const profile = await axios.get(`/api/users/info/${id}`, {
+      cancelToken: source.token
+    });
+    const movies = await axios.get(`/api/users/watched/${id}`, {
+      cancelToken: source.token
+    });
 
     const payload = {
       info: profile.data,
@@ -53,14 +59,15 @@ export const getProfile = id => async dispatch => {
       payload
     });
   } catch (error) {
-    console.log(error);
-    const { msg } = error.response.data;
+    if (!axios.isCancel(error)) {
+      const { msg } = error.response.data;
 
-    dispatch({
-      type: PROFILE_FAIL
-    });
+      dispatch({
+        type: PROFILE_FAIL
+      });
 
-    dispatch(setAlert(msg, "error"));
+      dispatch(setAlert(msg, "error"));
+    }
   }
 };
 

@@ -29,7 +29,7 @@ const useStyles = makeStyles({
 export default function Home() {
   const classes = useStyles();
   const { user } = useSelector(state => state);
-  console.log("user", user);
+
   if (user.loading) return null;
   return (
     <>
