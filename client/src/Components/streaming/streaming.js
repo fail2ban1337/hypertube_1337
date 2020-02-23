@@ -612,6 +612,7 @@ function Comments({ movieInfo }) {
                     onChange={handleInputChange}
                     fullWidth
                     margin="normal"
+                    inputProps={{ maxLength: 100 }}
                     InputLabelProps={{
                       classes: { notchedOutline: classes.notchedOutline },
                       shrink: true
