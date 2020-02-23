@@ -160,7 +160,7 @@ function StrVedio({ torrentInfo }) {
     }
     updateW();
   }, []);
-  console.log(torrentInfo.subtitle);
+
   const tracks = torrentInfo.subtitle.map(subtitle => ({
     kind: "subtitles",
     src: `/movies/subtitles/${torrentInfo.imdb_code}/${decodeURI(

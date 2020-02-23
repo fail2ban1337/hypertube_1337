@@ -221,3 +221,26 @@ exports.validateUpdateUser = [
     .isLength({ min: 1 })
     .withMessage("last name must be at least 1 character")
 ];
+
+exports.validateWatched = [
+  // imdb code
+  check('imdb_code', 'Invalid imdb code')
+    .exists()
+    .isString(),
+  // title
+  check('title', 'Invalid title')
+    .exists()
+    .isString(),
+  // year
+  check('year', 'Invalid year')
+    .exists()
+    .isNumeric(),
+  // rating
+  check('rating', 'Invalid rating')
+    .exists()
+    .isNumeric(),
+  // poster
+  check('poster', 'Invalid poster')
+    .exists()
+    .isString(),
+];
