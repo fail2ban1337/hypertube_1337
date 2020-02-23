@@ -12,6 +12,7 @@ const CommentsModel = require("../../models/Comments");
 const fs = require("fs");
 const mongoose = require("mongoose");
 const auth = require("../../middleware/auth");
+const { check, validationResult } = require("express-validator");
 
 FFmpeg.setFfmpegPath(ffmpegInstaller.path);
 let engines = [];
@@ -33,7 +34,7 @@ const convertFile = file => {
 };
 
 const needToConvert = ext => {
-  if (ext === "mp4" || ext === "ogv" || ext === "webm") return false;
+  if (ext === "mp4" || ext === "webm") return false;
   else return true;
 };
 
@@ -176,80 +177,122 @@ router.get("/video/:hash", async (req, res) => {
       }
     })
     .catch(function(e) {
-      res.status(500).end("something blew up (video)");
+      res.status(400).end("hash code not valide");
     });
 });
 
 // @route   Get api/streaming/watchedUpdate
 // @desc    add or update movie last watch time
 // @access  Private
-router.post("/watchedUpdate/", [auth], async (req, res) => {
-  try {
-    let { hash_code, imdb_code } = req.body;
-    // first we gonna check our database if there already
-    // the movie  so we gonna update his time
-    let result = await streamModel.findOne({
-      hashCode: hash_code
-    });
-    if (result) {
-      await streamModel.findOneAndUpdate(
-        { hashCode: hash_code },
-        { lastWatchedTime: new Date() }
-      );
-    } else {
-      let stream = new streamModel({
-        hashCode: hash_code,
-        imdbCode: imdb_code,
-        lastWatchedTime: new Date()
-      });
-      await stream.save();
+router.post(
+  "/watchedUpdate/",
+  [
+    auth,
+    check("hash_code")
+      .exists()
+      .withMessage(`hash code  is required`)
+      .isString()
+      .withMessage(`hash code Must be a string`),
+    check("imdb_code")
+      .exists()
+      .withMessage(`imdb code  is required`)
+      .isString()
+      .withMessage(`imdb code Must be a string`)
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
     }
-    let d = new Date();
-    d.setMonth(d.getMonth() - 1);
-    const myData = await streamModel.find({ lastWatchedTime: { $lte: d } });
-    myData.forEach(async function(arrayItem) {
-      await streamModel.findOneAndDelete({ hashCode: arrayItem.hashCode });
-      let moviePath = `../client/public/movies/torrent-stream/${arrayItem.hashCode}`;
-      let subtitlePath = `../client/public/movies/subtitles/${arrayItem.imdbCode}`;
-      let torrentFilePath = `../client/public/movies/torrent-stream/${arrayItem.hashCode}.torrent`;
-      if (fs.existsSync(torrentFilePath)) {
-        fs.unlinkSync(torrentFilePath);
+    try {
+      let { hash_code, imdb_code } = req.body;
+      // first we gonna check our database if there already
+      // the movie  so we gonna update his time
+      let result = await streamModel.findOne({
+        hashCode: hash_code
+      });
+      if (result) {
+        await streamModel.findOneAndUpdate(
+          { hashCode: hash_code },
+          { lastWatchedTime: new Date() }
+        );
+      } else {
+        let stream = new streamModel({
+          hashCode: hash_code,
+          imdbCode: imdb_code,
+          lastWatchedTime: new Date()
+        });
+        await stream.save();
       }
-      if (fs.existsSync(moviePath)) {
-        fs.rmdirSync(moviePath, { recursive: true });
-      }
-      if (fs.existsSync(subtitlePath)) {
-        fs.rmdirSync(subtitlePath, { recursive: true });
-      }
-    });
-    return res.send("Every-Thing goes Well");
-  } catch (error) {
-    res.status(500).json({ error: "something blew up(watchedUpdate)" });
+      let d = new Date();
+      d.setMonth(d.getMonth() - 1);
+      const myData = await streamModel.find({ lastWatchedTime: { $lte: d } });
+      myData.forEach(async function(arrayItem) {
+        await streamModel.findOneAndDelete({ hashCode: arrayItem.hashCode });
+        let moviePath = `../client/public/movies/torrent-stream/${arrayItem.hashCode}`;
+        let subtitlePath = `../client/public/movies/subtitles/${arrayItem.imdbCode}`;
+        let torrentFilePath = `../client/public/movies/torrent-stream/${arrayItem.hashCode}.torrent`;
+        if (fs.existsSync(torrentFilePath)) {
+          fs.unlinkSync(torrentFilePath);
+        }
+        if (fs.existsSync(moviePath)) {
+          fs.rmdirSync(moviePath, { recursive: true });
+        }
+        if (fs.existsSync(subtitlePath)) {
+          fs.rmdirSync(subtitlePath, { recursive: true });
+        }
+      });
+      return res.send("Every-Thing goes Well");
+    } catch (error) {
+      res.status(500).json({ error: "something blew up(watchedUpdate)" });
+    }
   }
-});
+);
 
 // @route   Get api/streaming/AddComment
 // @desc    add new comments from the chossen movie
 // @access  Private
-router.post("/AddComment", [auth], async (req, res) => {
-  try {
-    const { imdb_code, comment_text } = req.body;
-    let comment = new CommentsModel({
-      imdbCode: imdb_code,
-      commentText: comment_text.trim(),
-      userInfo: mongoose.Types.ObjectId(req.id)
-    });
-    await comment.save();
+router.post(
+  "/AddComment",
+  [
+    auth,
+    check("comment_text")
+      .exists()
+      .withMessage(`comment text is required`)
+      .isString()
+      .withMessage(`Comment Text Must be a string`)
+      .isLength({ max: 100 })
+      .withMessage("comment text length can be maximum 100 chars"),
+    check("imdb_code")
+      .exists()
+      .withMessage(`imdb code text is required`)
+      .isString()
+      .withMessage(`imdb code Must be a string`)
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    try {
+      const { imdb_code, comment_text } = req.body;
+      let comment = new CommentsModel({
+        imdbCode: imdb_code,
+        commentText: comment_text.trim(),
+        userInfo: mongoose.Types.ObjectId(req.id)
+      });
+      await comment.save();
 
-    const result = await CommentsModel.find({ _id: comment._id }).populate(
-      "userInfo",
-      "username profileImage"
-    );
-    return res.send(result);
-  } catch (error) {
-    res.status(500).json({ error: "Error on Adding New Comment" });
+      const result = await CommentsModel.find({ _id: comment._id }).populate(
+        "userInfo",
+        "username profileImage"
+      );
+      return res.send(result);
+    } catch (error) {
+      res.status(500).json({ error: "Error on Adding New Comment" });
+    }
   }
-});
+);
 
 // @route   Get api/streaming/likeComment
 // @desc    add like or remove it for the chossen comments
@@ -257,6 +300,9 @@ router.post("/AddComment", [auth], async (req, res) => {
 router.post("/likeComment", [auth], async (req, res) => {
   try {
     const { imdb_code, comment_id } = req.body;
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(comment_id);
+    if (!isValidObjectId)
+      return res.status(404).json({ msg: "Comment not found" });
     let result = await CommentsModel.find({
       _id: comment_id,
       imdbCode: imdb_code,

@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     left: "50%",
     zIndex: "-1",
     minHeight: "100%",
-    minHeight: "100%",
+    minWidth: "100%",
     width: "auto",
     height: "auto",
     transform: "translate(-50%, -50%)"
