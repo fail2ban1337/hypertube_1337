@@ -25,11 +25,15 @@ export const loadUser = () => async dispatch => {
       cancelToken: source.token
     });
     const { user } = response.data;
-
-    dispatch({
-      type: LOAD_USER,
-      payload: user
-    });
+    if (user)
+      dispatch({
+        type: LOAD_USER,
+        payload: user
+      });
+    else 
+      dispatch({
+        type: LOAD_FAIL
+      });
   } catch (error) {
     if (!axios.isCancel(error)) {
       dispatch({
