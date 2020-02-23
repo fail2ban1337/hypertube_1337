@@ -326,7 +326,6 @@ const getSubtitles = async imdb_code => {
 
     return subtitles;
   } catch (error) {
-    console.log(error);
     return [];
   }
 };
@@ -340,9 +339,7 @@ const deleteSubtitles = imdb_code => {
     if (fs.existsSync(subtitlePath)) {
       fs.rmdirSync(subtitlePath, { recursive: true });
     }
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 module.exports = {

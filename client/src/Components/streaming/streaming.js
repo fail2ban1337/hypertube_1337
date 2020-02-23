@@ -656,7 +656,8 @@ function Streming() {
       torrents: [{}],
       Director: "",
       Actors: "",
-      Production: ""
+      Production: "",
+      subtitle: []
     },
     loading: true
   });
