@@ -36,7 +36,7 @@ Run: ```cd backend && npm run postbuild```
 <img width="1200" alt="Screen Shot 2020-02-29 at 11 43 54 PM" src="https://user-images.githubusercontent.com/47558088/75616215-bb873b00-5b4e-11ea-9a01-44a973ad9ae2.png">
 
 **Comments And Suggestions Movies**
-<img width="1200" alt="Screen Shot 2020-02-29 at 11 50 18 PM" src="https://user-images.githubusercontent.com/47558088/75616232-dfe31780-5b4e-11ea-9639-204fdf253e24.png">
+<img width="1200" alt="Screen Shot 2020-02-29 at 11 44 07 PM" src="https://user-images.githubusercontent.com/47558088/75616312-aa8af980-5b4f-11ea-8eea-d10ad389774b.png">
 
 **Profile:**
 <img width="1200" alt="Screen Shot 2020-02-29 at 11 44 19 PM" src="https://user-images.githubusercontent.com/47558088/75616239-f7220500-5b4e-11ea-8a79-f74fcbe3f73d.png">
