@@ -48,7 +48,7 @@ Run: ```cd backend && npm run postbuild```
 <img width="1200" alt="Screen Shot 2020-02-29 at 11 44 31 PM" src="https://user-images.githubusercontent.com/47558088/75616265-4831f900-5b4f-11ea-88e7-b3c9a60f36fd.png">
 
 # By:
-- fdrissi
+- fdrissi-
 - abelomar
 - kdefaoui
 - yboumale
