@@ -13,7 +13,7 @@
     "@testing-library/user-event": "^8.0.3",
     "@u-wave/react-youtube": "^0.7.0",
     "antd": "^3.26.7",
-    "axios": "^0.19.1",
+    "axios": "^0.21.1",
     "i18n-js": "^3.5.1",
     "i18next": "^19.1.0",
     "i18next-browser-languagedetector": "^4.0.1",
